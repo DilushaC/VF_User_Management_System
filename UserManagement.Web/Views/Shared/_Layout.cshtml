@@ -205,30 +205,20 @@
                 </ul>
             </div>
         </div>
-        <!--**********************************
-            Sidebar end
-        ***********************************-->
-        <!--**********************************
-            Content body start
-        ***********************************-->
         <div class="content-body">
+            <div class="container">
+                <main role="main" class="pb-3">
+                    @RenderBody()
+                </main>
+            </div>
         </div>
-        <!--**********************************
-            Content body end
-        ***********************************-->
-        <!--**********************************
-            Footer start
-        ***********************************-->
         <div class="footer">
             <div class="copyright">
                 <p>Copyright &copy; Designed & Developed by <a href="https://themeforest.net/user/quixlab">Quixlab</a> 2018</p>
             </div>
         </div>
-        <!--**********************************
-            Footer end
-        ***********************************-->
     </div>
-
+    @await RenderSectionAsync("Scripts", required: false)
     <!-- Vendor js -->
     <script src="~/js/vendor.min.js"></script>
 
@@ -249,17 +239,7 @@
     <!-- App js -->
     <script src="~/js/app.min.js"></script>
 
-    <div class="container">
-        <main role="main" class="pb-3">
-            @RenderBody()
-        </main>
-    </div>
 
-    @*     <footer class="border-top footer text-muted">
-        <div class="container">
-            &copy; 2025 - UserManagement.Web - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
-        </div>
-    </footer> *@
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
@@ -289,11 +269,6 @@
     <script src="~/plugins/chartist/js/chartist.min.js"></script>
     <script src="~/plugins/chartist-plugin-tooltips/js/chartist-plugin-tooltip.min.js"></script>
 
-
-
     <script src="~/js/dashboard/dashboard-1.js"></script>
-
-
-    @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>
