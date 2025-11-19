@@ -92,14 +92,38 @@
 
         $("#Error").hide();
         function submitLogin() {
-            Swal.fire({
-                title: 'Successfully Login!',
-                text: 'Welcome to User Management System.',
-                icon: 'success',
-                timer: 2000,
-                showConfirmButton: false
+            var form = $("#loginForm");
+            $.ajax({
+                url: form.attr("/User/Login"), // Uses the form's asp-action and asp-controller
+                type: "POST",
+                data: form.serialize(),
+                headers: { "X-Requested-With": "XMLHttpRequest" },   // Collects all form inputs
+                success: function (response) {
+                    // ✅ If your controller returns JSON
+                    if (response.success) {
+                        Swal.fire({
+                            title: 'Successfully Login!',
+                            text: 'Welcome to User Management System.',
+                            icon: 'success',
+                            timer: 2000,
+                            showConfirmButton: false
+                        }).then(() => {
+                            window.location.href = response.redirectUrl;
+                        });
+                    } else if(response.redirectUrl != null){
+                         window.location.href = response.redirectUrl
+                    } else{
+                        $("#Error").text("Invalid username or password!").show();
+                    }
+                },
+                error: function (xhr, status, error) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: 'Something went wrong! Please try again.'
+                    });
+                }
             });
-
         }
     </script>
 

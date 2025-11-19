@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UserManagement.Web", "UserM
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UserManagement.Data", "UserManagement.Data\UserManagement.Data.csproj", "{C6001491-791C-48D3-8432-1520187E0982}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UserManagement.Business", "UserManagement.Business\UserManagement.Business.csproj", "{B18AC858-9FFF-491E-A846-007562751BF4}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{C6001491-791C-48D3-8432-1520187E0982}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C6001491-791C-48D3-8432-1520187E0982}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C6001491-791C-48D3-8432-1520187E0982}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B18AC858-9FFF-491E-A846-007562751BF4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B18AC858-9FFF-491E-A846-007562751BF4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B18AC858-9FFF-491E-A846-007562751BF4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B18AC858-9FFF-491E-A846-007562751BF4}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
