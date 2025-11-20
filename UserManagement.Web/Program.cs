@@ -1,5 +1,7 @@
 using UserManagement.Business.BranchHandler;
 using UserManagement.Business.ConnectionHandler;
+using UserManagement.Business.DepartmentHandler;
+using UserManagement.Business.DesignationHandler;
 using UserManagement.Business.Helpers;
 using UserManagement.Business.UserHandler;
 using UserManagement.Data.Context;
@@ -19,6 +21,8 @@ builder.Services.AddScoped<_ConnectionService>();
 builder.Services.AddScoped<PasswordHelper>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IBranchService, BranchService>();
+builder.Services.AddScoped<IDepartmentService, DepartmentService>();
+builder.Services.AddScoped<IDesignationService, DesignationService>();
 
 // Add session services
 builder.Services.AddDistributedMemoryCache();

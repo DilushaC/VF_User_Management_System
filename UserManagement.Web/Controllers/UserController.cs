@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using UserManagement.Business.BranchHandler;
+using UserManagement.Business.DepartmentHandler;
+using UserManagement.Business.DesignationHandler;
 using UserManagement.Business.UserHandler;
 using UserManagement.Data.Models;
 using UserManagement.Presentation.Filters;
@@ -12,11 +14,15 @@ namespace UserManagement.Web.Controllers
     {
         private readonly IUserService _userService;
         private readonly IBranchService _branchService;
+        private readonly IDepartmentService _departmentService;
+        private readonly IDesignationService _designationService;
 
-        public UserController(IUserService userService, IBranchService branchService)
+        public UserController(IUserService userService, IBranchService branchService,IDepartmentService departmentService,IDesignationService designationService)
         {
             _userService = userService;
             _branchService = branchService;
+            _departmentService = departmentService;
+            _designationService = designationService;
         }
         //public IActionResult Index()
         //{
@@ -48,10 +54,14 @@ namespace UserManagement.Web.Controllers
 
         }
 
+        [HttpGet]
         public ActionResult Register()
         {
             var branches = _branchService.GetAllBranchList();
+            var departments = _departmentService.GetAllDepartmentList();
+            var designations = _designationService.GetAllDesignationList();
 
+            //viewbag for branches
             ViewBag.Branches = branches
             .Select(x => new SelectListItem
             {
@@ -60,6 +70,30 @@ namespace UserManagement.Web.Controllers
             })
             .ToList();
 
+            //viewbag for departments
+            ViewBag.Departments = departments
+            .Select(x => new SelectListItem
+            {
+                Value = x.Id.ToString(),
+                Text = x.DepartmentName
+            })
+            .ToList();
+
+            //viewbag for desingations
+            ViewBag.Designations = designations
+            .Select(x => new SelectListItem
+            {
+                Value = x.Id.ToString(),
+                Text = x.DesignationName
+            })
+            .ToList();
+
+            return View();
+        }
+
+        [HttpPost]
+        public ActionResult Register(IFormCollection collection)
+        {
             return View();
         }
     }

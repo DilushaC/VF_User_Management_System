@@ -15,5 +15,6 @@ namespace UserManagement.Data.Models
         public string Phone { get; set; }
         public int PrimaryBranchId { get; set; }
         public int PrimaryDepartmentId { get; set; }
+        public int DesignationId { get; set; }
     }
 }
