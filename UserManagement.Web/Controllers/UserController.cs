@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using UserManagement.Business.BranchHandler;
 using UserManagement.Business.UserHandler;
 using UserManagement.Data.Models;
 using UserManagement.Presentation.Filters;
@@ -10,10 +11,12 @@ namespace UserManagement.Web.Controllers
     public class UserController : Controller
     {
         private readonly IUserService _userService;
+        private readonly IBranchService _branchService;
 
-        public UserController(IUserService userService)
+        public UserController(IUserService userService, IBranchService branchService)
         {
             _userService = userService;
+            _branchService = branchService;
         }
         //public IActionResult Index()
         //{
@@ -47,15 +50,16 @@ namespace UserManagement.Web.Controllers
 
         public ActionResult Register()
         {
-            var branches = new List<SelectListItem>
-            {
-                new SelectListItem { Value = "1", Text = "Email" },
-                new SelectListItem { Value = "2", Text = "Phone" },
-                new SelectListItem { Value = "3", Text = "Walk-in" },
-                new SelectListItem { Value = "4", Text = "Website Form" }
-            };
+            var branches = _branchService.GetAllBranchList();
 
-            ViewBag.Branches = branches;
+            ViewBag.Branches = branches
+            .Select(x => new SelectListItem
+            {
+                Value = x.Id.ToString(),
+                Text = x.BranchName
+            })
+            .ToList();
+
             return View();
         }
     }

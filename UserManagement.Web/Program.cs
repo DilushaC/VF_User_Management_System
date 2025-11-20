@@ -1,3 +1,4 @@
+using UserManagement.Business.BranchHandler;
 using UserManagement.Business.ConnectionHandler;
 using UserManagement.Business.Helpers;
 using UserManagement.Business.UserHandler;
@@ -17,6 +18,7 @@ builder.Services.AddScoped<DapperContext>();
 builder.Services.AddScoped<_ConnectionService>(); 
 builder.Services.AddScoped<PasswordHelper>();
 builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<IBranchService, BranchService>();
 
 // Add session services
 builder.Services.AddDistributedMemoryCache();

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace UserManagement.Data.Models
 {
-    public class UserRegisterViewModel
+    public class UserRegisterModel
     {
         public string UserName { get; set; }
         public string FirstName { get; set; }
