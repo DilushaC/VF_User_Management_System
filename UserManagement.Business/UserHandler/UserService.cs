@@ -1,7 +1,9 @@
 ﻿using Dapper;
+using Microsoft.AspNetCore.Http;
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Data.Common;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -20,6 +22,54 @@ namespace UserManagement.Business.UserHandler
         {
             _connectionService = connectionService;
             _passwordHelper = passwordHelper;
+        }
+
+        public async Task<bool> CreateUserAsync(IFormCollection collection)
+        {
+            try
+            {
+                // Extract values from collection
+                var userName = collection["UserName"].ToString();
+                var firstName = collection["FirstName"].ToString();
+                var lastName = collection["LastName"].ToString();
+                var email = collection["Email"].ToString();
+                var phone = collection["Phone"].ToString();
+                var designationId = collection["DesignationId"].ToString();
+                var primaryBranchId = collection["PrimaryBranchId"].ToString();
+                var primaryDepartmentId = collection["PrimaryDepartmentId"].ToString();
+
+                var password = "1234";
+                string encryptedPassword = _passwordHelper.ComputeHmac(password);
+
+                string sql = @"
+                INSERT INTO Users
+                (UserName, Password, FirstName, LastName, Email, Phone, DesignationId, PrimaryBranchId, PrimaryDepartmentId, IsActive, CreatedDate)
+                VALUES
+                (@UserName, @Password, @FirstName, @LastName, @Email, @Phone, @DesignationId, @PrimaryBranchId, @PrimaryDepartmentId,@IsActive, @CreatedDate);
+            ";
+
+                var parameters = new DynamicParameters();
+                parameters.Add("UserName", userName, DbType.String);
+                parameters.Add("Password", encryptedPassword, DbType.String);
+                parameters.Add("FirstName", firstName, DbType.String);
+                parameters.Add("LastName", lastName, DbType.String);
+                parameters.Add("Email", email, DbType.String);
+                parameters.Add("Phone", phone, DbType.String);
+                parameters.Add("DesignationId", Convert.ToInt32(designationId), DbType.Int32);
+                parameters.Add("PrimaryBranchId", Convert.ToInt32(primaryBranchId), DbType.Int32);
+                parameters.Add("PrimaryDepartmentId", Convert.ToInt32(primaryDepartmentId), DbType.Int32);
+                parameters.Add("IsActive", true, DbType.Boolean);
+                parameters.Add("CreatedDate", DateTime.Now, DbType.DateTime);
+
+                int rows = _connectionService.ExecuteWithPara(sql, parameters);
+
+                return rows > 0;
+
+            }
+            catch
+            {
+                return false;
+            }
         }
 
         public async Task<UserModel?> ValidateUserAsync(string username, string password)

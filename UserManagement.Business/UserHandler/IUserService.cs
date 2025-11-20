@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Http;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -10,5 +11,6 @@ namespace UserManagement.Business.UserHandler
     public interface IUserService
     {
         Task<UserModel> ValidateUserAsync(string username, string password);
+        Task<bool> CreateUserAsync(IFormCollection collection);
     }
 }

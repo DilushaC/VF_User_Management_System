@@ -92,9 +92,40 @@ namespace UserManagement.Web.Controllers
         }
 
         [HttpPost]
-        public ActionResult Register(IFormCollection collection)
+        public async Task<IActionResult> Register(IFormCollection collection)
         {
-            return View();
+            try
+            {
+                bool created = await _userService.CreateUserAsync(collection);
+
+                if (created)
+                {
+                    return Json(new
+                    {
+                        success = true,
+                        message = "User created successfully",
+                        redirectUrl = Url.Action("Index", "Home")
+                    });
+                }
+                else
+                {
+                    return Json(new
+                    {
+                        success = false,
+                        message = "Failed to create user"
+                    });
+                }
+            }
+            catch (Exception ex)
+            {
+                // Return error response
+                return Json(new
+                {
+                    success = false,
+                    message = $"Error: {ex.Message}"
+                });
+            }
         }
+
     }
 }
