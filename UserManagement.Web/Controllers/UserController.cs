@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using UserManagement.Business.UserHandler;
 using UserManagement.Data.Models;
 using UserManagement.Presentation.Filters;
@@ -42,6 +43,20 @@ namespace UserManagement.Web.Controllers
                 return Json(new { success = false });
             }
 
+        }
+
+        public ActionResult Register()
+        {
+            var branches = new List<SelectListItem>
+            {
+                new SelectListItem { Value = "1", Text = "Email" },
+                new SelectListItem { Value = "2", Text = "Phone" },
+                new SelectListItem { Value = "3", Text = "Walk-in" },
+                new SelectListItem { Value = "4", Text = "Website Form" }
+            };
+
+            ViewBag.Branches = branches;
+            return View();
         }
     }
 }

@@ -1,0 +1,110 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+    ViewData["Title"] = "Create Product";
+}
+<html class="h-100" lang="en">
+<body>
+    <div class="row">
+        <!-- start page title -->
+        <div class="row">
+            <div class="col-12">
+                <div class="page-title-box">
+                    <div class="page-title-right">
+                        <ol class="breadcrumb m-0">
+                            <li class="breadcrumb-item"><a href="javascript: void(0);">Dashboard</a></li>
+                            <li class="breadcrumb-item"><a href="javascript: void(0);">Products</a></li>
+                            <li class="breadcrumb-item active">Create Product</li>
+                        </ol>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Form row -->
+        <div class="row">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-body">
+                        <h3 class="header-title">Create Product</h3>
+                        <br />
+                        <form>
+                            <div class="mb-3">
+                                <div class="mb-3 col-md-6">
+                                    <label for="inputProduct" class="form-label">Product Name</label>
+                                    <input type="email" class="form-control" id="inputProduct" placeholder="Please Enter Product Name Here">
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <label for="Description">Description</label><span class="text-uppercase text-danger" style="margin-left:5px">*</span>
+                                <textarea id="Description" rows="5" class="form-control" name="Description" placeholder="About Description"></textarea>
+                            </div>
+
+                            <button type="submit" class="btn btn-primary">Create</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="~/assets/js/app.min.js"></script>
+    <script src="~/assets/js/sweetalert2.all.min.js"></script>
+    <script type="text/javascript">
+
+        $("#Error").hide();
+
+        function submitLogin() {
+
+            var form = $("#loginForm");
+
+            $.ajax({
+                url: form.attr("action"),   // Correct way to get form action URL
+                type: "POST",
+                data: form.serialize(),
+                headers: { "X-Requested-With": "XMLHttpRequest" },
+                success: function (response) {
+
+                    if (response.success) {
+
+                        Swal.fire({
+                            title: 'Are you sure?',
+                            text: "Do you want to resolve this complaint?",
+                            icon: 'question',
+                            showCancelButton: true,
+                            confirmButtonColor: '#3085d6',
+                            cancelButtonColor: '#d33',
+                            confirmButtonText: 'Yes, resolve it!'
+                        }).then((result) => {
+
+                            if (result.isConfirmed) {
+
+                                Swal.fire({
+                                    title: 'Success!',
+                                    text: 'Complaint resolved successfully.',
+                                    icon: 'success',
+                                    timer: 2000,
+                                    showConfirmButton: false
+                                }).then(() => {
+
+                                    // After confirmation → submit final action
+                                    form.attr('action','/ComplaintManageProcess/SubmitAndSendComplain');
+                                    form.submit();
+
+                                });
+                            }
+                        });
+
+                    } else {
+                        $("#Error").show().html(response.message || "Login failed.");
+                    }
+                },
+                error: function () {
+                    $("#Error").show().html("An error occurred.");
+                }
+            });
+        }
+
+    </script>
+
+</body>
+</html>
