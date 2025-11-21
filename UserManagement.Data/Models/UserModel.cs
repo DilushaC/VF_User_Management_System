@@ -29,8 +29,8 @@ namespace UserManagement.Data.Models
 
         public bool IsActive { get; set; }
 
-        public DateTime? CreatedDate { get; set; } // nullable
+        public DateTime? CreatedDate { get; set; } 
 
-        public DateTime? LastLoginDate { get; set; } // nullable
+        public DateTime? LastLoginDate { get; set; } 
     }
 }

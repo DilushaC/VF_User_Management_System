@@ -41,6 +41,7 @@
                 <table id="basic-datatable" class="table table-striped dt-responsive nowrap w-100">
                     <thead>
                         <tr>
+                            <th>User Name</th>
                             <th>Name</th>
                             <th>Email</th>
                             <th>Phone</th>
@@ -48,6 +49,7 @@
                             <th>Primary Department</th>
                             <th>Designation</th>
                             <th>Active</th>
+                            <th>View</th>
                         </tr>
                     </thead>
 
@@ -57,6 +59,7 @@
                             @foreach (var user in (List<UserModel>)ViewBag.UserList)
                             {
                                 <tr>
+                                    <td>@user.UserName</td>
                                     <td>@user.FirstName @user.LastName</td>
                                     <td>@user.Email</td>
                                     <td>@user.Phone</td>
@@ -64,14 +67,20 @@
                                     <td>@user.PrimaryDepartmentName</td>
                                     <td>@user.DesignationName</td>
                                     <td>@(user.IsActive ? "Active" : "Inactive")</td>
+                                    <td>
+                                    <td>
+                                        <a asp-controller="User" asp-action="Edit" asp-route-id="@user.Id" class="btn btn-sm btn-info">
+                                            <i class="bi bi-pencil"></i>
+                                        </a>
+                                    </td>
                                 </tr>
                             }
                         }
                     </tbody>
                 </table>
 
-            </div> 
-        </div> 
+            </div>
+        </div>
     </div>
 </div>
 
