@@ -57,6 +57,16 @@ namespace UserManagement.Web.Controllers
             return View(user);
         }
 
+        public async Task<IActionResult> LoadEditModal(int id)
+        {
+            var user = await _userService.GetUserByIdAsync(id);
+            if (user == null)
+            {
+                return NotFound();
+            }
+            return PartialView("_EditUserPartial", user);
+        }
+
         public ActionResult Login()
         {
             HttpContext.Session.Clear();
