@@ -43,20 +43,6 @@ namespace UserManagement.Web.Controllers
             return View();
         }
 
-        public async Task<IActionResult> Edit(int id)
-        {
-            var user = await _userService.GetUserByIdAsync(id);
-
-            if (user == null)
-            {
-                TempData["ErrorMessage"] = $"User with ID {id} not found.";
-                return RedirectToAction("UsersManagement");
-            }
-
-            // Assumes you have a view named Edit.cshtml
-            return View(user);
-        }
-
         public async Task<IActionResult> LoadEditModal(int id)
         {
             var user = await _userService.GetUserByIdAsync(id);

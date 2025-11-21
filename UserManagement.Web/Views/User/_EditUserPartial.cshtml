@@ -23,25 +23,29 @@
                 <input type="text" asp-for="LastName" class="form-control" />
             </div>
         </div>
-        <div class="mb-3">
-            <label for="Email" class="form-label">Email Address</label>
-            <input type="email" asp-for="Email" class="form-control" required />
-        </div>
-        <div class="mb-3">
-            <label for="Phone" class="form-label">Phone Number</label>
-            <input type="text" asp-for="Phone" class="form-control" />
+        <div class="row">
+            <div class="mb-3 col-md-6">
+                <label for="Email" class="form-label">Email Address</label>
+                <input type="email" asp-for="Email" class="form-control" required />
+            </div>
+            <div class="mb-3 col-md-6">
+                <label for="Phone" class="form-label">Phone Number</label>
+                <input type="text" asp-for="Phone" class="form-control" />
+            </div>
         </div>
         <div class="mb-3">
             <label for="Designation" class="form-label">Designation</label>
             <input type="text" asp-for="DesignationName" class="form-control" />
         </div>
-        <div class="mb-3">
-            <label for="Primary Branch" class="form-label">Primary Branch</label>
-            <input type="text" asp-for="PrimaryBranchName" class="form-control" />
-        </div>
-        <div class="mb-3">
-            <label for="Primary Department" class="form-label">Primary Department</label>
-            <input type="text" asp-for="PrimaryDepartmentName" class="form-control" />
+        <div class="row">
+            <div class="mb-3 col-md-6">
+                <label for="Primary Branch" class="form-label">Primary Branch</label>
+                <input type="text" asp-for="PrimaryBranchName" class="form-control" />
+            </div>
+            <div class="mb-3 col-md-6">
+                <label for="Primary Department" class="form-label">Primary Department</label>
+                <input type="text" asp-for="PrimaryDepartmentName" class="form-control" />
+            </div>
         </div>
         <div class="mb-3">
             <label for="IsActive" class="form-label">Status</label>
