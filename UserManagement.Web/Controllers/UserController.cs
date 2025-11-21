@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using System.Collections.Generic;
 using UserManagement.Business.BranchHandler;
 using UserManagement.Business.DepartmentHandler;
 using UserManagement.Business.DesignationHandler;
@@ -30,6 +31,15 @@ namespace UserManagement.Web.Controllers
         //}
         public IActionResult UsersManagement()
         {
+            var users = _userService.GetAllUsersList();
+            if (users != null)
+            {
+                ViewBag.UserList = users.ToList();
+            }
+            else
+            {
+                ViewBag.UserList = new List<UserModel>();
+            }
             return View();
         }
 

@@ -23,6 +23,9 @@ namespace UserManagement.Data.Models
         public int PrimaryDepartmentId { get; set; }
 
         public int DesignationId { get; set; }
+        public string PrimaryBranchName { get; set; }
+        public string PrimaryDepartmentName { get; set; }
+        public string DesignationName { get; set; }
 
         public bool IsActive { get; set; }
 

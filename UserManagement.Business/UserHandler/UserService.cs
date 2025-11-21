@@ -72,6 +72,114 @@ namespace UserManagement.Business.UserHandler
             }
         }
 
+        //public List<UserModel> GetAllUsersList()
+        //{
+        //    try
+        //    {
+        //        string Query = $"SELECT * FROM Users WHERE IsActive = 1";
+        //        var Data = _connectionService.Return(Query);
+        //        var Row = Data.Rows[0];
+
+        //        List<UserModel> usersList = new List<UserModel>();
+
+        //        for (int i = 0; i < Data.Rows.Count; i++)
+        //        {
+        //            var BRow = Data.Rows[i];
+        //            UserModel usersModel = new UserModel()
+        //            {
+        //                Id = Convert.ToInt32(BRow["Id"]),
+        //                UserName = BRow["UserName"] == DBNull.Value ? string.Empty : BRow["UserName"].ToString(),
+        //                FirstName = BRow["FirstName"] == DBNull.Value ? string.Empty : BRow["FirstName"].ToString(),
+        //                LastName = BRow["LastName"] == DBNull.Value ? string.Empty : BRow["LastName"].ToString(),
+        //                Email = BRow["Email"] == DBNull.Value ? string.Empty : BRow["Email"].ToString(),
+        //                Phone = BRow["Phone"] == DBNull.Value ? string.Empty : BRow["Phone"].ToString(),
+        //                PrimaryBranchId = BRow["PrimaryBranchId"] == DBNull.Value ? 0 : (int)BRow["PrimaryBranchId"],
+        //                PrimaryDepartmentId = BRow["PrimaryDepartmentId"] == DBNull.Value ? 0 : (int)BRow["PrimaryDepartmentId"],
+        //                DesignationId = BRow["DesignationId"] == DBNull.Value ? 0 : (int)BRow["DesignationId"],
+
+        //                IsActive = Convert.ToBoolean(BRow["IsActive"]),
+        //                CreatedDate = Convert.ToDateTime(BRow["CreatedDate"]),
+
+        //                LastLoginDate = BRow["LastLoginDate"] == DBNull.Value
+        //                    ? DateTime.MinValue 
+        //                    : Convert.ToDateTime(BRow["LastLoginDate"]),
+        //            };
+        //            usersList.Add(usersModel);
+
+        //        }
+        //        return usersList;
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        throw ex;
+        //    }
+        //}
+
+        public List<UserModel> GetAllUsersList()
+        {
+            try
+            {
+                string Query = @"
+                                SELECT 
+                                    U.*, 
+                                    B.BranchName AS PrimaryBranchName, 
+                                    D.DepartmentName AS PrimaryDepartmentName, 
+                                    G.DesignationName
+                                FROM 
+                                    Users U
+                                INNER JOIN 
+                                    Branch B ON U.PrimaryBranchId = B.Id
+                                INNER JOIN 
+                                    Department D ON U.PrimaryDepartmentId = D.Id
+                                INNER JOIN 
+                                    Designation G ON U.DesignationId = G.Id
+                                WHERE 
+                                    U.IsActive = 1;";
+
+                var Data = _connectionService.Return(Query);
+
+                List<UserModel> usersList = new List<UserModel>();
+
+                for (int i = 0; i < Data.Rows.Count; i++)
+                {
+                    var BRow = Data.Rows[i];
+                    UserModel usersModel = new UserModel()
+                    {
+                        Id = Convert.ToInt32(BRow["Id"]),
+                        UserName = BRow["UserName"] == DBNull.Value ? string.Empty : BRow["UserName"].ToString(),
+                        FirstName = BRow["FirstName"] == DBNull.Value ? string.Empty : BRow["FirstName"].ToString(),
+                        LastName = BRow["LastName"] == DBNull.Value ? string.Empty : BRow["LastName"].ToString(),
+                        Email = BRow["Email"] == DBNull.Value ? string.Empty : BRow["Email"].ToString(),
+                        Phone = BRow["Phone"] == DBNull.Value ? string.Empty : BRow["Phone"].ToString(),
+
+                        // Keep the IDs
+                        PrimaryBranchId = BRow["PrimaryBranchId"] == DBNull.Value ? 0 : (int)BRow["PrimaryBranchId"],
+                        PrimaryDepartmentId = BRow["PrimaryDepartmentId"] == DBNull.Value ? 0 : (int)BRow["PrimaryDepartmentId"],
+                        DesignationId = BRow["DesignationId"] == DBNull.Value ? 0 : (int)BRow["DesignationId"],
+
+                        // NEW: Map the joined names (You'll need to add these properties to your UserModel)
+                        PrimaryBranchName = BRow["PrimaryBranchName"] == DBNull.Value ? string.Empty : BRow["PrimaryBranchName"].ToString(),
+                        PrimaryDepartmentName = BRow["PrimaryDepartmentName"] == DBNull.Value ? string.Empty : BRow["PrimaryDepartmentName"].ToString(),
+                        DesignationName = BRow["DesignationName"] == DBNull.Value ? string.Empty : BRow["DesignationName"].ToString(),
+
+                        IsActive = Convert.ToBoolean(BRow["IsActive"]),
+                        CreatedDate = Convert.ToDateTime(BRow["CreatedDate"]),
+
+                        LastLoginDate = BRow["LastLoginDate"] == DBNull.Value
+                            ? DateTime.MinValue
+                            : Convert.ToDateTime(BRow["LastLoginDate"]),
+                    };
+                    usersList.Add(usersModel);
+                }
+                return usersList;
+            }
+            catch (Exception ex)
+            {
+                // Consider logging the exception instead of just throwing it
+                throw ex;
+            }
+        }
+
         public async Task<UserModel?> ValidateUserAsync(string username, string password)
         {
             const string query = @"
