@@ -28,6 +28,10 @@ namespace UserManagement.Web.Controllers
         //{
         //    return View();
         //}
+        public IActionResult UsersManagement()
+        {
+            return View();
+        }
 
         public ActionResult Login()
         {
@@ -54,6 +58,9 @@ namespace UserManagement.Web.Controllers
 
         }
 
+
+
+        //load user register page view
         [HttpGet]
         public ActionResult Register()
         {
@@ -91,6 +98,7 @@ namespace UserManagement.Web.Controllers
             return View();
         }
 
+        //create user API
         [HttpPost]
         public async Task<IActionResult> Register(IFormCollection collection)
         {
