@@ -99,7 +99,6 @@
             });
             return;
         }
-
         Swal.fire({
             title: 'Update User?',
             icon: 'warning',
@@ -115,8 +114,6 @@
                         Swal.showLoading();
                     }
                 });
-
-                // 1. First AJAX Call: /User/LoadEditModal
                 $.ajax({
                     url: '/User/LoadEditModal',
                     type: 'POST',

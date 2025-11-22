@@ -120,7 +120,6 @@ namespace UserManagement.Web.Controllers
         public async Task<IActionResult> Login(string username, string password)
         {
             UserModel user = await _userService.ValidateUserAsync(username, password);
-
             if (user != null)
             {
 
