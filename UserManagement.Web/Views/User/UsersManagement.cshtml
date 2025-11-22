@@ -62,29 +62,6 @@
                     </thead>
 
                     <tbody>
-                        @if (ViewBag.UserList != null)
-                        {
-                            @foreach (var user in (List<UserModel>)ViewBag.UserList)
-                            {
-                                <tr>
-                                    <td>@user.UserName</td>
-                                    <td>@user.FirstName @user.LastName</td>
-                                    <td>@user.Email</td>
-                                    <td>@user.Phone</td>
-                                    <td>@user.PrimaryBranchName</td>
-                                    <td>@user.PrimaryDepartmentName</td>
-                                    <td>@user.DesignationName</td>
-                                    <td>@(user.IsActive ? "Active" : "Inactive")</td>
-                                    <td>
-                                        <button type="button"
-                                                class="btn btn-sm btn-info edit-user-btn"
-                                                data-user-id="@user.Id">
-                                            <i class="bi bi-pencil"></i>
-                                        </button>
-                                    </td>
-                                </tr>
-                            }
-                        }
                     </tbody>
                 </table>
 
@@ -116,13 +93,38 @@
 
 <script>
     $('#basic-datatable').DataTable({
-        "paging": true,
-        "searching": true,
-        "ordering": true,
-        "info": true,
-        "pageLength": 10,
-        "lengthMenu": [10, 25, 50, 100]
+        processing: true,
+        serverSide: true,
+        ajax: {
+            url: '/User/GetUsersPaged',
+            type: 'POST'
+        },
+        columns: [
+            { data: 'userName' },
+            { data: 'fullName' },
+            { data: 'email' },
+            { data: 'phone' },
+            { data: 'primaryBranchName' },
+            { data: 'primaryDepartmentName' },
+            { data: 'designationName' },
+            { data: 'isActive' },
+            {
+                data: 'id',
+                render: function (data) {
+                    return `
+                        <button type="button"
+                                class="btn btn-sm btn-info edit-user-btn"
+                                data-user-id="${data}">
+                            <i class="bi bi-pencil"></i>
+                        </button>
+                    `;
+                }
+            }
+        ],
+        pageLength: 10,
+        lengthMenu: [10, 25, 50, 100]
     });
+
 
 </script>
 

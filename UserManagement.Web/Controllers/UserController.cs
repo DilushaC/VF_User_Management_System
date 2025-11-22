@@ -29,20 +29,63 @@ namespace UserManagement.Web.Controllers
         //{
         //    return View();
         //}
-        //get all user list
+
+        //get all user list draw the initial data table
         public IActionResult UsersManagement()
         {
-            var users = _userService.GetAllUsersList();
-            if (users != null)
-            {
-                ViewBag.UserList = users.ToList();
-            }
-            else
-            {
-                ViewBag.UserList = new List<UserModel>();
-            }
             return View();
         }
+
+        //dat table APi call to get records
+        [HttpPost]
+        public IActionResult GetUsersPaged()
+        {
+            var draw = Request.Form["draw"].FirstOrDefault();
+            var start = Request.Form["start"].FirstOrDefault();
+            var length = Request.Form["length"].FirstOrDefault();
+            var searchValue = Request.Form["search[value]"].FirstOrDefault();
+
+            int pageSize = length != null ? Convert.ToInt32(length) : 10;
+            int skip = start != null ? Convert.ToInt32(start) : 0;
+
+            var users = _userService.GetAllUsersList();
+
+            // Data table searching
+            if (!string.IsNullOrEmpty(searchValue))
+            {
+                users = users.Where(u =>
+                    u.UserName.Contains(searchValue) ||
+                    u.FirstName.Contains(searchValue) ||
+                    u.LastName.Contains(searchValue) ||
+                    u.Email.Contains(searchValue)
+                ).ToList();
+            }
+
+            int recordsTotal = users.Count();
+
+            // Pagination
+            var data = users.Skip(skip).Take(pageSize).Select(u => new
+            {
+                u.Id,
+                u.UserName,
+                FullName = $"{u.FirstName} {u.LastName}",
+                u.Email,
+                u.Phone,
+                u.PrimaryBranchName,
+                u.PrimaryDepartmentName,
+                u.DesignationName,
+                IsActive = u.IsActive ? "Active" : "Inactive"
+            }).ToList();
+
+            return Json(new
+            {
+                draw = draw,
+                recordsFiltered = recordsTotal,
+                recordsTotal = recordsTotal,
+                data = data
+            });
+        }
+
 
         //load single user record
         [HttpGet]
