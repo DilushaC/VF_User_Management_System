@@ -201,6 +201,61 @@ namespace UserManagement.Business.UserHandler
             }
         }
 
+        public async Task<bool> UpdateUserAsync(IFormCollection collection)
+        {
+            try
+            {
+                var userId = Convert.ToInt32(collection["Id"]);
+                var userName = collection["UserName"].ToString();
+                var firstName = collection["FirstName"].ToString();
+                var lastName = collection["LastName"].ToString();
+                var email = collection["Email"].ToString();
+                var phone = collection["Phone"].ToString();
+                var designationId = collection["DesignationId"].ToString();
+                var primaryBranchId = collection["PrimaryBranchId"].ToString();
+                var primaryDepartmentId = collection["PrimaryDepartmentId"].ToString();
+                var isActive = Convert.ToBoolean(collection["IsActive"]);
+
+                string sql = @"
+                    UPDATE Users
+                    SET 
+                        UserName = @UserName,
+                        FirstName = @FirstName,
+                        LastName = @LastName,
+                        Email = @Email,
+                        Phone = @Phone,
+                        DesignationId = @DesignationId,
+                        PrimaryBranchId = @PrimaryBranchId,
+                        PrimaryDepartmentId = @PrimaryDepartmentId,
+                        IsActive = @IsActive,
+                        CreatedDate = @CreatedDate
+                    WHERE Id = @UserId;
+                ";
+
+                var parameters = new DynamicParameters();
+                parameters.Add("UserId", userId, DbType.Int32);
+                parameters.Add("UserName", userName, DbType.String);
+                parameters.Add("FirstName", firstName, DbType.String);
+                parameters.Add("LastName", lastName, DbType.String);
+                parameters.Add("Email", email, DbType.String);
+                parameters.Add("Phone", phone, DbType.String);
+                parameters.Add("DesignationId", Convert.ToInt32(designationId), DbType.Int32);
+                parameters.Add("PrimaryBranchId", Convert.ToInt32(primaryBranchId), DbType.Int32);
+                parameters.Add("PrimaryDepartmentId", Convert.ToInt32(primaryDepartmentId), DbType.Int32);
+                parameters.Add("IsActive", isActive, DbType.Boolean);
+                parameters.Add("CreatedDate", DateTime.Now, DbType.DateTime);
+
+                int rows = _connectionService.ExecuteWithPara(sql, parameters);
+
+                return rows > 0;
+            }
+            catch(Exception ex)
+            {
+                return false;
+            }
+        }
+
+
         public async Task<UserModel?> ValidateUserAsync(string username, string password)
         {
             const string query = @"

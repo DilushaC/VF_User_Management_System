@@ -29,6 +29,7 @@ namespace UserManagement.Web.Controllers
         //{
         //    return View();
         //}
+        //get all user list
         public IActionResult UsersManagement()
         {
             var users = _userService.GetAllUsersList();
@@ -43,8 +44,41 @@ namespace UserManagement.Web.Controllers
             return View();
         }
 
+        //load single user record
+        [HttpGet]
         public async Task<IActionResult> LoadEditModal(int id)
         {
+            var branches = _branchService.GetAllBranchList();
+            var departments = _departmentService.GetAllDepartmentList();
+            var designations = _designationService.GetAllDesignationList();
+
+            //viewbag for branches
+            ViewBag.Branches = branches
+            .Select(x => new SelectListItem
+            {
+                Value = x.Id.ToString(),
+                Text = x.BranchName
+            })
+            .ToList();
+
+            //viewbag for departments
+            ViewBag.Departments = departments
+            .Select(x => new SelectListItem
+            {
+                Value = x.Id.ToString(),
+                Text = x.DepartmentName
+            })
+            .ToList();
+
+            //viewbag for desingations
+            ViewBag.Designations = designations
+            .Select(x => new SelectListItem
+            {
+                Value = x.Id.ToString(),
+                Text = x.DesignationName
+            })
+            .ToList();
+
             var user = await _userService.GetUserByIdAsync(id);
             if (user == null)
             {
@@ -52,6 +86,29 @@ namespace UserManagement.Web.Controllers
             }
             return PartialView("_EditUserPartial", user);
         }
+
+        //update single user data
+        [HttpPost]
+        public async Task<IActionResult> LoadEditModal(IFormCollection form)
+        {
+            try
+            {
+                // Send the entire form collection to service layer
+                var result = await _userService.UpdateUserAsync(form);
+
+                if (!result)
+                {
+                    return StatusCode(500, "Failed to update user.");
+                }
+
+                return Ok(new { message = "User updated successfully." });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Error: {ex.Message}");
+            }
+        }
+
 
         public ActionResult Login()
         {
@@ -118,7 +175,7 @@ namespace UserManagement.Web.Controllers
             return View();
         }
 
-        //create user API
+        //create user with method overloading 
         [HttpPost]
         public async Task<IActionResult> Register(IFormCollection collection)
         {
