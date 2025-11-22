@@ -93,21 +93,21 @@ namespace UserManagement.Web.Controllers
         {
             try
             {
-                // Send the entire form collection to service layer
                 var result = await _userService.UpdateUserAsync(form);
 
                 if (!result)
                 {
-                    return StatusCode(500, "Failed to update user.");
+                    return Ok(new { success = false, message = "Failed to update user."});
                 }
 
-                return Ok(new { message = "User updated successfully." });
+                return Ok(new { success = true, message = "User updated successfully.", redirectUrl = Url.Action("UsersManagement", "User") });
             }
             catch (Exception ex)
             {
-                return StatusCode(500, $"Error: {ex.Message}");
+                return Ok(new { success = false, message = $"Error: {ex.Message}" });
             }
         }
+
 
 
         public ActionResult Login()

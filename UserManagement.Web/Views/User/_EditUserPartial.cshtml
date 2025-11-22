@@ -86,14 +86,12 @@
 <script src="~/assets/vendor/select2/js/select2.min.js"></script>
 
 <script>
-
-    document.getElementById("updateUserForm").addEventListener("submit", async function (e) {
+    $("#updateUserForm").on("submit", function (e) {
+        debugger;
         e.preventDefault();
+        let form = $(this);
 
-        const form = document.getElementById("updateUserForm");
-
-        // Basic browser validation
-        if (!form.checkValidity()) {
+        if (!form[0].checkValidity()) {
             Swal.fire({
                 icon: "warning",
                 title: "Missing Information",
@@ -102,50 +100,54 @@
             return;
         }
 
-        const url = "/User/LoadEditModal";   // ✔ API endpoint
-        const formData = new FormData(form);
-
-        try {
-            const response = await fetch(url, {
-                method: "POST",
-                body: formData
-            });
-
-            if (response.ok) {
-
-                const modal = bootstrap.Modal.getInstance(document.getElementById("userEditModal"));
-
+        Swal.fire({
+            title: 'Update User?',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: 'Yes, Update',
+            cancelButtonText: 'Cancel'
+        }).then((result) => {
+            if (result.isConfirmed) {
                 Swal.fire({
-                    icon: "success",
-                    title: "Updated!",
-                    text: "User updated successfully."
-                }).then(() => {
-                    modal.hide();
-
-                    // Refresh parent table if function exists
-                    if (window.onUserUpdated) {
-                        window.onUserUpdated();
+                    title: 'Updating...',
+                    allowOutsideClick: false,
+                    didOpen: () => {
+                        Swal.showLoading();
                     }
                 });
 
-            } else {
-                // Read error message returned by controller
-                const errorText = await response.text();
-                Swal.fire({
-                    icon: "error",
-                    title: "Update Failed",
-                    text: errorText || "Unable to update the user."
+                // 1. First AJAX Call: /User/LoadEditModal
+                $.ajax({
+                    url: '/User/LoadEditModal',
+                    type: 'POST',
+                    data: form.serialize(),
+                    headers: { "X-Requested-With": "XMLHttpRequest" },
+                    success: function (response) {
+                        Swal.close();
+
+                        Swal.fire({
+                            icon: response.success ? 'success' : 'error',
+                            title: response.success ? 'Success' : 'Error',
+                            text: response.message
+                        }).then(() => {
+                            if (response.success) {
+                                const modal = bootstrap.Modal.getInstance(document.getElementById("userEditModal"));
+                                modal.hide();
+                                window.location.href = response.redirectUrl;
+                            }
+                        });
+                    },
+                    error: function (xhr) {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error',
+                            text: xhr.responseJSON?.message || 'Something went wrong! Please try again.'
+                        });
+                    }
                 });
             }
-
-        } catch (err) {
-            Swal.fire({
-                icon: "error",
-                title: "Server Error",
-                text: "Something went wrong while sending the request."
-            });
-        }
+        });
     });
-
 </script>
+
 
