@@ -1,5 +1,6 @@
 using UserManagement.Business.BranchHandler;
 using UserManagement.Business.ConnectionHandler;
+using UserManagement.Business.DatatableHandler;
 using UserManagement.Business.DepartmentHandler;
 using UserManagement.Business.DesignationHandler;
 using UserManagement.Business.Helpers;
@@ -23,6 +24,8 @@ builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IBranchService, BranchService>();
 builder.Services.AddScoped<IDepartmentService, DepartmentService>();
 builder.Services.AddScoped<IDesignationService, DesignationService>();
+builder.Services.AddScoped<IDataTableService, DataTableService>();
+
 
 // Add session services
 builder.Services.AddDistributedMemoryCache();

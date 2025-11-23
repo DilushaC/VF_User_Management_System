@@ -8,6 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using UserManagement.Business.ConnectionHandler;
+using UserManagement.Business.DatatableHandler;
 using UserManagement.Business.Helpers;
 using UserManagement.Data.Models;
 
@@ -108,13 +109,9 @@ namespace UserManagement.Business.UserHandler
                         LastName = BRow["LastName"] == DBNull.Value ? string.Empty : BRow["LastName"].ToString(),
                         Email = BRow["Email"] == DBNull.Value ? string.Empty : BRow["Email"].ToString(),
                         Phone = BRow["Phone"] == DBNull.Value ? string.Empty : BRow["Phone"].ToString(),
-
-                        // Keep the IDs
                         PrimaryBranchId = BRow["PrimaryBranchId"] == DBNull.Value ? 0 : (int)BRow["PrimaryBranchId"],
                         PrimaryDepartmentId = BRow["PrimaryDepartmentId"] == DBNull.Value ? 0 : (int)BRow["PrimaryDepartmentId"],
                         DesignationId = BRow["DesignationId"] == DBNull.Value ? 0 : (int)BRow["DesignationId"],
-
-                        // NEW: Map the joined names (You'll need to add these properties to your UserModel)
                         PrimaryBranchName = BRow["PrimaryBranchName"] == DBNull.Value ? string.Empty : BRow["PrimaryBranchName"].ToString(),
                         PrimaryDepartmentName = BRow["PrimaryDepartmentName"] == DBNull.Value ? string.Empty : BRow["PrimaryDepartmentName"].ToString(),
                         DesignationName = BRow["DesignationName"] == DBNull.Value ? string.Empty : BRow["DesignationName"].ToString(),
@@ -132,7 +129,6 @@ namespace UserManagement.Business.UserHandler
             }
             catch (Exception ex)
             {
-                // Consider logging the exception instead of just throwing it
                 throw ex;
             }
         }

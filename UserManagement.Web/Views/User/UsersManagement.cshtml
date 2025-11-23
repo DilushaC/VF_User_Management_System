@@ -101,9 +101,14 @@
         },
         columns: [
             { data: 'userName' },
-            { data: 'fullName' },
+            {
+                data: null,  // use null when combining multiple fields
+                render: function (data, type, row) {
+                    return row.firstName + ' ' + row.lastName; // combine here
+            }
+            },
             { data: 'email' },
-            { data: 'phone' },
+            { data: 'phone',orderable: true  },
             { data: 'primaryBranchName' },
             { data: 'primaryDepartmentName' },
             { data: 'designationName' },

@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc.Rendering;
 using System.Collections.Generic;
 using UserManagement.Business.BranchHandler;
+using UserManagement.Business.DatatableHandler;
 using UserManagement.Business.DepartmentHandler;
 using UserManagement.Business.DesignationHandler;
 using UserManagement.Business.UserHandler;
@@ -17,13 +18,15 @@ namespace UserManagement.Web.Controllers
         private readonly IBranchService _branchService;
         private readonly IDepartmentService _departmentService;
         private readonly IDesignationService _designationService;
+        private readonly IDataTableService _dataTableService;
 
-        public UserController(IUserService userService, IBranchService branchService,IDepartmentService departmentService,IDesignationService designationService)
+        public UserController(IUserService userService, IBranchService branchService,IDepartmentService departmentService,IDesignationService designationService,IDataTableService dataTableService)
         {
             _userService = userService;
             _branchService = branchService;
             _departmentService = departmentService;
             _designationService = designationService;
+            _dataTableService = dataTableService;
         }
         //public IActionResult Index()
         //{
@@ -36,55 +39,32 @@ namespace UserManagement.Web.Controllers
             return View();
         }
 
-        //dat table APi call to get records
+        //data table APi call to get records
         [HttpPost]
         public IActionResult GetUsersPaged()
         {
-            var draw = Request.Form["draw"].FirstOrDefault();
-            var start = Request.Form["start"].FirstOrDefault();
-            var length = Request.Form["length"].FirstOrDefault();
-            var searchValue = Request.Form["search[value]"].FirstOrDefault();
+            var dtRequest = _dataTableService.BuildRequest(Request);
 
-            int pageSize = length != null ? Convert.ToInt32(length) : 10;
-            int skip = start != null ? Convert.ToInt32(start) : 0;
+            // Build query
+            var query = _userService.GetAllUsersList().AsQueryable();
 
-            var users = _userService.GetAllUsersList();
-
-            // Data table searching
-            if (!string.IsNullOrEmpty(searchValue))
+            // Custom search (your logic)
+            if (!string.IsNullOrWhiteSpace(dtRequest.SearchValue))
             {
-                users = users.Where(u =>
-                    u.UserName.Contains(searchValue) ||
-                    u.FirstName.Contains(searchValue) ||
-                    u.LastName.Contains(searchValue) ||
-                    u.Email.Contains(searchValue)
-                ).ToList();
+                string s = dtRequest.SearchValue;
+                query = query.Where(u =>
+                    u.UserName.Contains(s) ||
+                    u.FirstName.Contains(s) ||
+                    u.LastName.Contains(s) ||
+                    u.Email.Contains(s));
             }
 
-            int recordsTotal = users.Count();
+            // Execute paging using common handler
+            var response = _dataTableService.ApplyDataTable(query, dtRequest);
 
-            // Pagination
-            var data = users.Skip(skip).Take(pageSize).Select(u => new
-            {
-                u.Id,
-                u.UserName,
-                FullName = $"{u.FirstName} {u.LastName}",
-                u.Email,
-                u.Phone,
-                u.PrimaryBranchName,
-                u.PrimaryDepartmentName,
-                u.DesignationName,
-                IsActive = u.IsActive ? "Active" : "Inactive"
-            }).ToList();
-
-            return Json(new
-            {
-                draw = draw,
-                recordsFiltered = recordsTotal,
-                recordsTotal = recordsTotal,
-                data = data
-            });
+            return Json(response);
         }
+
 
 
         //load single user record
