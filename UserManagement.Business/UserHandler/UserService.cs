@@ -90,9 +90,7 @@ namespace UserManagement.Business.UserHandler
                                 INNER JOIN 
                                     Department D ON U.PrimaryDepartmentId = D.Id
                                 INNER JOIN 
-                                    Designation G ON U.DesignationId = G.Id
-                                WHERE 
-                                    U.IsActive = 1;";
+                                    Designation G ON U.DesignationId = G.Id";
 
                 var Data = _connectionService.Return(Query);
 
