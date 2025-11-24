@@ -1,18 +1,18 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using UserManagement.Business.BranchHandler;
 using UserManagement.Business.DatatableHandler;
 using UserManagement.Business.DepartmentHandler;
-using UserManagement.Business.ProductHandler;
 
 namespace UserManagement.Web.Controllers
 {
-    public class DepartmentController : Controller
+    public class BranchController : Controller
     {
-        private readonly IDepartmentService _departmentService;
+        private readonly IBranchService _branchService;
         private readonly IDataTableService _dataTableService;
 
-        public DepartmentController(IDepartmentService departmentService, IDataTableService dataTableService)
+        public BranchController(IBranchService branchService, IDataTableService dataTableService)
         {
-            _departmentService = departmentService;
+            _branchService = branchService;
             _dataTableService = dataTableService;
         }
 
@@ -21,7 +21,7 @@ namespace UserManagement.Web.Controllers
             return View();
         }
 
-        public ActionResult DepartmentsManagement()
+        public IActionResult BranchesManagement()
         {
             return View();
         }
@@ -31,14 +31,14 @@ namespace UserManagement.Web.Controllers
         {
             try
             {
-                bool created = await _departmentService.CreateDepartmentAsync(collection);
+                bool created = await _branchService.CreateBranchAsync(collection);
 
                 if (created)
                 {
                     return Json(new
                     {
                         success = true,
-                        message = "Department created successfully",
+                        message = "Branch created successfully",
                         redirectUrl = Url.Action("DepartmentsManagement", "Department")
                     });
                 }
@@ -47,7 +47,7 @@ namespace UserManagement.Web.Controllers
                     return Json(new
                     {
                         success = false,
-                        message = "Failed to create Department"
+                        message = "Failed to create Branch"
                     });
                 }
             }
@@ -63,19 +63,19 @@ namespace UserManagement.Web.Controllers
         }
 
         [HttpPost]
-        public IActionResult GetDepartmentsPaged()
+        public IActionResult GetBranchesPaged()
         {
             var dtRequest = _dataTableService.BuildRequest(Request);
 
             // Build query
-            var query = _departmentService.GetAllDepartmentList().AsQueryable();
+            var query = _branchService.GetAllBranchList().AsQueryable();
 
             // Custom search (your logic)
             if (!string.IsNullOrWhiteSpace(dtRequest.SearchValue))
             {
                 string s = dtRequest.SearchValue;
                 query = query.Where(u =>
-                    u.DepartmentName.Contains(s));
+                    u.BranchName.Contains(s));
             }
 
             // Execute paging using common handler
@@ -87,12 +87,12 @@ namespace UserManagement.Web.Controllers
         [HttpGet]
         public async Task<IActionResult> LoadEditModal(int id)
         {
-            var department = await _departmentService.GetDepartmentByIdAsync(id);
-            if (department == null)
+            var branch = await _branchService.GetBranchByIdAsync(id);
+            if (branch == null)
             {
                 return NotFound();
             }
-            return PartialView("_EditDepartmentPartial", department);
+            return PartialView("_EditBranchPartial", branch);
         }
 
         [HttpPost]
@@ -100,19 +100,20 @@ namespace UserManagement.Web.Controllers
         {
             try
             {
-                var result = await _departmentService.UpdateDepartmentAsync(form);
+                var result = await _branchService.UpdateBranchAsync(form);
 
                 if (!result)
                 {
-                    return Ok(new { success = false, message = "Failed to update Department." });
+                    return Ok(new { success = false, message = "Failed to update Branch." });
                 }
 
-                return Ok(new { success = true, message = "Department updated successfully.", redirectUrl = Url.Action("DepartmentsManagement", "Department") });
+                return Ok(new { success = true, message = "Branch updated successfully.", redirectUrl = Url.Action("BranchesManagement", "Branch") });
             }
             catch (Exception ex)
             {
                 return Ok(new { success = false, message = $"Error: {ex.Message}" });
             }
         }
+
     }
 }

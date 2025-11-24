@@ -71,7 +71,7 @@ namespace UserManagement.Web.Controllers
         [HttpGet]
         public async Task<IActionResult> LoadEditModal(int id)
         {
-            var branches = _branchService.GetAllBranchList();
+            var branches = _branchService.GetAllActiveBranchList();
             var departments = _departmentService.GetAllActiveDepartmentList();
             var designations = _designationService.GetAllActiveDesignationList();
 
