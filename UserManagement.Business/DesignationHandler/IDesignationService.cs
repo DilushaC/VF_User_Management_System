@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Http;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -9,6 +10,8 @@ namespace UserManagement.Business.DesignationHandler
 {
     public interface IDesignationService
     {
+        Task<bool> CreateDesignationAsync(IFormCollection collection);
         public List<DesignationModel> GetAllDesignationList();
+
     }
 }

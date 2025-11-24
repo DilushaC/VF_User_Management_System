@@ -1,9 +1,13 @@
-﻿using System;
+﻿using Dapper;
+using Microsoft.AspNetCore.Http;
+using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using UserManagement.Business.ConnectionHandler;
+using UserManagement.Business.Helpers;
 using UserManagement.Data.Models;
 
 namespace UserManagement.Business.DesignationHandler
@@ -16,6 +20,38 @@ namespace UserManagement.Business.DesignationHandler
         {
             _connectionService = connectionService;
         }
+
+        public async Task<bool> CreateDesignationAsync(IFormCollection collection)
+        {
+            try
+            {
+                // Extract values from collection
+                var designationName = collection["DesignationName"].ToString();
+                var isActive = collection["IsActive"].ToString();
+
+                string sql = @"
+                INSERT INTO Designation
+                (DesignationName, IsActive, CreatedDate)
+                VALUES
+                (@DesignationName, @IsActive, @CreatedDate);
+            ";
+
+                var parameters = new DynamicParameters();
+                parameters.Add("DesignationName", designationName, DbType.String);
+                parameters.Add("IsActive", true, DbType.Boolean);
+                parameters.Add("CreatedDate", DateTime.Now, DbType.DateTime);
+
+                int rows = _connectionService.ExecuteWithPara(sql, parameters);
+
+                return rows > 0;
+
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
         public List<DesignationModel> GetAllDesignationList()
         {
             try
