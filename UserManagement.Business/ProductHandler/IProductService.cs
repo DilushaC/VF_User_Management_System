@@ -12,5 +12,7 @@ namespace UserManagement.Business.ProductHandler
     {
         Task<bool> CreateProductAsync(IFormCollection collection);
         public List<ProductModel> GetAllProductList();
+        Task<ProductModel> GetProductByIdAsync(int id);
+        Task<bool> UpdateProductAsync(IFormCollection collection);
     }
 }

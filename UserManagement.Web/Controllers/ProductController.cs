@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using UserManagement.Business.BranchHandler;
 using UserManagement.Business.DatatableHandler;
 using UserManagement.Business.DepartmentHandler;
@@ -41,8 +42,8 @@ namespace UserManagement.Web.Controllers
                     return Json(new
                     {
                         success = true,
-                        message = "User created successfully",
-                        redirectUrl = Url.Action("Index", "Home")
+                        message = "Product created successfully",
+                        redirectUrl = Url.Action("ProductsManagement", "Product")
                     });
                 }
                 else
@@ -86,6 +87,38 @@ namespace UserManagement.Web.Controllers
 
             return Json(response);
         }
+
+        [HttpGet]
+        public async Task<IActionResult> LoadEditModal(int id)
+        {
+            var product = await _productService.GetProductByIdAsync(id);
+            if (product == null)
+            {
+                return NotFound();
+            }
+            return PartialView("_EditProductPartial", product);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> LoadEditModal(IFormCollection form)
+        {
+            try
+            {
+                var result = await _productService.UpdateProductAsync(form);
+
+                if (!result)
+                {
+                    return Ok(new { success = false, message = "Failed to update Product." });
+                }
+
+                return Ok(new { success = true, message = "Product updated successfully.", redirectUrl = Url.Action("ProductsManagement", "Product") });
+            }
+            catch (Exception ex)
+            {
+                return Ok(new { success = false, message = $"Error: {ex.Message}" });
+            }
+        }
+
 
     }
 }

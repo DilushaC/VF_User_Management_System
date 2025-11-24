@@ -102,11 +102,11 @@
                         if (response.success) {
                             Swal.fire({
                                 icon: 'success',
-                                title: 'Product Created Successfully',
+                                title: response.message,
                                 showConfirmButton: false,
                                 timer: 1500
                             }).then(() => {
-                                window.location.href = '/User/UsersManagement';
+                                window.location.href = response.redirectUrl;
                                 // Reset form and Select2 elements
                             });
                         } else if (response.redirectUrl) {

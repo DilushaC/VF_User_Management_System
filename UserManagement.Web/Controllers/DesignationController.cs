@@ -49,8 +49,8 @@ namespace UserManagement.Web.Controllers
                     return Json(new
                     {
                         success = true,
-                        message = "User created successfully",
-                        redirectUrl = Url.Action("Index", "Home")
+                        message = "Designation created successfully",
+                        redirectUrl = Url.Action("DesignationsManagement", "Designation")
                     });
                 }
                 else
@@ -121,17 +121,6 @@ namespace UserManagement.Web.Controllers
         [HttpGet]
         public async Task<IActionResult> LoadEditModal(int id)
         {
-            var designations = _designationService.GetAllDesignationList();
-
-            //viewbag for desingations
-            ViewBag.Designations = designations
-            .Select(x => new SelectListItem
-            {
-                Value = x.Id.ToString(),
-                Text = x.DesignationName
-            })
-            .ToList();
-
             var designation = await _designationService.GetDesignationByIdAsync(id);
             if (designation == null)
             {

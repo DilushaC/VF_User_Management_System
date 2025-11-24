@@ -73,7 +73,7 @@
                 <div class="spinner-border text-primary" role="status">
                     <span class="visually-hidden">Loading...</span>
                 </div>
-                <p class="mt-2">Loading designation details...</p>
+                <p class="mt-2">Loading product details...</p>
             </div>
         </div>
     </div>
@@ -112,8 +112,8 @@
                 render: function (data) {
                     return `
                         <button type="button"
-                                class="btn btn-sm btn-info edit-designation-btn"
-                                data-designation-id="${data}">
+                                class="btn btn-sm btn-info edit-product-btn"
+                                data-product-id="${data}">
                             <i class="bi bi-pencil"></i>
                         </button>
                     `;
@@ -130,13 +130,13 @@
 
 <script>
     $(document).ready(function () {
-        const designationEditModal = new bootstrap.Modal(document.getElementById('designationEditModal'));
-        const modalContent = $('#designationEditModal .modal-content');
-        $('#basic-datatable').on('click', '.edit-designation-btn', function () {
-            const Id = $(this).data('designation-id');
+        const productEditModal = new bootstrap.Modal(document.getElementById('productEditModal'));
+        const modalContent = $('#productEditModal .modal-content');
+        $('#basic-datatable').on('click', '.edit-product-btn', function () {
+            const Id = $(this).data('product-id');
 
             if (!Id) {
-                alert("Designation ID is missing!");
+                alert("Product ID is missing!");
                 return;
             }
             modalContent.html(`
@@ -144,12 +144,12 @@
                     <div class="spinner-border text-primary" role="status">
                         <span class="visually-hidden">Loading...</span>
                     </div>
-                    <p class="mt-2">Loading designation details...</p>
+                    <p class="mt-2">Loading product details...</p>
                 </div>
             `);
 
-            designationEditModal.show();
-            const url = '@Url.Action("LoadEditModal", "Designation")/' + Id;
+            productEditModal.show();
+            const url = '@Url.Action("LoadEditModal", "Product")/' + Id;
 
             $.ajax({
                 url: url,
