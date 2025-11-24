@@ -51,6 +51,39 @@ namespace UserManagement.Business.ProductHandler
             }
         }
 
+        public List<ProductModel> GetAllActiveProductList()
+        {
+            try
+            {
+                string Query = $"SELECT * FROM Products WHERE IsActive = 1";
+                var Data = _connectionService.Return(Query);
+                var Row = Data.Rows[0];
+
+                List<ProductModel> productList = new List<ProductModel>();
+
+                for (int i = 0; i < Data.Rows.Count; i++)
+                {
+                    var BRow = Data.Rows[i];
+                    ProductModel bModel = new ProductModel()
+                    {
+                        Id = Convert.ToInt32(BRow["Id"]),
+                        ProductName = BRow["ProductName"].ToString(),
+                        Description = BRow["Description"].ToString(),
+                        IsActive = Convert.ToBoolean(BRow["IsActive"]),
+                        CreatedDate = Convert.ToDateTime(BRow["CreatedDate"]),
+                    };
+                    productList.Add(bModel);
+                }
+                return productList;
+
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+
         public List<ProductModel> GetAllProductList()
         {
             try
