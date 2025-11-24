@@ -4,6 +4,7 @@ using UserManagement.Business.DatatableHandler;
 using UserManagement.Business.DepartmentHandler;
 using UserManagement.Business.DesignationHandler;
 using UserManagement.Business.Helpers;
+using UserManagement.Business.ProductHandler;
 using UserManagement.Business.UserHandler;
 using UserManagement.Data.Context;
 using UserManagement.Presentation.Filters;
@@ -24,6 +25,7 @@ builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IBranchService, BranchService>();
 builder.Services.AddScoped<IDepartmentService, DepartmentService>();
 builder.Services.AddScoped<IDesignationService, DesignationService>();
+builder.Services.AddScoped<IProductService, ProductService>();
 builder.Services.AddScoped<IDataTableService, DataTableService>();
 
 

@@ -37,12 +37,6 @@ namespace UserManagement.Web.Controllers
             return View();
         }
 
-        // GET: DesignationController/Create
-        //public ActionResult Create()
-        //{
-        //    return View();
-        //}
-
         [HttpPost]
         public async Task<IActionResult> Create(IFormCollection collection)
         {
