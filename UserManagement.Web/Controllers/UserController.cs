@@ -165,7 +165,7 @@ namespace UserManagement.Web.Controllers
         {
             var branches = _branchService.GetAllBranchList();
             var departments = _departmentService.GetAllDepartmentList();
-            var designations = _designationService.GetAllDesignationList();
+            var designations = _designationService.GetAllUSerDesignationList();
 
             //viewbag for branches
             ViewBag.Branches = branches
