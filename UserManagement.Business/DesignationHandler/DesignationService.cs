@@ -83,7 +83,7 @@ namespace UserManagement.Business.DesignationHandler
             }
         }
 
-        public List<DesignationModel> GetAllUSerDesignationList()
+        public List<DesignationModel> GetAllActiveDesignationList()
         {
             try
             {

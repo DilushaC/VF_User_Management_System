@@ -12,7 +12,7 @@ namespace UserManagement.Business.DesignationHandler
     {
         Task<bool> CreateDesignationAsync(IFormCollection collection);
         public List<DesignationModel> GetAllDesignationList();
-        public List<DesignationModel> GetAllUSerDesignationList();
+        public List<DesignationModel> GetAllActiveDesignationList();
         Task<DesignationModel> GetDesignationByIdAsync(int id);
         Task<bool> UpdateDesignationAsync(IFormCollection collection);
 
