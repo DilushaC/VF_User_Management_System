@@ -39,7 +39,7 @@ namespace UserManagement.Web.Controllers
                     {
                         success = true,
                         message = "Branch created successfully",
-                        redirectUrl = Url.Action("DepartmentsManagement", "Department")
+                        redirectUrl = Url.Action("BranchesManagement", "Branch")
                     });
                 }
                 else
