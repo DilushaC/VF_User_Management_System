@@ -83,6 +83,37 @@ namespace UserManagement.Business.DesignationHandler
             }
         }
 
+        public List<DesignationModel> GetAllUSerDesignationList()
+        {
+            try
+            {
+                string Query = $"SELECT * FROM Designation WHERE IsActive = 1";
+                var Data = _connectionService.Return(Query);
+                var Row = Data.Rows[0];
+
+                List<DesignationModel> designationList = new List<DesignationModel>();
+
+                for (int i = 0; i < Data.Rows.Count; i++)
+                {
+                    var BRow = Data.Rows[i];
+                    DesignationModel bModel = new DesignationModel()
+                    {
+                        Id = Convert.ToInt32(BRow["Id"]),
+                        DesignationName = BRow["DesignationName"].ToString(),
+                        IsActive = Convert.ToBoolean(BRow["IsActive"]),
+                        CreatedDate = Convert.ToDateTime(BRow["CreatedDate"]),
+                    };
+                    designationList.Add(bModel);
+                }
+                return designationList;
+
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
         public async Task<DesignationModel> GetDesignationByIdAsync(int id)
         {
             try
