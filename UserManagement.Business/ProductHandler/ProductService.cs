@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using UserManagement.Business.ConnectionHandler;
+using UserManagement.Data.Models;
 
 namespace UserManagement.Business.ProductHandler
 {
@@ -47,6 +48,38 @@ namespace UserManagement.Business.ProductHandler
             catch
             {
                 return false;
+            }
+        }
+
+        public List<ProductModel> GetAllProductList()
+        {
+            try
+            {
+                string Query = $"SELECT * FROM Products";
+                var Data = _connectionService.Return(Query);
+                var Row = Data.Rows[0];
+
+                List<ProductModel> productList = new List<ProductModel>();
+
+                for (int i = 0; i < Data.Rows.Count; i++)
+                {
+                    var BRow = Data.Rows[i];
+                    ProductModel bModel = new ProductModel()
+                    {
+                        Id = Convert.ToInt32(BRow["Id"]),
+                        ProductName = BRow["ProductName"].ToString(),
+                        Description = BRow["Description"].ToString(),
+                        IsActive = Convert.ToBoolean(BRow["IsActive"]),
+                        CreatedDate = Convert.ToDateTime(BRow["CreatedDate"]),
+                    };
+                    productList.Add(bModel);
+                }
+                return productList;
+
+            }
+            catch (Exception ex)
+            {
+                throw ex;
             }
         }
 

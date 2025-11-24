@@ -4,11 +4,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using UserManagement.Data.Models;
 
 namespace UserManagement.Business.ProductHandler
 {
     public interface IProductService
     {
         Task<bool> CreateProductAsync(IFormCollection collection);
+        public List<ProductModel> GetAllProductList();
     }
 }

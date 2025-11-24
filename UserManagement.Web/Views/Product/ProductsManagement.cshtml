@@ -1,0 +1,183 @@
+﻿@using UserManagement.Data.Models
+@{
+    ViewData["Title"] = "Products Management";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<meta charset="utf-8" />
+<title>Datatables | Attex - Bootstrap 5 Admin & Dashboard Template</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta content="A fully featured admin theme which can be used to build CRM, CMS, etc." name="description" />
+<meta content="Coderthemes" name="author" />
+
+<!-- Datatables css -->
+<link href="~/assets/vendor/datatables.net-bs5/css/dataTables.bootstrap5.min.css" rel="stylesheet" type="text/css" />
+<link href="~/assets/vendor/datatables.net-responsive-bs5/css/responsive.bootstrap5.min.css" rel="stylesheet" type="text/css" />
+<link href="~/assets/vendor/datatables.net-fixedcolumns-bs5/css/fixedColumns.bootstrap5.min.css" rel="stylesheet" type="text/css" />
+<link href="~/assets/vendor/datatables.net-fixedheader-bs5/css/fixedHeader.bootstrap5.min.css" rel="stylesheet" type="text/css" />
+<link href="~/assets/vendor/datatables.net-buttons-bs5/css/buttons.bootstrap5.min.css" rel="stylesheet" type="text/css" />
+<link href="~/assets/vendor/datatables.net-select-bs5/css/select.bootstrap5.min.css" rel="stylesheet" type="text/css" />
+
+<!-- Theme Config Js -->
+<script src="~/assets/js/config.js"></script>
+
+<!-- App css -->
+<link href="~/assets/css/app.min.css" rel="stylesheet" type="text/css" id="app-style" />
+
+<!-- Icons css -->
+<link href="~/assets/css/icons.min.css" rel="stylesheet" type="text/css" />
+<div class="row">
+    <div class="col-12">
+        <div class="page-title-box">
+            <div class="page-title-right">
+                <ol class="breadcrumb m-0">
+                    <li class="breadcrumb-item"><a href="javascript: void(0);">Management</a></li>
+                    <li class="breadcrumb-item"><a href="javascript: void(0);">Product</a></li>
+                    <li class="breadcrumb-item active">Products Management</li>
+                </ol>
+            </div>
+        </div>
+        <div class="page-title-box">
+            <h4 class="page-title">Products Management</h4>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-body">
+                <table id="basic-datatable" class="table table-striped dt-responsive nowrap w-100">
+                    <thead>
+                        <tr>
+                            <th>Product Name</th>
+                            <th>Product Description</th>
+                            <th>Active</th>
+                            <th>Edit</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                    </tbody>
+                </table>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="productEditModal" tabindex="-1" aria-labelledby="productEditModalLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content">
+            <!-- Initial loading content -->
+            <div class="modal-body text-center py-5">
+                <div class="spinner-border text-primary" role="status">
+                    <span class="visually-hidden">Loading...</span>
+                </div>
+                <p class="mt-2">Loading designation details...</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="~/assets/lib/jquery/jquery.min.js"></script>
+<script src="~/assets/vendor/datatables.net/js/jquery.dataTables.min.js"></script>
+<script src="~/assets/vendor/datatables.net-bs5/js/dataTables.bootstrap5.min.js"></script>
+<script src="~/assets/vendor/datatables.net-select/js/dataTables.select.min.js"></script>
+<script src="~/assets/vendor/datatables.net-keytable/js/dataTables.keyTable.min.js"></script>
+<script src="~/assets/js/app.min.js"></script>
+
+<script>
+    $('#basic-datatable').DataTable({
+        processing: true,
+        serverSide: true,
+        ajax: {
+            url: '/Product/GetProductsPaged',
+            type: 'POST'
+        },
+        columns: [
+            { data: 'productName' },
+            { data: 'description' },
+            {
+                data: 'isActive',
+                render: function (data, type, row) {
+                    if (data === true || data === "Active") {
+                        return '<span class="badge bg-success">Active</span>';
+                    } else {
+                        return '<span class="badge bg-danger">Inactive</span>';
+                    }
+            },
+            },
+            {
+                data: 'id',
+                render: function (data) {
+                    return `
+                        <button type="button"
+                                class="btn btn-sm btn-info edit-designation-btn"
+                                data-designation-id="${data}">
+                            <i class="bi bi-pencil"></i>
+                        </button>
+                    `;
+                }
+            }
+        ],
+        pageLength: 10,
+        lengthMenu: [10, 25, 50, 100],
+        orderable: true
+    });
+
+
+</script>
+
+<script>
+    $(document).ready(function () {
+        const designationEditModal = new bootstrap.Modal(document.getElementById('designationEditModal'));
+        const modalContent = $('#designationEditModal .modal-content');
+        $('#basic-datatable').on('click', '.edit-designation-btn', function () {
+            const Id = $(this).data('designation-id');
+
+            if (!Id) {
+                alert("Designation ID is missing!");
+                return;
+            }
+            modalContent.html(`
+                <div class="modal-body text-center py-5">
+                    <div class="spinner-border text-primary" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
+                    <p class="mt-2">Loading designation details...</p>
+                </div>
+            `);
+
+            designationEditModal.show();
+            const url = '@Url.Action("LoadEditModal", "Designation")/' + Id;
+
+            $.ajax({
+                url: url,
+                type: 'GET',
+                cache: false,
+                success: function (partialViewHtml) {
+                    modalContent.html(partialViewHtml);
+                },
+                error: function (xhr, status, error) {
+                    console.error("AJAX error:", status, error);
+                    modalContent.html(`
+                        <div class="modal-header">
+                            <h5 class="modal-title text-danger">Error Loading Data</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <p class="m-0">Failed to load user details. Server responded with: ${xhr.status} (${xhr.statusText})</p>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        </div>
+                    `);
+                }
+            });
+        });
+    });
+
+
+</script>
+
+
