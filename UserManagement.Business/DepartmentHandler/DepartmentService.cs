@@ -1,5 +1,8 @@
-﻿using System;
+﻿using Dapper;
+using Microsoft.AspNetCore.Http;
+using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -16,6 +19,37 @@ namespace UserManagement.Business.DepartmentHandler
         {
             _connectionService = connectionService;
         }
+
+        public async Task<bool> CreateDepartmentAsync(IFormCollection collection)
+        {
+            try
+            {
+                var departmentName = collection["DepartmentName"].ToString();
+                var isActive = collection["IsActive"].ToString();
+
+                string sql = @"
+                INSERT INTO Department
+                (DepartmentName, IsActive, CreatedDate)
+                VALUES
+                (@DepartmentName, @IsActive, @CreatedDate);
+            ";
+
+                var parameters = new DynamicParameters();
+                parameters.Add("DepartmentName", departmentName, DbType.String);
+                parameters.Add("IsActive", isActive, DbType.Boolean);
+                parameters.Add("CreatedDate", DateTime.Now, DbType.DateTime);
+
+                int rows = _connectionService.ExecuteWithPara(sql, parameters);
+
+                return rows > 0;
+
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
 
         public List<DepartmentModel> GetAllDepartmentList()
         {
