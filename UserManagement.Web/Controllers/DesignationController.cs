@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using UserManagement.Business.BranchHandler;
 using UserManagement.Business.DatatableHandler;
 using UserManagement.Business.DepartmentHandler;
@@ -11,13 +12,21 @@ namespace UserManagement.Web.Controllers
     public class DesignationController : Controller
     {
         private readonly IDesignationService _designationService;
+        private readonly IDataTableService _dataTableService;
 
-        public DesignationController(IDesignationService designationService)
+        public DesignationController(IDesignationService designationService,IDataTableService dataTableService)
         {
             _designationService = designationService;
+            _dataTableService = dataTableService;
         }
         // GET: DesignationController
         public ActionResult Index()
+        {
+            return View();
+        }
+
+        // GET: DesignationController
+        public ActionResult DesignationsManagement()
         {
             return View();
         }
@@ -89,6 +98,73 @@ namespace UserManagement.Web.Controllers
         public ActionResult Edit(int id)
         {
             return View();
+        }
+
+        //load data table
+        [HttpPost]
+        public IActionResult GetDesignationsPaged()
+        {
+            var dtRequest = _dataTableService.BuildRequest(Request);
+
+            // Build query
+            var query = _designationService.GetAllDesignationList().AsQueryable();
+
+            // Custom search (your logic)
+            if (!string.IsNullOrWhiteSpace(dtRequest.SearchValue))
+            {
+                string s = dtRequest.SearchValue;
+                query = query.Where(u =>
+                    u.DesignationName.Contains(s));
+            }
+
+            // Execute paging using common handler
+            var response = _dataTableService.ApplyDataTable(query, dtRequest);
+
+            return Json(response);
+        }
+
+        //load single user record
+        [HttpGet]
+        public async Task<IActionResult> LoadEditModal(int id)
+        {
+            var designations = _designationService.GetAllDesignationList();
+
+            //viewbag for desingations
+            ViewBag.Designations = designations
+            .Select(x => new SelectListItem
+            {
+                Value = x.Id.ToString(),
+                Text = x.DesignationName
+            })
+            .ToList();
+
+            var designation = await _designationService.GetDesignationByIdAsync(id);
+            if (designation == null)
+            {
+                return NotFound();
+            }
+            return PartialView("_EditDesignationPartial", designation);
+        }
+
+        //update single designation record
+        [HttpPost]
+        public async Task<IActionResult> LoadEditModal(IFormCollection form)
+        {
+            try
+            {
+                var result = await _designationService.UpdateDesignationAsync(form);
+
+                if (!result)
+                {
+                    return Ok(new { success = false, message = "Failed to update Designation." });
+                }
+
+                return Ok(new { success = true, message = "Designation updated successfully.", redirectUrl = Url.Action("DesignationsManagement", "Designation") });
+            }
+            catch (Exception ex)
+            {
+                return Ok(new { success = false, message = $"Error: {ex.Message}" });
+            }
         }
 
         // POST: DesignationController/Edit/5

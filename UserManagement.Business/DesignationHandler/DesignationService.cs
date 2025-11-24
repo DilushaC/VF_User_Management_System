@@ -56,7 +56,7 @@ namespace UserManagement.Business.DesignationHandler
         {
             try
             {
-                string Query = $"SELECT * FROM Designation WHERE IsActive = 1";
+                string Query = $"SELECT * FROM Designation";
                 var Data = _connectionService.Return(Query);
                 var Row = Data.Rows[0];
 
@@ -80,6 +80,81 @@ namespace UserManagement.Business.DesignationHandler
             catch (Exception ex)
             {
                 throw ex;
+            }
+        }
+
+        public async Task<DesignationModel> GetDesignationByIdAsync(int id)
+        {
+            try
+            {
+                string query = @"
+                                SELECT 
+                                    Id,
+                                    DesignationName,
+                                    IsActive,
+                                    CreatedDate
+                                FROM 
+                                    Designation
+                                WHERE 
+                                    Id = @Id";
+
+                DataTable data = await _connectionService.SingleQueryReturn(query, id);
+
+                if (data == null || data.Rows.Count == 0)
+                {
+                    return null;
+                }
+
+                DataRow row = data.Rows[0];
+
+                DesignationModel model = new DesignationModel()
+                {
+                    Id = Convert.ToInt32(row["Id"]),
+                    DesignationName = row["DesignationName"] == DBNull.Value ? string.Empty : row["DesignationName"].ToString(),
+                    IsActive = row["IsActive"] != DBNull.Value && Convert.ToBoolean(row["IsActive"]),
+                    CreatedDate = row["CreatedDate"] == DBNull.Value
+                                    ? DateTime.MinValue
+                                    : Convert.ToDateTime(row["CreatedDate"])
+                };
+
+                return model;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"Failed to retrieve designation with ID {id}.", ex);
+            }
+        }
+
+        public async Task<bool> UpdateDesignationAsync(IFormCollection collection)
+        {
+            try
+            {
+                var Id = Convert.ToInt32(collection["Id"]);
+                var designationName = collection["DesignationName"].ToString();
+                var isActive = Convert.ToBoolean(collection["IsActive"]);
+
+                string sql = @"
+                    UPDATE Designation
+                    SET 
+                        DesignationName = @DesignationName,
+                        IsActive = @IsActive,
+                        CreatedDate = @CreatedDate
+                    WHERE Id = @Id;
+                ";
+
+                var parameters = new DynamicParameters();
+                parameters.Add("Id", Id, DbType.Int32);
+                parameters.Add("DesignationName", designationName, DbType.String);
+                parameters.Add("IsActive", isActive, DbType.Boolean);
+                parameters.Add("CreatedDate", DateTime.Now, DbType.DateTime);
+
+                int rows = _connectionService.ExecuteWithPara(sql, parameters);
+
+                return rows > 0;
+            }
+            catch (Exception ex)
+            {
+                return false;
             }
         }
     }
