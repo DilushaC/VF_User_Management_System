@@ -11,6 +11,9 @@ namespace UserManagement.Business.DepartmentHandler
     public interface IDepartmentService
     {
         public List<DepartmentModel> GetAllDepartmentList();
+        public List<DepartmentModel> GetAllActiveDepartmentList();
         Task<bool> CreateDepartmentAsync(IFormCollection collection);
+        Task<DepartmentModel> GetDepartmentByIdAsync(int id);
+        Task<bool> UpdateDepartmentAsync(IFormCollection collection);
     }
 }

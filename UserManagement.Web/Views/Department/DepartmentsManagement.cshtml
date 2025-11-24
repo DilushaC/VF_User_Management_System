@@ -128,13 +128,13 @@
 
 <script>
     $(document).ready(function () {
-        const designationEditModal = new bootstrap.Modal(document.getElementById('designationEditModal'));
-        const modalContent = $('#designationEditModal .modal-content');
-        $('#basic-datatable').on('click', '.edit-designation-btn', function () {
-            const Id = $(this).data('designation-id');
+        const departmentEditModal = new bootstrap.Modal(document.getElementById('departmentEditModal'));
+        const modalContent = $('#departmentEditModal .modal-content');
+        $('#basic-datatable').on('click', '.edit-department-btn', function () {
+            const Id = $(this).data('department-id');
 
             if (!Id) {
-                alert("Designation ID is missing!");
+                alert("Department ID is missing!");
                 return;
             }
             modalContent.html(`
@@ -142,12 +142,12 @@
                     <div class="spinner-border text-primary" role="status">
                         <span class="visually-hidden">Loading...</span>
                     </div>
-                    <p class="mt-2">Loading designation details...</p>
+                    <p class="mt-2">Loading department details...</p>
                 </div>
             `);
 
-            designationEditModal.show();
-            const url = '@Url.Action("LoadEditModal", "Designation")/' + Id;
+            departmentEditModal.show();
+            const url = '@Url.Action("LoadEditModal", "Department")/' + Id;
 
             $.ajax({
                 url: url,

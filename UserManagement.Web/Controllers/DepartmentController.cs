@@ -38,8 +38,8 @@ namespace UserManagement.Web.Controllers
                     return Json(new
                     {
                         success = true,
-                        message = "Product created successfully",
-                        redirectUrl = Url.Action("ProductsManagement", "Product")
+                        message = "Department created successfully",
+                        redirectUrl = Url.Action("DepartmentsManagement", "Department")
                     });
                 }
                 else
@@ -82,6 +82,37 @@ namespace UserManagement.Web.Controllers
             var response = _dataTableService.ApplyDataTable(query, dtRequest);
 
             return Json(response);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> LoadEditModal(int id)
+        {
+            var department = await _departmentService.GetDepartmentByIdAsync(id);
+            if (department == null)
+            {
+                return NotFound();
+            }
+            return PartialView("_EditDepartmentPartial", department);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> LoadEditModal(IFormCollection form)
+        {
+            try
+            {
+                var result = await _departmentService.UpdateDepartmentAsync(form);
+
+                if (!result)
+                {
+                    return Ok(new { success = false, message = "Failed to update Department." });
+                }
+
+                return Ok(new { success = true, message = "Department updated successfully.", redirectUrl = Url.Action("DepartmentsManagement", "Department") });
+            }
+            catch (Exception ex)
+            {
+                return Ok(new { success = false, message = $"Error: {ex.Message}" });
+            }
         }
     }
 }
