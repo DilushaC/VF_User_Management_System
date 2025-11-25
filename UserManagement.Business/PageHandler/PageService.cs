@@ -108,12 +108,8 @@ namespace UserManagement.Business.PageHandler
             try
             {
                 string query = @"
-                SELECT 
-                    P.*,
-                    Pr.ProductName
-                FROM Pages P
-                LEFT JOIN Products Pr ON P.ProductId = Pr.Id
-                WHERE P.Id = @Id;";
+                SELECT * FROM Pages
+                WHERE Id = @Id;";
 
                 DataTable data = await _connectionService.SingleQueryReturn(query, id);
 
@@ -130,7 +126,7 @@ namespace UserManagement.Business.PageHandler
                     PageName = row["PageName"] == DBNull.Value ? string.Empty : row["PageName"].ToString(),
                     PageUrl = row["PageUrl"] == DBNull.Value ? string.Empty : row["PageUrl"].ToString(),
                     PageCode = row["PageCode"] == DBNull.Value ? string.Empty : row["PageCode"].ToString(),
-                    ProductName = row["ProductName"] == DBNull.Value ? string.Empty : row["ProductName"].ToString(),
+                    ProductId = row["ProductId"] == DBNull.Value ? 0 : Convert.ToInt32(row["ProductId"]),
                     Description = row["Description"] == DBNull.Value ? string.Empty : row["Description"].ToString(),
                     IsActive = row["IsActive"] != DBNull.Value && Convert.ToBoolean(row["IsActive"]),
                     CreatedDate = row["CreatedDate"] == DBNull.Value
@@ -143,6 +139,52 @@ namespace UserManagement.Business.PageHandler
             catch (Exception ex)
             {
                 throw new Exception($"Failed to retrieve page with ID {id}.", ex);
+            }
+        }
+
+
+        public async Task<bool> UpdatePageAsync(IFormCollection collection)
+        {
+            try
+            {
+                var Id = Convert.ToInt32(collection["Id"]);
+                var pageName = collection["PageName"].ToString();
+                var productId = collection["ProductId"].ToString();
+                var pageUrl = collection["PageUrl"].ToString();
+                var pageCode = collection["PageCode"].ToString();
+                var description = collection["Description"].ToString();
+                var isActive = Convert.ToBoolean(collection["IsActive"]);
+
+                string sql = @"
+                    UPDATE Pages
+                    SET 
+                        PageName = @PageName,
+                        ProductId = @ProductId,
+                        PageUrl = @PageUrl,
+                        PageCode = @PageCode,
+                        Description = @Description,
+                        IsActive = @IsActive,
+                        CreatedDate = @CreatedDate
+                    WHERE Id = @Id;
+                ";
+
+                var parameters = new DynamicParameters();
+                parameters.Add("Id", Id, DbType.Int32);
+                parameters.Add("PageName", pageName, DbType.String);
+                parameters.Add("PageUrl", pageUrl, DbType.String);
+                parameters.Add("PageCode", pageCode, DbType.String);
+                parameters.Add("ProductId", Convert.ToInt32(productId), DbType.Int32);
+                parameters.Add("Description", description, DbType.String);
+                parameters.Add("IsActive", isActive, DbType.Boolean);
+                parameters.Add("CreatedDate", DateTime.Now, DbType.DateTime);
+
+                int rows = _connectionService.ExecuteWithPara(sql, parameters);
+
+                return rows > 0;
+            }
+            catch (Exception ex)
+            {
+                return false;
             }
         }
 

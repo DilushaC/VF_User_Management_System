@@ -13,5 +13,6 @@ namespace UserManagement.Business.PageHandler
         Task<bool> CreatePageAsync(IFormCollection collection);
         public List<PageModel> GetAllPagesList();
         Task<PageModel> GetPageByIdAsync(int id);
+        Task<bool> UpdatePageAsync(IFormCollection collection);
     }
 }

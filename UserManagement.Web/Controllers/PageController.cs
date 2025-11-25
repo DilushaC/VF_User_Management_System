@@ -122,5 +122,26 @@ namespace UserManagement.Web.Controllers
             }
             return PartialView("_EditPagePartial", user);
         }
+
+
+        [HttpPost]
+        public async Task<IActionResult> LoadEditModal(IFormCollection form)
+        {
+            try
+            {
+                var result = await _pageService.UpdatePageAsync(form);
+
+                if (!result)
+                {
+                    return Ok(new { success = false, message = "Failed to update Page." });
+                }
+
+                return Ok(new { success = true, message = "Page updated successfully.", redirectUrl = Url.Action("PagesManagement", "Page") });
+            }
+            catch (Exception ex)
+            {
+                return Ok(new { success = false, message = $"Error: {ex.Message}" });
+            }
+        }
     }
 }

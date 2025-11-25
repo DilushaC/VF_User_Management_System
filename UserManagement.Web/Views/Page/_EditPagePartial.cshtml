@@ -107,7 +107,7 @@
                             text: response.message
                         }).then(() => {
                             if (response.success) {
-                                const modal = bootstrap.Modal.getInstance(document.getElementById("designationEditModal"));
+                                const modal = bootstrap.Modal.getInstance(document.getElementById("pageEditModal"));
                                 modal.hide();
                                 window.location.href = response.redirectUrl;
                             }
