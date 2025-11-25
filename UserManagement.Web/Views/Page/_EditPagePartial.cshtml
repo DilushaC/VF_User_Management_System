@@ -29,8 +29,7 @@
             </div>
             <div class="mb-3">
                 <label class="form-label">Product</label>
-                <select asp-for="ProductId" class="form-select" asp-items="ViewBag.Products">
-                    <option value="">-- Select Product --</option>
+                <select id="ProductId" asp-for="ProductId" class="form-control select2" asp-items="ViewBag.Products">
                 </select>
             </div>
         </div>
@@ -41,7 +40,7 @@
         </div>
         <div class="mb-3  col-md-3">
             <label class="form-label">Status</label>
-            <select asp-for="IsActive" class="form-select">
+            <select asp-for="IsActive" class="form-control select2">
                 <option value="true">Active</option>
                 <option value="false">Inactive</option>
             </select>
@@ -62,6 +61,10 @@
 <script src="~/assets/vendor/select2/js/select2.min.js"></script>
 
 <script>
+    $("#ProductId").select2({
+        placeholder: "Select Product",
+    });
+
     $("#updatePageForm").on("submit", function (e) {
         debugger;
         e.preventDefault();
