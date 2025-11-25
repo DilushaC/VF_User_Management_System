@@ -5,7 +5,7 @@
 }
 
 <div class="modal-header">
-    <h5 class="modal-title" id="userEditModalLabel">Edit User Role: @Model.UserName</h5>
+    <h5 class="modal-title" id="userRoleEditModalLabel">Edit User Role: @Model.UserName</h5>
     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
 </div>
 
@@ -43,7 +43,7 @@
         placeholder: "Select User Role",
     });
 
-    $("#updateRoleForm").on("submit", function (e) {
+    $("#updateUserRoleForm").on("submit", function (e) {
         debugger;
         e.preventDefault();
         let form = $(this);
@@ -72,7 +72,7 @@
                     }
                 });
                 $.ajax({
-                    url: '/Role/LoadEditModal',
+                    url: '/UserRole/LoadEditModal',
                     type: 'POST',
                     data: form.serialize(),
                     headers: { "X-Requested-With": "XMLHttpRequest" },
@@ -85,7 +85,7 @@
                             text: response.message
                         }).then(() => {
                             if (response.success) {
-                                const modal = bootstrap.Modal.getInstance(document.getElementById("roleEditModal"));
+                                const modal = bootstrap.Modal.getInstance(document.getElementById("userRoleEditModal"));
                                 modal.hide();
                                 window.location.href = response.redirectUrl;
                             }

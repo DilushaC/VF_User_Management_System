@@ -13,5 +13,6 @@ namespace UserManagement.Business.UserRoleHandler
         Task<bool> CreateUserRoleAsync(IFormCollection collection);
         public List<UserRoleModel> GetAllUserRolesList();
         Task<UserRoleModel> GetUserRoleByIdAsync(int id);
+        Task<bool> UpdateUserRoleAsync(IFormCollection collection);
     }
 }

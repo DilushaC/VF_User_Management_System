@@ -137,6 +137,34 @@ namespace UserManagement.Business.UserRoleHandler
             }
         }
 
+        public async Task<bool> UpdateUserRoleAsync(IFormCollection collection)
+        {
+            try
+            {
+                var Id = Convert.ToInt32(collection["Id"]);
+                var roleId = collection["RoleId"].ToString();
+
+                string sql = @"
+                    UPDATE UserRoles
+                    SET 
+                        RoleId = @RoleId
+                    WHERE Id = @Id;
+                ";
+
+                var parameters = new DynamicParameters();
+                parameters.Add("Id", Id, DbType.Int32);
+                parameters.Add("RoleId", Convert.ToInt32(roleId), DbType.Int32);
+
+                int rows = _connectionService.ExecuteWithPara(sql, parameters);
+
+                return rows > 0;
+            }
+            catch (Exception ex)
+            {
+                return false;
+            }
+        }
+
 
 
     }

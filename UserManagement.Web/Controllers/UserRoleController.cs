@@ -24,6 +24,7 @@ namespace UserManagement.Web.Controllers
             _userRoleService = userRoleService;
             _dataTableService = dataTableService;
         }
+
         public IActionResult Index()
         {
             var users = _userService.GetAllActiveUsersList();
@@ -47,6 +48,11 @@ namespace UserManagement.Web.Controllers
             })
             .ToList();
 
+            return View();
+        }
+
+        public ActionResult UserRolesManagement()
+        {
             return View();
         }
 
@@ -85,11 +91,6 @@ namespace UserManagement.Web.Controllers
                     message = $"Error: {ex.Message}"
                 });
             }
-        }
-
-        public ActionResult UserRolesManagement()
-        {
-            return View();
         }
 
         [HttpPost]
@@ -136,6 +137,27 @@ namespace UserManagement.Web.Controllers
                 return NotFound();
             }
             return PartialView("_EditUserRolePartial", user);
+        }
+
+
+        [HttpPost]
+        public async Task<IActionResult> LoadEditModal(IFormCollection form)
+        {
+            try
+            {
+                var result = await _userRoleService.UpdateUserRoleAsync(form);
+
+                if (!result)
+                {
+                    return Ok(new { success = false, message = "Failed to update User Role." });
+                }
+
+                return Ok(new { success = true, message = "User Role updated successfully.", redirectUrl = Url.Action("UserRolesManagement", "UserRole") });
+            }
+            catch (Exception ex)
+            {
+                return Ok(new { success = false, message = $"Error: {ex.Message}" });
+            }
         }
     }
 }
