@@ -114,8 +114,8 @@
                 render: function (data) {
                     return `
                         <button type="button"
-                                class="btn btn-sm btn-info edit-designation-btn"
-                                data-designation-id="${data}">
+                                class="btn btn-sm btn-info edit-page-btn"
+                                data-page-id="${data}">
                             <i class="bi bi-pencil"></i>
                         </button>
                     `;
@@ -150,7 +150,7 @@
                 </div>
             `);
 
-            designationEditModal.show();
+            pageEditModal.show();
             const url = '@Url.Action("LoadEditModal", "Page")/' + Id;
 
             $.ajax({

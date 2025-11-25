@@ -103,5 +103,48 @@ namespace UserManagement.Business.PageHandler
             }
         }
 
+        public async Task<PageModel> GetPageByIdAsync(int id)
+        {
+            try
+            {
+                string query = @"
+                SELECT 
+                    P.*,
+                    Pr.ProductName
+                FROM Pages P
+                LEFT JOIN Products Pr ON P.ProductId = Pr.Id
+                WHERE P.Id = @Id;";
+
+                DataTable data = await _connectionService.SingleQueryReturn(query, id);
+
+                if (data == null || data.Rows.Count == 0)
+                {
+                    return null;
+                }
+
+                DataRow row = data.Rows[0];
+
+                PageModel model = new PageModel()
+                {
+                    Id = Convert.ToInt32(row["Id"]),
+                    PageName = row["PageName"] == DBNull.Value ? string.Empty : row["PageName"].ToString(),
+                    PageUrl = row["PageUrl"] == DBNull.Value ? string.Empty : row["PageUrl"].ToString(),
+                    PageCode = row["PageCode"] == DBNull.Value ? string.Empty : row["PageCode"].ToString(),
+                    ProductName = row["ProductName"] == DBNull.Value ? string.Empty : row["ProductName"].ToString(),
+                    Description = row["Description"] == DBNull.Value ? string.Empty : row["Description"].ToString(),
+                    IsActive = row["IsActive"] != DBNull.Value && Convert.ToBoolean(row["IsActive"]),
+                    CreatedDate = row["CreatedDate"] == DBNull.Value
+                                    ? DateTime.MinValue
+                                    : Convert.ToDateTime(row["CreatedDate"])
+                };
+
+                return model;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"Failed to retrieve page with ID {id}.", ex);
+            }
+        }
+
     }
 }

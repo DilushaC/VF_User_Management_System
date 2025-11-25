@@ -100,5 +100,27 @@ namespace UserManagement.Web.Controllers
                 });
             }
         }
+
+        [HttpGet]
+        public async Task<IActionResult> LoadEditModal(int id)
+        {
+            var products = _productService.GetAllActiveProductList();
+
+            //viewbag for branches
+            ViewBag.Products = products
+            .Select(x => new SelectListItem
+            {
+                Value = x.Id.ToString(),
+                Text = x.ProductName
+            })
+            .ToList();
+
+            var user = await _pageService.GetPageByIdAsync(id);
+            if (user == null)
+            {
+                return NotFound();
+            }
+            return PartialView("_EditPagePartial", user);
+        }
     }
 }
