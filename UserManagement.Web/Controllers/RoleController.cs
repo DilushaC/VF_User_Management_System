@@ -93,5 +93,26 @@ namespace UserManagement.Web.Controllers
             }
             return PartialView("_EditRolePartial", role);
         }
+
+        [HttpPost]
+        public async Task<IActionResult> LoadEditModal(IFormCollection form)
+        {
+            try
+            {
+                var result = await _roleService.UpdateRoleAsync(form);
+
+                if (!result)
+                {
+                    return Ok(new { success = false, message = "Failed to update Role." });
+                }
+
+                return Ok(new { success = true, message = "Role updated successfully.", redirectUrl = Url.Action("RolesManagement", "Role") });
+            }
+            catch (Exception ex)
+            {
+                return Ok(new { success = false, message = $"Error: {ex.Message}" });
+            }
+        }
     }
 }
+

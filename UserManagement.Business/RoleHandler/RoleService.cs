@@ -122,5 +122,39 @@ namespace UserManagement.Business.RoleHandler
                 throw new Exception($"Failed to retrieve role with ID {id}.", ex);
             }
         }
+
+        public async Task<bool> UpdateRoleAsync(IFormCollection collection)
+        {
+            try
+            {
+                var Id = Convert.ToInt32(collection["Id"]);
+                var roleName = collection["RoleName"].ToString();
+                var description = collection["Description"].ToString();
+                var isAdminAccount = Convert.ToBoolean(collection["IsAdminAccount"]);
+
+                string sql = @"
+                    UPDATE Roles
+                    SET 
+                        RoleName = @RoleName,
+                        Description = @Description,
+                        IsAdminAccount = @IsAdminAccount
+                    WHERE Id = @Id;
+                ";
+
+                var parameters = new DynamicParameters();
+                parameters.Add("Id", Id, DbType.Int32);
+                parameters.Add("RoleName", roleName, DbType.String);
+                parameters.Add("Description", description, DbType.String);
+                parameters.Add("IsAdminAccount", isAdminAccount, DbType.Boolean);
+
+                int rows = _connectionService.ExecuteWithPara(sql, parameters);
+
+                return rows > 0;
+            }
+            catch (Exception ex)
+            {
+                return false;
+            }
+        }
     }
 }
