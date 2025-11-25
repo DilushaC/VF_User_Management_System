@@ -114,5 +114,28 @@ namespace UserManagement.Web.Controllers
 
             return Json(response);
         }
+
+
+        [HttpGet]
+        public async Task<IActionResult> LoadEditModal(int id)
+        {
+            var roles = _roleService.GetAllRolesList();
+
+            //viewbag for branches
+            ViewBag.UserRoles = roles
+            .Select(x => new SelectListItem
+            {
+                Value = x.Id.ToString(),
+                Text = x.RoleName
+            })
+            .ToList();
+
+            var user = await _userRoleService.GetUserRoleByIdAsync(id);
+            if (user == null)
+            {
+                return NotFound();
+            }
+            return PartialView("_EditUserRolePartial", user);
+        }
     }
 }

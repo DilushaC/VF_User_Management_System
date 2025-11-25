@@ -94,6 +94,50 @@ namespace UserManagement.Business.UserRoleHandler
             }
         }
 
+        public async Task<UserRoleModel> GetUserRoleByIdAsync(int id)
+        {
+            try
+            {
+                string query = @"
+                    SELECT 
+                        UR.Id,
+                        UR.UserId,
+                        U.UserName,
+                        UR.RoleId,
+                        R.RoleName
+                    FROM UserRoles UR
+                    INNER JOIN Users U ON UR.UserId = U.Id
+                    INNER JOIN Roles R ON UR.RoleId = R.Id
+                    WHERE UR.Id = @Id;
+                ";
+
+            DataTable data = await _connectionService.SingleQueryReturn(query, id);
+
+            if (data == null || data.Rows.Count == 0)
+            {
+                return null;
+            }
+
+            DataRow row = data.Rows[0];
+
+            UserRoleModel model = new UserRoleModel()
+            {
+                Id = Convert.ToInt32(row["Id"]),
+                UserId = Convert.ToInt32(row["UserId"]),
+                UserName = row["UserName"] == DBNull.Value ? string.Empty : row["UserName"].ToString(),
+                RoleId = Convert.ToInt32(row["RoleId"]),
+                RoleName = row["RoleName"] == DBNull.Value ? string.Empty : row["RoleName"].ToString(),
+            };
+
+            return model;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"Failed to retrieve user-role with ID {id}.", ex);
+            }
+        }
+
+
 
     }
 }

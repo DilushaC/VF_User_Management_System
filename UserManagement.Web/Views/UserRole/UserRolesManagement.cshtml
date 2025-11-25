@@ -59,7 +59,7 @@
     </div>
 </div>
 
-<div class="modal fade" id="roleRoleEditModal" tabindex="-1" aria-labelledby="roleRoleEditModalLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
+<div class="modal fade" id="userRoleEditModal" tabindex="-1" aria-labelledby="userRoleEditModalLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
     <div class="modal-dialog modal-lg modal-dialog-centered">
         <div class="modal-content">
             <!-- Initial loading content -->
@@ -97,7 +97,7 @@
                     return `
                         <button type="button"
                                 class="btn btn-sm btn-info edit-userRole-btn"
-                                data-userRole-id="${data}">
+                                data-id="${data}">
                             <i class="bi bi-pencil"></i>
                         </button>
                     `;
@@ -114,13 +114,13 @@
 
 <script>
     $(document).ready(function () {
-        const roleEditModal = new bootstrap.Modal(document.getElementById('roleEditModal'));
-        const modalContent = $('#roleEditModal .modal-content');
-        $('#basic-datatable').on('click', '.edit-role-btn', function () {
-            const Id = $(this).data('role-id');
+        const userRoleEditModal = new bootstrap.Modal(document.getElementById('userRoleEditModal'));
+        const modalContent = $('#userRoleEditModal .modal-content');
+        $('#basic-datatable').on('click', '.edit-userRole-btn', function () {
+            const Id = $(this).data('id');
 
             if (!Id) {
-                alert("Role ID is missing!");
+                alert("User Role ID is missing!");
                 return;
             }
             modalContent.html(`
@@ -132,8 +132,8 @@
                 </div>
             `);
 
-            roleEditModal.show();
-            const url = '@Url.Action("LoadEditModal", "Role")/' + Id;
+            userRoleEditModal.show();
+            const url = '@Url.Action("LoadEditModal", "UserRole")/' + Id;
 
             $.ajax({
                 url: url,
