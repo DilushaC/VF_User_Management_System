@@ -37,7 +37,7 @@
                         <div class="row g-2">
                             <div class="mb-3 col-md-6">
                                 <label asp-for="UserName" class="form-label">User Name</label>
-                                <input asp-for="UserName" class="form-control round" required />
+                                <input asp-for="UserName" class="form-control round"/>
                                 <span asp-validation-for="UserName" class="text-danger"></span>
                             </div>
                         </div>
@@ -68,7 +68,10 @@
                             <div class="mb-3 col-md-6">
                                 <label asp-for="Phone" class="form-label"></label>
                                 <input asp-for="Phone"
-                                       type="tel"
+                                       type="text"
+                                       inputmode="numeric"
+                                       maxlength="10"
+                                       oninput="this.value = this.value.replace(/[^0-9]/g,'')"
                                        class="form-control round"
                                        placeholder="Enter phone number"
                                        pattern="0\d{9}"
