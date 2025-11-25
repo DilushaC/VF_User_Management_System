@@ -14,6 +14,7 @@ namespace UserManagement.Business.UserHandler
         Task<bool> CreateUserAsync(IFormCollection collection);
         Task<bool> UpdateUserAsync(IFormCollection collection);
         public List<UserModel> GetAllUsersList();
+        public List<UserModel> GetAllActiveUsersList();
         Task<UserModel> GetUserByIdAsync(int id);
     }
 }

@@ -1,15 +1,9 @@
-﻿@model UserManagement.Data.Models.DepartmentModel
+﻿@model UserManagement.Data.Models.UserRoleModel
 
 @{
-    ViewData["Title"] = "Create Department";
+    ViewData["Title"] = "Create User Role";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
-<meta charset="utf-8" />
-<title>Form Advanced | Attex - Bootstrap 5 Admin & Dashboard Template</title>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta content="A fully featured admin theme which can be used to build CRM, CMS, etc." name="description" />
-<meta content="Coderthemes" name="author" />
-
 
 <div class="row">
     <!-- start page title -->
@@ -18,9 +12,9 @@
             <div class="page-title-box">
                 <div class="page-title-right">
                     <ol class="breadcrumb m-0">
-                        <li class="breadcrumb-item"><a href="javascript: void(0);">Management</a></li>
-                        <li class="breadcrumb-item"><a href="javascript: void(0);">Departments</a></li>
-                        <li class="breadcrumb-item active">Create Department</li>
+                        <li class="breadcrumb-item"><a href="javascript: void(0);">Access Management</a></li>
+                        <li class="breadcrumb-item"><a href="javascript: void(0);">User Roles</a></li>
+                        <li class="breadcrumb-item active">Create User Role</li>
                     </ol>
                 </div>
             </div>
@@ -31,27 +25,36 @@
         <div class="col-12">
             <div class="card">
                 <div class="card-body">
-                    <h3 class="header">Create Department</h3>
+                    <h3 class="header">Create User Role</h3>
                     <br />
-                    <form asp-action="Create" asp-controller="Department" method="post" id="RegisterForm">
+                    <form asp-action="Create" asp-controller="UserRole" method="post" id="RegisterForm">
                         <div class="row g-2">
                             <div class="mb-3 col-md-6">
-                                <label asp-for="DepartmentName" class="form-label">Department Name</label>
-                                <input asp-for="DepartmentName" class="form-control round" required />
-                                <span asp-validation-for="DepartmentName" class="text-danger"></span>
+                                <label asp-for="UserId" class="form-label">User Name</label>
+                                <select id="UserId"
+                                        asp-for="UserId"
+                                        class="form-control select2"
+                                        data-placeholder="Select User"
+                                        asp-items="ViewBag.Users">
+                                    <option></option>
+                                </select>
+                                <span asp-validation-for="UserId" class="text-danger"></span>
                             </div>
                         </div>
                         <div class="row g-2">
-                            <div class="mb-3 col-md-2">
-                                <label asp-for="IsActive" class="form-label">Active Status</label>
-                                <select asp-for="IsActive" class="form-select">
-                                    <option value="true">Active</option>
-                                    <option value="false">Inactive</option>
+                            <div class="mb-3 col-md-6">
+                                <label asp-for="RoleId" class="form-label">User Role</label>
+                                <select id="RoleId"
+                                        asp-for="RoleId"
+                                        class="form-control select2"
+                                        data-placeholder="Select Role"
+                                        asp-items="ViewBag.Roles">
+                                    <option></option>
                                 </select>
-                                <span asp-validation-for="IsActive" class="text-danger"></span>
+                                <span asp-validation-for="RoleId" class="text-danger"></span>
                             </div>
                         </div>
-                        <button type="submit" class="btn btn-primary">Create Department</button>
+                        <button type="submit" class="btn btn-primary">Create User Role</button>
                     </form>
                 </div> <!-- end card-body -->
             </div> <!-- end card-->
@@ -64,12 +67,22 @@
 <!-- Load Select2 JS -->
 <script src="~/assets/vendor/select2/js/select2.min.js"></script>
 
+
 <script>
+
+    $("#UserId").select2({
+        placeholder: "Select UserId",
+    });
+
+    $("#RoleId").select2({
+        placeholder: "Select User Role",
+    });
+
     $("#RegisterForm").on("submit", function (e) {
     e.preventDefault(); // Stop default form submission
     let form = $(this);
         Swal.fire({
-            title: 'Create Department?',
+            title: 'Create User Role?',
             text: "Are you sure you want to create?",
             icon: 'warning',
             showCancelButton: true,
@@ -85,7 +98,7 @@
                     }
                 });
                 $.ajax({
-                    url: '/Department/Create',
+                    url: '/UserRole/Create',
                     type: 'POST',
                     data: form.serialize(),
                     headers: { "X-Requested-With": "XMLHttpRequest" },
@@ -108,7 +121,7 @@
                             Swal.fire({
                                 icon: 'error',
                                 title: 'Error',
-                                text: response.message || 'Failed to create Department.'
+                                text: response.message || 'Failed to create role.'
                             });
                         }
                     },
