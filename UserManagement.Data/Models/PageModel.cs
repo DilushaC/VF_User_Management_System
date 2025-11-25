@@ -11,6 +11,7 @@ namespace UserManagement.Data.Models
         public int Id { get; set; }
         public string PageName { get; set; }
         public int ProductId { get; set; }
+        public string ProductName { get; set; } 
         public string PageUrl { get; set; }
         public string PageCode { get; set; }
         public string Description { get; set; }

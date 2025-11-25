@@ -38,6 +38,33 @@ namespace UserManagement.Web.Controllers
             return View();
         }
 
+        public ActionResult PagesManagement()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        public IActionResult GetPagesPaged()
+        {
+            var dtRequest = _dataTableService.BuildRequest(Request);
+
+            // Build query
+            var query = _pageService.GetAllPagesList().AsQueryable();
+
+            // Custom search (your logic)
+            if (!string.IsNullOrWhiteSpace(dtRequest.SearchValue))
+            {
+                string s = dtRequest.SearchValue;
+                query = query.Where(u =>
+                    u.PageName.Contains(s));
+            }
+
+            // Execute paging using common handler
+            var response = _dataTableService.ApplyDataTable(query, dtRequest);
+
+            return Json(response);
+        }
+
         [HttpPost]
         public async Task<IActionResult> Create(IFormCollection collection)
         {
@@ -51,7 +78,7 @@ namespace UserManagement.Web.Controllers
                     {
                         success = true,
                         message = "Page created successfully",
-                        redirectUrl = Url.Action("ProductsManagement", "Product")
+                        redirectUrl = Url.Action("PagesManagement", "Page")
                     });
                 }
                 else
