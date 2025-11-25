@@ -6,6 +6,7 @@ using UserManagement.Business.DesignationHandler;
 using UserManagement.Business.Helpers;
 using UserManagement.Business.PageHandler;
 using UserManagement.Business.ProductHandler;
+using UserManagement.Business.RoleHandler;
 using UserManagement.Business.UserHandler;
 using UserManagement.Data.Context;
 using UserManagement.Presentation.Filters;
@@ -28,6 +29,7 @@ builder.Services.AddScoped<IDepartmentService, DepartmentService>();
 builder.Services.AddScoped<IDesignationService, DesignationService>();
 builder.Services.AddScoped<IProductService, ProductService>();
 builder.Services.AddScoped<IPageService, PageService>();
+builder.Services.AddScoped<IRoleService, RoleService>();
 builder.Services.AddScoped<IDataTableService, DataTableService>();
 
 

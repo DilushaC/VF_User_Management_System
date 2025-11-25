@@ -1,0 +1,131 @@
+﻿@model UserManagement.Data.Models.RoleModel
+
+@{
+    ViewData["Title"] = "Create Role";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="row">
+    <!-- start page title -->
+    <div class="row">
+        <div class="col-12">
+            <div class="page-title-box">
+                <div class="page-title-right">
+                    <ol class="breadcrumb m-0">
+                        <li class="breadcrumb-item"><a href="javascript: void(0);">Management</a></li>
+                        <li class="breadcrumb-item"><a href="javascript: void(0);">Roles</a></li>
+                        <li class="breadcrumb-item active">Create Role</li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Form row -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body">
+                    <h3 class="header">Create Role</h3>
+                    <br />
+                    <form asp-action="RegisterRole" asp-controller="Role" method="post" id="RegisterForm">
+                        <div class="row g-2">
+                            <div class="mb-3 col-md-6">
+                                <label asp-for="RoleName" class="form-label">Role Name</label>
+                                <input asp-for="RoleName" class="form-control round" required />
+                                <span asp-validation-for="RoleName" class="text-danger"></span>
+                            </div>
+                        </div>
+                        <div class="row g-2">
+                            <div class="mb-3 col-md-6">
+                                <label asp-for="Description" class="form-label">Description</label>
+                                <textarea asp-for="Description" class="form-control round" required></textarea>
+                                <span asp-validation-for="Description" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <div class="row g-2">
+                            <div class="mb-3 col-md-2">
+                                <label asp-for="IsAdminAccount" class="form-label">Admin Account</label>
+                                <select asp-for="IsAdminAccount" class="form-select">
+                                    <option value="true">Yes</option>
+                                    <option value="false">No</option>
+                                </select>
+                                <span asp-validation-for="IsAdminAccount" class="text-danger"></span>
+                            </div>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Create Role</button>
+                    </form>
+                </div> <!-- end card-body -->
+            </div> <!-- end card-->
+        </div> <!-- end col -->
+    </div>
+</div>
+<!-- Load jQuery only ONCE -->
+<script src="~/assets/lib/jquery/jquery.min.js"></script>
+<script src="~/assets/js/sweetalert2.all.min.js"></script>
+
+
+<script>
+    $("#RegisterForm").on("submit", function (e) {
+    e.preventDefault(); // Stop default form submission
+    let form = $(this);
+        Swal.fire({
+            title: 'Create Role?',
+            text: "Are you sure you want to create?",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: 'Yes, Save',
+            cancelButtonText: 'Cancel'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                Swal.fire({
+                    title: 'Saving...',
+                    allowOutsideClick: false,
+                    didOpen: () => {
+                        Swal.showLoading();
+                    }
+                });
+                $.ajax({
+                    url: '/Role/Create',
+                    type: 'POST',
+                    data: form.serialize(),
+                    headers: { "X-Requested-With": "XMLHttpRequest" },
+                    success: function (response) {
+                        Swal.close();
+                        if (response.success) {
+                            Swal.fire({
+                                icon: 'success',
+                                title: response.message,
+                                showConfirmButton: false,
+                                timer: 1500
+                            }).then(() => {
+                                window.location.href = response.redirectUrl;
+                                // Reset form and Select2 elements
+                            });
+                        } else if (response.redirectUrl) {
+                            // Redirect if controller provides URL
+                            window.location.href = response.redirectUrl;
+                        } else {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Error',
+                                text: response.message || 'Failed to create role.'
+                            });
+                        }
+                    },
+                    error: function (xhr, status, error) {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error',
+                            text: 'Something went wrong! Please try again.'
+                        });
+                    }
+                });
+            }
+        });
+    });
+
+
+
+</script>
+
