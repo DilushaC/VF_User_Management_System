@@ -79,7 +79,7 @@ namespace UserManagement.Web.Controllers
             {
                 string s = dtRequest.SearchValue;
                 query = query.Where(u =>
-                    u.ProductName.Contains(s));
+                    u.ProductName.ToLower().Contains(s));
             }
 
             // Execute paging using common handler

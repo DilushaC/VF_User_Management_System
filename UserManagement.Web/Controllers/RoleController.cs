@@ -38,7 +38,7 @@ namespace UserManagement.Web.Controllers
                     {
                         success = true,
                         message = "Role created successfully",
-                        redirectUrl = Url.Action("PagesManagement", "Page")
+                        redirectUrl = Url.Action("RolesManagement", "Role")
                     });
                 }
                 else
@@ -74,7 +74,7 @@ namespace UserManagement.Web.Controllers
             {
                 string s = dtRequest.SearchValue;
                 query = query.Where(u =>
-                    u.RoleName.Contains(s));
+                    u.RoleName.ToLower().Contains(s));
             }
 
             // Execute paging using common handler

@@ -108,7 +108,7 @@ namespace UserManagement.Web.Controllers
             {
                 string s = dtRequest.SearchValue;
                 query = query.Where(u =>
-                    u.DesignationName.Contains(s));
+                    u.DesignationName.ToLower().Contains(s));
             }
 
             // Execute paging using common handler

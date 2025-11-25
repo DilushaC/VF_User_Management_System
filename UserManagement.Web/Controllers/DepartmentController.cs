@@ -75,7 +75,7 @@ namespace UserManagement.Web.Controllers
             {
                 string s = dtRequest.SearchValue;
                 query = query.Where(u =>
-                    u.DepartmentName.Contains(s));
+                    u.DepartmentName.ToLower().Contains(s));
             }
 
             // Execute paging using common handler

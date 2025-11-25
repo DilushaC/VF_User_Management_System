@@ -53,10 +53,10 @@ namespace UserManagement.Web.Controllers
             {
                 string s = dtRequest.SearchValue;
                 query = query.Where(u =>
-                    u.UserName.Contains(s) ||
-                    u.FirstName.Contains(s) ||
-                    u.LastName.Contains(s) ||
-                    u.Email.Contains(s));
+                    u.UserName.ToLower().Contains(s) ||
+                    u.FirstName.ToLower().Contains(s) ||
+                    u.LastName.ToLower().Contains(s) ||
+                    u.Email.ToLower().Contains(s));
             }
 
             // Execute paging using common handler
