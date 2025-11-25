@@ -81,5 +81,46 @@ namespace UserManagement.Business.RoleHandler
                 throw ex;
             }
         }
+
+
+        public async Task<RoleModel> GetRoleByIdAsync(int id)
+        {
+            try
+            {
+                string query = @"
+                                SELECT 
+                                    Id,
+                                    RoleName,
+                                    Description,
+                                    IsAdminAccount
+                                FROM 
+                                    Roles
+                                WHERE 
+                                    Id = @Id";
+
+                DataTable data = await _connectionService.SingleQueryReturn(query, id);
+
+                if (data == null || data.Rows.Count == 0)
+                {
+                    return null;
+                }
+
+                DataRow row = data.Rows[0];
+
+                RoleModel model = new RoleModel()
+                {
+                    Id = Convert.ToInt32(row["Id"]),
+                    RoleName = row["RoleName"] == DBNull.Value ? string.Empty : row["RoleName"].ToString(),
+                    Description = row["Description"] == DBNull.Value ? string.Empty : row["Description"].ToString(),
+                    IsAdminAccount = row["IsAdminAccount"] != DBNull.Value && Convert.ToBoolean(row["IsAdminAccount"]),
+                };
+
+                return model;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"Failed to retrieve role with ID {id}.", ex);
+            }
+        }
     }
 }

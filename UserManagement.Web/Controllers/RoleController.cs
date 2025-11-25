@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using UserManagement.Business.DatatableHandler;
 using UserManagement.Business.RoleHandler;
 
@@ -80,6 +81,17 @@ namespace UserManagement.Web.Controllers
             var response = _dataTableService.ApplyDataTable(query, dtRequest);
 
             return Json(response);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> LoadEditModal(int id)
+        {
+            var role = await _roleService.GetRoleByIdAsync(id);
+            if (role == null)
+            {
+                return NotFound();
+            }
+            return PartialView("_EditRolePartial", role);
         }
     }
 }

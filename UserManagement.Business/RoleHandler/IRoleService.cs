@@ -12,5 +12,6 @@ namespace UserManagement.Business.RoleHandler
     {
         Task<bool> CreateRoleAsync(IFormCollection collection);
         public List<RoleModel> GetAllRolesList();
+        Task<RoleModel> GetRoleByIdAsync(int id);
     }
 }

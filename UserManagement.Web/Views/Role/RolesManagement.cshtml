@@ -59,7 +59,7 @@
     </div>
 </div>
 
-<div class="modal fade" id="departmentEditModal" tabindex="-1" aria-labelledby="departmentEditModalLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
+<div class="modal fade" id="roleEditModal" tabindex="-1" aria-labelledby="roleEditModalLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
     <div class="modal-dialog modal-lg modal-dialog-centered">
         <div class="modal-content">
             <!-- Initial loading content -->
@@ -94,9 +94,9 @@
                 data: 'isAdminAccount',
                 render: function (data, type, row) {
                     if (data === true || data === "Active") {
-                        return '<span class="badge bg-success">Active</span>';
+                        return '<span class="badge bg-success">Yes</span>';
                     } else {
-                        return '<span class="badge bg-danger">Inactive</span>';
+                        return '<span class="badge bg-danger">No</span>';
                     }
             },
             },
@@ -123,13 +123,13 @@
 
 <script>
     $(document).ready(function () {
-        const departmentEditModal = new bootstrap.Modal(document.getElementById('departmentEditModal'));
-        const modalContent = $('#departmentEditModal .modal-content');
-        $('#basic-datatable').on('click', '.edit-department-btn', function () {
-            const Id = $(this).data('department-id');
+        const roleEditModal = new bootstrap.Modal(document.getElementById('roleEditModal'));
+        const modalContent = $('#roleEditModal .modal-content');
+        $('#basic-datatable').on('click', '.edit-role-btn', function () {
+            const Id = $(this).data('role-id');
 
             if (!Id) {
-                alert("Department ID is missing!");
+                alert("Role ID is missing!");
                 return;
             }
             modalContent.html(`
@@ -137,12 +137,12 @@
                     <div class="spinner-border text-primary" role="status">
                         <span class="visually-hidden">Loading...</span>
                     </div>
-                    <p class="mt-2">Loading department details...</p>
+                    <p class="mt-2">Loading role details...</p>
                 </div>
             `);
 
-            departmentEditModal.show();
-            const url = '@Url.Action("LoadEditModal", "Department")/' + Id;
+            roleEditModal.show();
+            const url = '@Url.Action("LoadEditModal", "Role")/' + Id;
 
             $.ajax({
                 url: url,

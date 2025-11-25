@@ -1,0 +1,110 @@
+﻿@using UserManagement.Data.Models
+@model RoleModel
+@{
+    Layout = null;
+}
+
+<div class="modal-header">
+    <h5 class="modal-title" id="userEditModalLabel">Edit Role: @Model.RoleName</h5>
+    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+</div>
+
+<form id="updateRoleForm" asp-action="LoadEditModal" asp-controller="Role" method="post">
+    <input type="hidden" asp-for="Id" />
+
+    <div class="modal-body">
+
+        <div class="mb-3 col-md-6">
+            <label class="form-label">Role Name</label>
+            <input type="text" asp-for="RoleName" class="form-control" />
+        </div>
+        <div class="mb-3 col-md-6">
+            <label asp-for="Description" class="form-label"></label>
+            <textarea asp-for="Description" class="form-control" rows="4"></textarea>
+            <span asp-validation-for="Description" class="text-danger"></span>
+        </div>
+        <div class="mb-3  col-md-3">
+            <label class="form-label">Status</label>
+            <select asp-for="IsAdminAccount" class="form-select">
+                <option value="true">Active</option>
+                <option value="false">Inactive</option>
+            </select>
+        </div>
+
+    </div>
+
+    <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+        <button type="submit" class="btn btn-primary">Save Changes</button>
+    </div>
+</form>
+
+<!-- Load jQuery only ONCE -->
+<script src="~/assets/lib/jquery/jquery.min.js"></script>
+<script src="~/assets/js/sweetalert2.all.min.js"></script>
+<!-- Load Select2 JS -->
+<script src="~/assets/vendor/select2/js/select2.min.js"></script>
+
+<script>
+    $("#updateRoleForm").on("submit", function (e) {
+        debugger;
+        e.preventDefault();
+        let form = $(this);
+
+        if (!form[0].checkValidity()) {
+            Swal.fire({
+                icon: "warning",
+                title: "Missing Information",
+                text: "Please fill in all required fields."
+            });
+            return;
+        }
+        Swal.fire({
+            title: 'Update Role?',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: 'Yes, Update',
+            cancelButtonText: 'Cancel'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                Swal.fire({
+                    title: 'Updating...',
+                    allowOutsideClick: false,
+                    didOpen: () => {
+                        Swal.showLoading();
+                    }
+                });
+                $.ajax({
+                    url: '/Role/LoadEditModal',
+                    type: 'POST',
+                    data: form.serialize(),
+                    headers: { "X-Requested-With": "XMLHttpRequest" },
+                    success: function (response) {
+                        Swal.close();
+
+                        Swal.fire({
+                            icon: response.success ? 'success' : 'error',
+                            title: response.success ? 'Success' : 'Error',
+                            text: response.message
+                        }).then(() => {
+                            if (response.success) {
+                                const modal = bootstrap.Modal.getInstance(document.getElementById("roleEditModal"));
+                                modal.hide();
+                                window.location.href = response.redirectUrl;
+                            }
+                        });
+                    },
+                    error: function (xhr) {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error',
+                            text: xhr.responseJSON?.message || 'Something went wrong! Please try again.'
+                        });
+                    }
+                });
+            }
+        });
+    });
+</script>
+
+
