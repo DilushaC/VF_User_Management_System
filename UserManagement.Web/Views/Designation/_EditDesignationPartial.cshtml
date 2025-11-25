@@ -20,7 +20,7 @@
         </div>
         <div class="mb-3  col-md-3">
             <label class="form-label">Status</label>
-            <select asp-for="IsActive" class="form-select">
+            <select id="Status" asp-for="IsActive" class="form-select">
                 <option value="true">Active</option>
                 <option value="false">Inactive</option>
             </select>
@@ -41,6 +41,10 @@
 <script src="~/assets/vendor/select2/js/select2.min.js"></script>
 
 <script>
+    $("#Status").select2({
+        placeholder: "Select Status",
+    });
+
     $("#updateDesignationForm").on("submit", function (e) {
         debugger;
         e.preventDefault();

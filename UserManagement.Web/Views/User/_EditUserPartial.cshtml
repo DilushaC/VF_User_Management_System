@@ -60,9 +60,9 @@
             </div>
         </div>
 
-        <div class="mb-3">
+        <div class="mb-3 col-md-2">
             <label class="form-label">Status</label>
-            <select asp-for="IsActive" class="form-select">
+            <select id="Status" asp-for="IsActive" class="form-select">
                 <option value="true">Active</option>
                 <option value="false">Inactive</option>
             </select>
@@ -91,6 +91,9 @@
     });
     $("#PrimaryDepartmentId").select2({
         placeholder: "Select Department",
+    });
+    $("#Status").select2({
+        placeholder: "Select Status",
     });
 
     $("#updateUserForm").on("submit", function (e) {
