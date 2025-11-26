@@ -7,6 +7,7 @@ using UserManagement.Business.Helpers;
 using UserManagement.Business.PageHandler;
 using UserManagement.Business.ProductHandler;
 using UserManagement.Business.RoleHandler;
+using UserManagement.Business.RolePagePermission;
 using UserManagement.Business.UserHandler;
 using UserManagement.Business.UserRoleHandler;
 using UserManagement.Data.Context;
@@ -32,6 +33,7 @@ builder.Services.AddScoped<IProductService, ProductService>();
 builder.Services.AddScoped<IPageService, PageService>();
 builder.Services.AddScoped<IRoleService, RoleService>();
 builder.Services.AddScoped<IUserRoleService, UserRoleService>();
+builder.Services.AddScoped<IRolePagePermissionService, RolePagePermissionService>();
 builder.Services.AddScoped<IDataTableService, DataTableService>();
 
 
