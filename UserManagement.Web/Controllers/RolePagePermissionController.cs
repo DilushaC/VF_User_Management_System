@@ -132,5 +132,25 @@ namespace UserManagement.Web.Controllers
             }
             return PartialView("_EditRolePagePartial", rolePage);
         }
+
+        [HttpPost]
+        public async Task<IActionResult> LoadEditModal(IFormCollection form)
+        {
+            try
+            {
+                var result = await _rolePagePermissionService.UpdateRolePagePermissionAsync(form);
+
+                if (!result)
+                {
+                    return Ok(new { success = false, message = "Failed to update Page Permission." });
+                }
+
+                return Ok(new { success = true, message = "Page Permission updated successfully.", redirectUrl = Url.Action("RolePagePermissionsManagement", "RolePagePermission") });
+            }
+            catch (Exception ex)
+            {
+                return Ok(new { success = false, message = $"Error: {ex.Message}" });
+            }
+        }
     }
 }

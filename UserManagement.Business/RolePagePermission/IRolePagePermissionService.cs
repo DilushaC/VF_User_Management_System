@@ -13,5 +13,6 @@ namespace UserManagement.Business.RolePagePermission
         Task<bool> CreateRolePagePermissionAsync(IFormCollection collection);
         public List<RolePagePermissionModel> GetAllRolePagePermissionList();
         Task<RolePagePermissionModel> GetRolePagePermissionByIdAsync(int id);
+        Task<bool> UpdateRolePagePermissionAsync(IFormCollection collection);
     }
 }

@@ -142,6 +142,35 @@ namespace UserManagement.Business.RolePagePermission
             }
         }
 
+        public async Task<bool> UpdateRolePagePermissionAsync(IFormCollection collection)
+        {
+            try
+            {
+                var Id = Convert.ToInt32(collection["Id"]);
+                var pageId = collection["PageId"].ToString();
+                var canEdit = Convert.ToBoolean(collection["CanEdit"]);
 
+                string sql = @"
+                    UPDATE RolePagePermissions
+                    SET 
+                        PageId = @PageId,
+                        CanEdit = @CanEdit
+                    WHERE Id = @Id;
+                ";
+
+                var parameters = new DynamicParameters();
+                parameters.Add("Id", Id, DbType.Int32);
+                parameters.Add("PageId", Convert.ToInt32(pageId), DbType.Int32);
+                parameters.Add("CanEdit", canEdit, DbType.Boolean);
+
+                int rows = _connectionService.ExecuteWithPara(sql, parameters);
+
+                return rows > 0;
+            }
+            catch (Exception ex)
+            {
+                return false;
+            }
+        }
     }
 }
