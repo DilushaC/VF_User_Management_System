@@ -98,5 +98,50 @@ namespace UserManagement.Business.RolePagePermission
             }
         }
 
+        public async Task<RolePagePermissionModel> GetRolePagePermissionByIdAsync(int id)
+        {
+            try
+            {
+                string query = @"
+                    SELECT
+                        UR.Id,
+                        UR.RoleId,
+                        UR.PageId,
+                        UR.CanEdit,
+                        R.RoleName,
+                        P.PageName
+                    FROM RolePagePermissions UR
+                    LEFT JOIN Roles R ON UR.RoleId = R.Id
+                    LEFT JOIN Pages P ON UR.PageId = P.Id
+                    WHERE UR.Id = @Id;
+                ";
+
+                DataTable data = await _connectionService.SingleQueryReturn(query, id);
+
+                if (data == null || data.Rows.Count == 0)
+                    return null;
+
+                DataRow row = data.Rows[0];
+
+                RolePagePermissionModel model = new RolePagePermissionModel()
+                {
+                    Id = row["Id"] == DBNull.Value ? 0 : Convert.ToInt32(row["Id"]),
+                    RoleId = row["RoleId"] == DBNull.Value ? 0 : Convert.ToInt32(row["RoleId"]),
+                    PageId = row["PageId"] == DBNull.Value ? 0 : Convert.ToInt32(row["PageId"]),
+                    CanEdit = row["CanEdit"] == DBNull.Value ? false : Convert.ToBoolean(row["CanEdit"]),
+
+                    RoleName = row["RoleName"]?.ToString() ?? "",
+                    PageName = row["PageName"]?.ToString() ?? ""
+                };
+
+                return model;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"Failed to retrieve role page permission with ID {id}.", ex);
+            }
+        }
+
+
     }
 }

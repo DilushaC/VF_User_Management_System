@@ -125,10 +125,10 @@
 
 <script>
     $(document).ready(function () {
-        const roleEditModal = new bootstrap.Modal(document.getElementById('roleEditModal'));
-        const modalContent = $('#roleEditModal .modal-content');
-        $('#basic-datatable').on('click', '.edit-role-btn', function () {
-            const Id = $(this).data('role-id');
+        const pagePermissionEditModal = new bootstrap.Modal(document.getElementById('pagePermissionEditModal'));
+        const modalContent = $('#pagePermissionEditModal .modal-content');
+        $('#basic-datatable').on('click', '.edit-pagePermission-btn', function () {
+            const Id = $(this).data('pagepermission-id');
 
             if (!Id) {
                 alert("Role ID is missing!");
@@ -143,8 +143,8 @@
                 </div>
             `);
 
-            roleEditModal.show();
-            const url = '@Url.Action("LoadEditModal", "Role")/' + Id;
+            pagePermissionEditModal.show();
+            const url = '@Url.Action("LoadEditModal", "RolePagePermission")/' + Id;
 
             $.ajax({
                 url: url,

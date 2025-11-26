@@ -110,5 +110,27 @@ namespace UserManagement.Web.Controllers
 
             return Json(response);
         }
+
+        [HttpGet]
+        public async Task<IActionResult> LoadEditModal(int id)
+        {
+            var pages = _pageService.GetAllPagesList();
+
+            //viewbag for branches
+            ViewBag.Pages = pages
+            .Select(x => new SelectListItem
+            {
+                Value = x.Id.ToString(),
+                Text = x.PageName
+            })
+            .ToList();
+
+            var rolePage = await _rolePagePermissionService.GetRolePagePermissionByIdAsync(id);
+            if (rolePage == null)
+            {
+                return NotFound();
+            }
+            return PartialView("_EditRolePagePartial", rolePage);
+        }
     }
 }
