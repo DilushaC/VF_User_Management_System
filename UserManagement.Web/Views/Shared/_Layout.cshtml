@@ -239,7 +239,7 @@
                             <li class="side-nav-item">
                                 <a data-bs-toggle="collapse" href="#sidebarDesignation" aria-expanded="false" aria-controls="sidebarDesignation" class="side-nav-link">
                                     <i class="ri-vip-crown-2-line"></i>
-                                    <span>Designation</span>
+                                    <span>Designations</span>
                                     <span class="menu-arrow"></span>
                                 </a>
                                 <div class="collapse" id="sidebarDesignation">
@@ -265,57 +265,122 @@
                                 </div>
                             </li>
                         }
-                        <li class="side-nav-item">
-                            <a data-bs-toggle="collapse" href="#sidebarBranch" aria-expanded="false" aria-controls="sidebarBranch" class="side-nav-link">
-                                <i class="ri-route-line"></i>
-                                <span>Branches</span>
-                                <span class="menu-arrow"></span>
-                            </a>
-                            <div class="collapse" id="sidebarBranch">
-                                <ul class="side-nav-second-level">
-                                    <li>
-                                        <a class="menu-item" href="/Branch/Index">Create Branch</a>
-                                    </li>
-                                    <li>
-                                        <a class="menu-item" href="/Branch/BranchesManagement">Branches Management</a>
-                                    </li>
-                                </ul>
-                            </div>
-                        </li>
-                        <li class="side-nav-item">
-                            <a data-bs-toggle="collapse" href="#sidebarDepartment" aria-expanded="false" aria-controls="sidebarDepartment" class="side-nav-link">
-                                <i class="ri-suitcase-line"></i>
-                                <span>Departments</span>
-                                <span class="menu-arrow"></span>
-                            </a>
-                            <div class="collapse" id="sidebarDepartment">
-                                <ul class="side-nav-second-level">
-                                    <li>
-                                        <a class="menu-item" href="/Department/Index">Create Department</a>
-                                    </li>
-                                    <li>
-                                        <a class="menu-item" href="/Department/DepartmentsManagement">Departments Management</a>
-                                    </li>
-                                </ul>
-                            </div>
-                        </li>
-                        <li class="side-nav-item">
-                            <a data-bs-toggle="collapse" href="#sidebarProduct" aria-expanded="false" aria-controls="sidebarProduct" class="side-nav-link">
-                                <i class="ri-shopping-cart-line"></i>
-                                <span>Products</span>
-                                <span class="menu-arrow"></span>
-                            </a>
-                            <div class="collapse" id="sidebarProduct">
-                                <ul class="side-nav-second-level">
-                                    <li>
-                                        <a class="menu-item" href="/Product/Index">Create Product</a>
-                                    </li>
-                                    <li>
-                                        <a class="menu-item" href="/Product/ProductsManagement">Products Management</a>
-                                    </li>
-                                </ul>
-                            </div>
-                        </li>
+                        @if (CanAccess("/Branch/Index") || CanAccess("/Branch/BranchesManagement"))
+                        {
+                            <li class="side-nav-item">
+                                <a data-bs-toggle="collapse" href="#sidebarBranch" aria-expanded="false" aria-controls="sidebarBranch" class="side-nav-link">
+                                    <i class="ri-route-line"></i>
+                                    <span>Branches</span>
+                                    <span class="menu-arrow"></span>
+                                </a>
+                                <div class="collapse" id="sidebarBranch">
+                                    <ul class="side-nav-second-level">
+
+                                        @* Register User *@
+                                        @if (CanAccess("/Branch/Index"))
+                                        {
+                                            <li>
+                                                <a class="menu-item" href="/Branch/Index">Create Branch</a>
+                                            </li>
+                                        }
+
+                                        @* Users Management *@
+                                        @if (CanAccess("/Branch/BranchesManagement"))
+                                        {
+                                            <li>
+                                                <a href="/Branch/BranchesManagement">Branches Management</a>
+                                            </li>
+                                        }
+
+                                    </ul>
+                                </div>
+                            </li>
+                        }
+                        @if (CanAccess("/Department/Index") || CanAccess("/Department/DepartmentsManagement"))
+                        {
+                            <li class="side-nav-item">
+                                <a data-bs-toggle="collapse" href="#sidebarDepartment" aria-expanded="false" aria-controls="sidebarDepartment" class="side-nav-link">
+                                    <i class="ri-suitcase-line"></i>
+                                    <span>Departments</span>
+                                    <span class="menu-arrow"></span>
+                                </a>
+                                <div class="collapse" id="sidebarDepartment">
+                                    <ul class="side-nav-second-level">
+
+                                        @* Register User *@
+                                        @if (CanAccess("/Department/Index"))
+                                        {
+                                            <li>
+                                                <a class="menu-item" href="/Department/Index">Create Department</a>
+                                            </li>
+                                        }
+
+                                        @* Users Management *@
+                                        @if (CanAccess("/Department/DepartmentsManagement"))
+                                        {
+                                            <li>
+                                                <a href="/Department/DepartmentsManagement">Departments Management</a>
+                                            </li>
+                                        }
+
+                                    </ul>
+                                </div>
+                            </li>
+                        }
+                        @if (CanAccess("/Product/Index") || CanAccess("/Product/ProductsManagement"))
+                        {
+                            <li class="side-nav-item">
+                                <a data-bs-toggle="collapse" href="#sidebarProduct" aria-expanded="false" aria-controls="sidebarProduct" class="side-nav-link">
+                                    <i class="ri-shopping-cart-line"></i>
+                                    <span>Products</span>
+                                    <span class="menu-arrow"></span>
+                                </a>
+                                <div class="collapse" id="sidebarProduct">
+                                    <ul class="side-nav-second-level">
+                                        @if (CanAccess("/Product/Index"))
+                                        {
+                                            <li>
+                                                <a class="menu-item" href="/Product/Index">Create Product</a>
+                                            </li>
+                                        }
+                                        @if (CanAccess("/Product/ProductsManagement"))
+                                        {
+                                            <li>
+                                                <a href="/Product/ProductsManagement">Products Management</a>
+                                            </li>
+                                        }
+
+                                    </ul>
+                                </div>
+                            </li>
+                        }
+                        @if (CanAccess("/Product/Index") || CanAccess("/Product/ProductsManagement"))
+                        {
+                            <li class="side-nav-item">
+                                <a data-bs-toggle="collapse" href="#sidebarPages" aria-expanded="false" aria-controls="sidebarPages" class="side-nav-link">
+                                    <i class="ri-shopping-cart-line"></i>
+                                    <span>Products</span>
+                                    <span class="menu-arrow"></span>
+                                </a>
+                                <div class="collapse" id="sidebarPages">
+                                    <ul class="side-nav-second-level">
+                                        @if (CanAccess("/Product/Index"))
+                                        {
+                                            <li>
+                                                <a class="menu-item" href="/Product/Index">Create Product</a>
+                                            </li>
+                                        }
+                                        @if (CanAccess("/Product/ProductsManagement"))
+                                        {
+                                            <li>
+                                                <a href="/Product/ProductsManagement">Products Management</a>
+                                            </li>
+                                        }
+
+                                    </ul>
+                                </div>
+                            </li>
+                        }
                         <li class="side-nav-item">
                             <a data-bs-toggle="collapse" href="#sidebarPages" aria-expanded="false" aria-controls="sidebarPages" class="side-nav-link">
                                 <i class="ri-pages-line"></i>
