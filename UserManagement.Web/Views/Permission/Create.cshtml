@@ -43,15 +43,16 @@
                         </div>
                         <div class="row g-2">
                             <div class="mb-3 col-md-6">
-                                <label asp-for="PageId" class="form-label">Page Name</label>
-                                <select id="PageId"
-                                        asp-for="PageId"
+                                <label asp-for="PageIds" class="form-label">Page Name</label>
+                                <select id="PageIds"
+                                        name="PageIds"
+                                        asp-for="PageIds"
                                         class="form-control select2"
-                                        data-placeholder="Select Page"
+                                        multiple="multiple"
+                                        data-placeholder="Select Pages"
                                         asp-items="ViewBag.Pages">
-                                    <option></option>
                                 </select>
-                                <span asp-validation-for="PageId" class="text-danger"></span>
+                                <span asp-validation-for="PageIds" class="text-danger"></span>
                             </div>
                         </div>
                         <div class="row g-2">
@@ -84,8 +85,9 @@
         placeholder: "Select RoleId",
     });
 
-    $("#PageId").select2({
-        placeholder: "Select PageId",
+    $("#PageIds").select2({
+        width: "100%",
+        allowClear: true
     });
 
     $("#RegisterForm").on("submit", function (e) {

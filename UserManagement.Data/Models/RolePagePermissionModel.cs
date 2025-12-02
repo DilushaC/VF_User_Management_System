@@ -14,5 +14,7 @@ namespace UserManagement.Data.Models
         public bool CanEdit { get; set; }
         public string RoleName { get; set; }
         public string PageName { get; set; }
+        public List<int> PageIds { get; set; } = new List<int>();
+
     }
 }

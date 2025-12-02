@@ -10,7 +10,7 @@
 </div>
 
 <form id="updatePagePermissionForm" asp-action="LoadEditModal" asp-controller="RolePagePermission" method="post">
-    <input type="hidden" asp-for="Id" />
+    <input type="hidden" asp-for="RoleId" />
 
     <div class="modal-body">
 
@@ -18,9 +18,14 @@
             <label class="form-label">Role Name</label>
             <input type="text" asp-for="RoleName" class="form-control" readonly />
         </div>
-        <div class="mb-3  col-md-3">
+        <div class="mb-3  col-md-12">
             <label class="form-label">Page Name</label>
-            <select id="PageId" asp-for="PageId" class="form-control select2" asp-items="ViewBag.Pages">
+            <select id="PageIds"
+                    name="PageIds"
+                    asp-for="PageIds"
+                    class="form-control select2"
+                    asp-items="ViewBag.Pages"
+                    multiple="multiple">
             </select>
         </div>
         <div class="mb-3  col-md-3">
@@ -46,9 +51,12 @@
 <script src="~/assets/vendor/select2/js/select2.min.js"></script>
 
 <script>
-    $("#PageId").select2({
-        placeholder: "Select Page",
+    $("#PageIds").select2({
+        placeholder: "Select Pages",
+        width: '100%',
     });
+    $("#PageIds").val(@Html.Raw(Json.Serialize(Model.PageIds))).trigger("change");
+
     $("#CanEdit").select2({
         placeholder: "Select Option",
     });
@@ -82,7 +90,7 @@
                     }
                 });
                 $.ajax({
-                    url: '/RolePagePermission/LoadEditModal',
+                    url: '/Permission/LoadEditModal',
                     type: 'POST',
                     data: form.serialize(),
                     headers: { "X-Requested-With": "XMLHttpRequest" },

@@ -146,7 +146,7 @@ namespace UserManagement.Web.Controllers
                     return Ok(new { success = false, message = "Failed to update Page Permission." });
                 }
 
-                return Ok(new { success = true, message = "Page Permission updated successfully.", redirectUrl = Url.Action("Management", "RolePagePermission") });
+                return Ok(new { success = true, message = "Page Permission updated successfully.", redirectUrl = Url.Action("Management", "Permission") });
             }
             catch (Exception ex)
             {
