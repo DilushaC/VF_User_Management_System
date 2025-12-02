@@ -26,7 +26,7 @@ namespace UserManagement.Web.Controllers
             _dataTableService = dataTableService;
         }
 
-        public IActionResult Index()
+        public IActionResult Create()
         {
             var users = _userService.GetAllActiveUsersList();
             var roles = _roleService.GetAllRolesList();

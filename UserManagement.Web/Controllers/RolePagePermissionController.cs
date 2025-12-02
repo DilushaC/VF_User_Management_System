@@ -21,7 +21,8 @@ namespace UserManagement.Web.Controllers
             _pageService = pageService;
             _rolePagePermissionService = rolePagePermissionService;
         }
-        public IActionResult Index()
+        [HttpGet]
+        public IActionResult Create()
         {
             var roles = _roleService.GetAllRolesList();
             var pages = _pageService.GetAllPagesList();

@@ -20,7 +20,8 @@ namespace UserManagement.Web.Controllers
             _dataTableService = dataTableService;
         }
 
-        public IActionResult Index()
+        [HttpGet]
+        public IActionResult Create()
         {
             return View();
         }

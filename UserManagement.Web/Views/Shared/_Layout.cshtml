@@ -1,29 +1,24 @@
 ﻿@using System.Text.Json
 @{
-    // Use HttpContext in Layout
     var username = Context.Session.GetString("UserName");
     var userId = Context.Session.GetString("UserId");
-
-    // Deserialize allowed pages from session
-    var json = Context.Session.GetString("PageUrls");
+    var pageURLs = Context.Session.GetString("PageUrls");
     List<string> allowedPages = new List<string>();
-    if (!string.IsNullOrEmpty(json))
+    if (!string.IsNullOrEmpty(pageURLs))
     {
-        allowedPages = JsonSerializer.Deserialize<List<string>>(json) ?? new List<string>();
+        allowedPages = JsonSerializer.Deserialize<List<string>>(pageURLs) ?? new List<string>();
     }
 
-    // Normalize URLs to start with '/'
     allowedPages = allowedPages.Select(u => u.StartsWith("/") ? u : "/" + u).ToList();
 
-    // Group pages by first segment to form menus
     var menuGroups = allowedPages
         .Select(url =>
         {
             var segments = url.Trim('/').Split('/');
             return new
             {
-                MenuTitle = segments[0], // First segment = menu
-                PageTitle = segments.Length > 1 ? segments[1] : segments[0], // Second segment or fallback
+                MenuTitle = segments[0],
+                PageTitle = segments.Length > 1 ? segments[1] : segments[0],
                 Url = url
             };
         })

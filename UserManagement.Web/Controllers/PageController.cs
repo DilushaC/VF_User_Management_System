@@ -22,7 +22,9 @@ namespace UserManagement.Web.Controllers
             _pageService = pageService;
             _dataTableService = dataTableService;
         }
-        public IActionResult Index()
+
+        [HttpGet]
+        public IActionResult Create()
         {
             var products = _productService.GetAllActiveProductList();
 

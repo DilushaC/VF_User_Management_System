@@ -19,14 +19,14 @@ namespace UserManagement.Web.Controllers
             _designationService = designationService;
             _dataTableService = dataTableService;
         }
-        // GET: DesignationController
-        public ActionResult Index()
+
+        public ActionResult Create()
         {
             return View();
         }
 
         // GET: DesignationController
-        public ActionResult DesignationsManagement()
+        public ActionResult Management()
         {
             return View();
         }
