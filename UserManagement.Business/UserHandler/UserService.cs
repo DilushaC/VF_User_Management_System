@@ -346,6 +346,69 @@ namespace UserManagement.Business.UserHandler
             return isValid ? user : null;
         }
 
+        //get user pages
+        public async Task<UserModel> GetPagesByUserId(int id)
+        {
+            try
+            {
+
+                UserModel userModel = new UserModel()
+                {
+                    PageUrls = new List<string>()
+                };
+
+                string roleQuery = @"SELECT RoleId FROM UserRoles WHERE UserId ="+id;
+                DataTable roleData = await _connectionService.SingleQueryReturn(roleQuery, id);
+
+                if (roleData != null && roleData.Rows.Count > 0)
+                {
+                    int roleId = Convert.ToInt32(roleData.Rows[0]["RoleId"]);
+                    userModel.RoleId = roleId;
+
+                    // 3️⃣ Get PageIds from RolePagePermissions
+                    string pagePermissionQuery = @"
+                        SELECT PageId 
+                        FROM RolePagePermissions 
+                        WHERE RoleId ="+roleId;
+
+                    DataTable pagePermData = await _connectionService.SingleQueryReturn(pagePermissionQuery, roleId);
+
+                    if (pagePermData != null && pagePermData.Rows.Count > 0)
+                    {
+                        // Build IN clause
+                        List<int> pageIds = pagePermData.Rows.Cast<DataRow>()
+                                            .Select(r => Convert.ToInt32(r["PageId"]))
+                                            .ToList();
+
+                        string idList = string.Join(",", pageIds);
+
+                        // 4️⃣ Get Page URLs
+                        string pageUrlQuery = $@"
+                            SELECT PageUrl 
+                            FROM Pages 
+                            WHERE Id IN ({idList}) AND IsActive = 1";
+
+                        DataTable pageData = await _connectionService.SingleQueryReturn(pageUrlQuery,roleId);
+
+                        if (pageData != null)
+                        {
+                            foreach (DataRow p in pageData.Rows)
+                            {
+                                userModel.PageUrls.Add(p["PageUrl"].ToString());
+                            }
+                        }
+                    }
+                }
+
+                return userModel;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"Failed to retrieve user with ID {id}.", ex);
+            }
+        }
+
+
 
     }
 }

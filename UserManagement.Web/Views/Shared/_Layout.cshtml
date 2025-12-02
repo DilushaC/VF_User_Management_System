@@ -1,5 +1,19 @@
 ﻿@{
     var username = Context.Session.GetString("UserName");
+    var userId = Context.Session.GetString("UserId");
+}
+@using System.Text.Json;
+@{
+    var json = Context.Session.GetString("PageUrls");
+    List<string> allowedPages = new List<string>();
+
+    if (!string.IsNullOrEmpty(json))
+    {
+        allowedPages = JsonSerializer.Deserialize<List<string>>(json);
+    }
+
+    // Helper function to check access
+    bool CanAccess(string url) => allowedPages.Contains(url, StringComparer.OrdinalIgnoreCase);
 }
 <!DOCTYPE html>
 <html lang="en">
@@ -133,12 +147,6 @@
                                     <i class="ri-customer-service-2-line fs-18 align-middle me-1"></i>
                                     <span>Support</span>
                                 </a>
-
-                                <a href="auth-lock-screen.html" class="dropdown-item">
-                                    <i class="ri-lock-password-line fs-18 align-middle me-1"></i>
-                                    <span>Lock Screen</span>
-                                </a>
-
                                 <a href="/User/Login" class="dropdown-item">
                                     <i class="ri-logout-box-line fs-18 align-middle me-1"></i>
                                     <span>Logout</span>
@@ -195,40 +203,68 @@
                             </a>
                         </li>
                         <li class="side-nav-title">Management - Master</li>
-                        <li class="side-nav-item">
-                            <a data-bs-toggle="collapse" href="#sidebarUsers" aria-expanded="false" aria-controls="sidebarUsers" class="side-nav-link">
-                                <i class=" ri-user-line"></i>
-                                <span>Users</span>
-                                <span class="menu-arrow"></span>
-                            </a>
-                            <div class="collapse" id="sidebarUsers">
-                                <ul class="side-nav-second-level">
-                                    <li>
-                                        <a class="menu-item" href="/User/Register">Register User</a>
-                                    </li>
-                                    <li>
-                                        <a href="/User/UsersManagement">Users Management</a>
-                                    </li>
-                                </ul>
-                            </div>
-                        </li>
-                        <li class="side-nav-item">
-                            <a data-bs-toggle="collapse" href="#sidebarDesignation" aria-expanded="false" aria-controls="sidebarDesignation" class="side-nav-link">
-                                <i class="ri-vip-crown-2-line"></i>
-                                <span>Designations</span>
-                                <span class="menu-arrow"></span>
-                            </a>
-                            <div class="collapse" id="sidebarDesignation">
-                                <ul class="side-nav-second-level">
-                                    <li>
-                                        <a class="menu-item" href="/Designation/Index">Create Designation</a>
-                                    </li>
-                                    <li>
-                                        <a class="menu-item" href="/Designation/DesignationsManagement">Designation Management</a>
-                                    </li>
-                                </ul>
-                            </div>
-                        </li>
+                        @if (CanAccess("/User/Register") || CanAccess("/User/UsersManagement"))
+                        {
+                            <li class="side-nav-item">
+                                <a data-bs-toggle="collapse" href="#sidebarUsers" aria-expanded="false" aria-controls="sidebarUsers" class="side-nav-link">
+                                    <i class="ri-user-line"></i>
+                                    <span>Users</span>
+                                    <span class="menu-arrow"></span>
+                                </a>
+                                <div class="collapse" id="sidebarUsers">
+                                    <ul class="side-nav-second-level">
+
+                                        @* Register User *@
+                                        @if (CanAccess("/User/Register"))
+                                        {
+                                            <li>
+                                                <a class="menu-item" href="/User/Register">Register User</a>
+                                            </li>
+                                        }
+
+                                        @* Users Management *@
+                                        @if (CanAccess("/User/UsersManagement"))
+                                        {
+                                            <li>
+                                                <a href="/User/UsersManagement">Users Management</a>
+                                            </li>
+                                        }
+
+                                    </ul>
+                                </div>
+                            </li>
+                        }
+                        @if (CanAccess("/Designation/Index") || CanAccess("/Designation/DesignationsManagement"))
+                        {
+                            <li class="side-nav-item">
+                                <a data-bs-toggle="collapse" href="#sidebarDesignation" aria-expanded="false" aria-controls="sidebarDesignation" class="side-nav-link">
+                                    <i class="ri-vip-crown-2-line"></i>
+                                    <span>Designation</span>
+                                    <span class="menu-arrow"></span>
+                                </a>
+                                <div class="collapse" id="sidebarDesignation">
+                                    <ul class="side-nav-second-level">
+
+                                        @* Register User *@
+                                        @if (CanAccess("/Designation/Index"))
+                                        {
+                                            <li>
+                                                <a class="menu-item" href="/Designation/Index">Create Designation</a>
+                                            </li>
+                                        }
+
+                                        @* Users Management *@
+                                        @if (CanAccess("/Designation/DesignationsManagement"))
+                                        {
+                                            <li>
+                                                <a href="/Designation/DesignationsManagement">Designations Management</a>
+                                            </li>
+                                        }
+
+                                    </ul>
+                                </div>
+                            </li>
+                        }
                         <li class="side-nav-item">
                             <a data-bs-toggle="collapse" href="#sidebarBranch" aria-expanded="false" aria-controls="sidebarBranch" class="side-nav-link">
                                 <i class="ri-route-line"></i>
@@ -341,10 +377,10 @@
                             <div class="collapse" id="sidebarRolePages">
                                 <ul class="side-nav-second-level">
                                     <li>
-                                        <a href="/RolePagePermission/Index">Create Page Permission</a>
+                                        <a href="/RolePagePermission/Index">Create Permission</a>
                                     </li>
                                     <li>
-                                        <a href="/RolePagePermission/RolePagePermissionsManagement">Page Permission Management</a>
+                                        <a href="/RolePagePermission/RolePagePermissionsManagement">Permission Management</a>
                                     </li>
                                 </ul>
                             </div>
@@ -410,6 +446,11 @@
                 });
         });
     </script>
+
+    <script>
+        console.log("PageUrls:", "@Context.Session.GetString("PageUrls")");
+    </script>
+
 
 </body>
 </html>

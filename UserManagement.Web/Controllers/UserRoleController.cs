@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using System.Data;
 using UserManagement.Business.BranchHandler;
 using UserManagement.Business.DatatableHandler;
 using UserManagement.Business.DepartmentHandler;
@@ -17,7 +18,7 @@ namespace UserManagement.Web.Controllers
         private readonly IUserRoleService _userRoleService;
         private readonly IDataTableService _dataTableService;
 
-        public UserRoleController(IUserService userService,IDataTableService dataTableService,IRoleService roleService,IUserRoleService userRoleService)
+        public UserRoleController(IUserService userService, IDataTableService dataTableService, IRoleService roleService, IUserRoleService userRoleService)
         {
             _userService = userService;
             _roleService = roleService;

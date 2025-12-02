@@ -31,6 +31,8 @@ namespace UserManagement.Data.Models
 
         public DateTime? CreatedDate { get; set; } 
 
-        public DateTime? LastLoginDate { get; set; } 
+        public DateTime? LastLoginDate { get; set; }
+        public int RoleId { get; set; }
+        public List<string> PageUrls { get; set; } = new List<string>();
     }
 }

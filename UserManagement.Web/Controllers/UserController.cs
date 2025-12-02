@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using System.Collections.Generic;
+using System.Text.Json;
 using UserManagement.Business.BranchHandler;
 using UserManagement.Business.DatatableHandler;
 using UserManagement.Business.DepartmentHandler;
@@ -148,7 +149,14 @@ namespace UserManagement.Web.Controllers
 
                 HttpContext.Session.SetString("UserName", user.UserName);
                 HttpContext.Session.SetString("UserId", Convert.ToString(user.Id));
-                return Json(new { success = true, redirectUrl = Url.Action("Index", "Home") });
+                var pages = await _userService.GetPagesByUserId(user.Id);
+                List<string> normalizedUrls = pages.PageUrls
+                    .Select(p => p.StartsWith("/") ? p : "/" + p)
+                    .ToList();
+                // Serialize and save to session
+                string pageUrlsJson = JsonSerializer.Serialize(normalizedUrls);
+                HttpContext.Session.SetString("PageUrls", pageUrlsJson);
+                return Json(new { success = true, redirectUrl = Url.Action("Index", "Home"), pageUrls = pages.PageUrls });
             }
             else
             {
