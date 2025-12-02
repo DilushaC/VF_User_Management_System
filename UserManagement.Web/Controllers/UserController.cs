@@ -29,13 +29,9 @@ namespace UserManagement.Web.Controllers
             _designationService = designationService;
             _dataTableService = dataTableService;
         }
-        //public IActionResult Index()
-        //{
-        //    return View();
-        //}
 
         //get all user list draw the initial data table
-        public IActionResult UsersManagement()
+        public IActionResult Management()
         {
             return View();
         }
@@ -124,7 +120,7 @@ namespace UserManagement.Web.Controllers
                     return Ok(new { success = false, message = "Failed to update user."});
                 }
 
-                return Ok(new { success = true, message = "User updated successfully.", redirectUrl = Url.Action("UsersManagement", "User") });
+                return Ok(new { success = true, message = "User updated successfully.", redirectUrl = Url.Action("Management", "User") });
             }
             catch (Exception ex)
             {
@@ -219,7 +215,7 @@ namespace UserManagement.Web.Controllers
                     {
                         success = true,
                         message = "User created successfully",
-                        redirectUrl = Url.Action("Index", "Home")
+                        redirectUrl = Url.Action("Management", "User")
                     });
                 }
                 else

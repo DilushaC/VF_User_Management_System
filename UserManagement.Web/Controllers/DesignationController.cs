@@ -50,7 +50,7 @@ namespace UserManagement.Web.Controllers
                     {
                         success = true,
                         message = "Designation created successfully",
-                        redirectUrl = Url.Action("DesignationsManagement", "Designation")
+                        redirectUrl = Url.Action("Management", "Designation")
                     });
                 }
                 else
@@ -142,7 +142,7 @@ namespace UserManagement.Web.Controllers
                     return Ok(new { success = false, message = "Failed to update Designation." });
                 }
 
-                return Ok(new { success = true, message = "Designation updated successfully.", redirectUrl = Url.Action("DesignationsManagement", "Designation") });
+                return Ok(new { success = true, message = "Designation updated successfully.", redirectUrl = Url.Action("Management", "Designation") });
             }
             catch (Exception ex)
             {

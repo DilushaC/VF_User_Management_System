@@ -16,12 +16,13 @@ namespace UserManagement.Web.Controllers
             _dataTableService = dataTableService;
         }
 
-        public IActionResult Index()
+        [HttpGet]
+        public IActionResult Create()
         {
             return View();
         }
 
-        public ActionResult DepartmentsManagement()
+        public ActionResult Management()
         {
             return View();
         }
@@ -39,7 +40,7 @@ namespace UserManagement.Web.Controllers
                     {
                         success = true,
                         message = "Department created successfully",
-                        redirectUrl = Url.Action("DepartmentsManagement", "Department")
+                        redirectUrl = Url.Action("Management", "Department")
                     });
                 }
                 else
@@ -107,7 +108,7 @@ namespace UserManagement.Web.Controllers
                     return Ok(new { success = false, message = "Failed to update Department." });
                 }
 
-                return Ok(new { success = true, message = "Department updated successfully.", redirectUrl = Url.Action("DepartmentsManagement", "Department") });
+                return Ok(new { success = true, message = "Department updated successfully.", redirectUrl = Url.Action("Management", "Department") });
             }
             catch (Exception ex)
             {

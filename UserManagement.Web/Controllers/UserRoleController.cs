@@ -52,7 +52,7 @@ namespace UserManagement.Web.Controllers
             return View();
         }
 
-        public ActionResult UserRolesManagement()
+        public ActionResult Management()
         {
             return View();
         }
@@ -71,7 +71,7 @@ namespace UserManagement.Web.Controllers
                     {
                         success = true,
                         message = "User Role created successfully",
-                        redirectUrl = Url.Action("UserRolesManagement", "UserRole")
+                        redirectUrl = Url.Action("Management", "UserRole")
                     });
                 }
                 else
@@ -153,7 +153,7 @@ namespace UserManagement.Web.Controllers
                     return Ok(new { success = false, message = "Failed to update User Role." });
                 }
 
-                return Ok(new { success = true, message = "User Role updated successfully.", redirectUrl = Url.Action("UserRolesManagement", "UserRole") });
+                return Ok(new { success = true, message = "User Role updated successfully.", redirectUrl = Url.Action("Management", "UserRole") });
             }
             catch (Exception ex)
             {

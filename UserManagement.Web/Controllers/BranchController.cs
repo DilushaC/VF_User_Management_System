@@ -16,12 +16,13 @@ namespace UserManagement.Web.Controllers
             _dataTableService = dataTableService;
         }
 
-        public IActionResult Index()
+        [HttpGet]
+        public IActionResult Create()
         {
             return View();
         }
 
-        public IActionResult BranchesManagement()
+        public IActionResult Management()
         {
             return View();
         }
@@ -39,7 +40,7 @@ namespace UserManagement.Web.Controllers
                     {
                         success = true,
                         message = "Branch created successfully",
-                        redirectUrl = Url.Action("BranchesManagement", "Branch")
+                        redirectUrl = Url.Action("Management", "Branch")
                     });
                 }
                 else
@@ -107,7 +108,7 @@ namespace UserManagement.Web.Controllers
                     return Ok(new { success = false, message = "Failed to update Branch." });
                 }
 
-                return Ok(new { success = true, message = "Branch updated successfully.", redirectUrl = Url.Action("BranchesManagement", "Branch") });
+                return Ok(new { success = true, message = "Branch updated successfully.", redirectUrl = Url.Action("Management", "Branch") });
             }
             catch (Exception ex)
             {

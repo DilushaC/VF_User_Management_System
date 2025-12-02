@@ -48,7 +48,7 @@ namespace UserManagement.Web.Controllers
             return View();
         }
 
-        public ActionResult RolePagePermissionsManagement()
+        public ActionResult Management()
         {
             return View();
         }
@@ -66,7 +66,7 @@ namespace UserManagement.Web.Controllers
                     {
                         success = true,
                         message = "Page Permission created successfully",
-                        redirectUrl = Url.Action("RolePagePermissionsManagement", "RolePagePermission")
+                        redirectUrl = Url.Action("Management", "RolePagePermission")
                     });
                 }
                 else
@@ -146,7 +146,7 @@ namespace UserManagement.Web.Controllers
                     return Ok(new { success = false, message = "Failed to update Page Permission." });
                 }
 
-                return Ok(new { success = true, message = "Page Permission updated successfully.", redirectUrl = Url.Action("RolePagePermissionsManagement", "RolePagePermission") });
+                return Ok(new { success = true, message = "Page Permission updated successfully.", redirectUrl = Url.Action("Management", "RolePagePermission") });
             }
             catch (Exception ex)
             {

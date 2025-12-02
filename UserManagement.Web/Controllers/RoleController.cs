@@ -15,12 +15,14 @@ namespace UserManagement.Web.Controllers
             _dataTableService = dataTableService;
             _roleService = roleService;
         }
-        public IActionResult Index()
+
+        [HttpGet]
+        public IActionResult Create()
         {
             return View();
         }
 
-        public ActionResult RolesManagement()
+        public ActionResult Management()
         {
             return View();
         }
@@ -38,7 +40,7 @@ namespace UserManagement.Web.Controllers
                     {
                         success = true,
                         message = "Role created successfully",
-                        redirectUrl = Url.Action("RolesManagement", "Role")
+                        redirectUrl = Url.Action("Management", "Role")
                     });
                 }
                 else
@@ -106,7 +108,7 @@ namespace UserManagement.Web.Controllers
                     return Ok(new { success = false, message = "Failed to update Role." });
                 }
 
-                return Ok(new { success = true, message = "Role updated successfully.", redirectUrl = Url.Action("RolesManagement", "Role") });
+                return Ok(new { success = true, message = "Role updated successfully.", redirectUrl = Url.Action("Management", "Role") });
             }
             catch (Exception ex)
             {

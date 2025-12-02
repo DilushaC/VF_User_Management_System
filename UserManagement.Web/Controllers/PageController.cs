@@ -40,7 +40,7 @@ namespace UserManagement.Web.Controllers
             return View();
         }
 
-        public ActionResult PagesManagement()
+        public ActionResult Management()
         {
             return View();
         }
@@ -80,7 +80,7 @@ namespace UserManagement.Web.Controllers
                     {
                         success = true,
                         message = "Page created successfully",
-                        redirectUrl = Url.Action("PagesManagement", "Page")
+                        redirectUrl = Url.Action("Management", "Page")
                     });
                 }
                 else
@@ -138,7 +138,7 @@ namespace UserManagement.Web.Controllers
                     return Ok(new { success = false, message = "Failed to update Page." });
                 }
 
-                return Ok(new { success = true, message = "Page updated successfully.", redirectUrl = Url.Action("PagesManagement", "Page") });
+                return Ok(new { success = true, message = "Page updated successfully.", redirectUrl = Url.Action("Management", "Page") });
             }
             catch (Exception ex)
             {

@@ -26,7 +26,7 @@ namespace UserManagement.Web.Controllers
             return View();
         }
 
-        public ActionResult ProductsManagement()
+        public ActionResult Management()
         {
             return View();
         }
@@ -44,7 +44,7 @@ namespace UserManagement.Web.Controllers
                     {
                         success = true,
                         message = "Product created successfully",
-                        redirectUrl = Url.Action("ProductsManagement", "Product")
+                        redirectUrl = Url.Action("Management", "Product")
                     });
                 }
                 else
@@ -112,7 +112,7 @@ namespace UserManagement.Web.Controllers
                     return Ok(new { success = false, message = "Failed to update Product." });
                 }
 
-                return Ok(new { success = true, message = "Product updated successfully.", redirectUrl = Url.Action("ProductsManagement", "Product") });
+                return Ok(new { success = true, message = "Product updated successfully.", redirectUrl = Url.Action("Management", "Product") });
             }
             catch (Exception ex)
             {
