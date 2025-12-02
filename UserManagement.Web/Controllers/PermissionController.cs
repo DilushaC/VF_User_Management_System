@@ -66,7 +66,7 @@ namespace UserManagement.Web.Controllers
                     {
                         success = true,
                         message = "Page Permission created successfully",
-                        redirectUrl = Url.Action("Management", "RolePagePermission")
+                        redirectUrl = Url.Action("Management", "Permission")
                     });
                 }
                 else
