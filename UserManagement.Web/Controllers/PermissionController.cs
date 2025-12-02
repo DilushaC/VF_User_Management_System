@@ -7,14 +7,14 @@ using UserManagement.Business.RolePagePermission;
 
 namespace UserManagement.Web.Controllers
 {
-    public class RolePagePermissionController : Controller
+    public class PermissionController : Controller
     {
         private readonly IDataTableService _dataTableService;
         private readonly IRoleService _roleService;
         private readonly IPageService _pageService;
         private readonly IRolePagePermissionService _rolePagePermissionService;
 
-        public RolePagePermissionController(IDataTableService dataTableService, IRoleService roleService,IPageService pageService,IRolePagePermissionService rolePagePermissionService)
+        public PermissionController(IDataTableService dataTableService, IRoleService roleService,IPageService pageService,IRolePagePermissionService rolePagePermissionService)
         {
             _dataTableService = dataTableService;
             _roleService = roleService;
