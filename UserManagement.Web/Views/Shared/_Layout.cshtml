@@ -1,54 +1,37 @@
-﻿@{
+﻿@using System.Text.Json
+@{
+    // Use HttpContext in Layout
     var username = Context.Session.GetString("UserName");
     var userId = Context.Session.GetString("UserId");
-}
-@using System.Text.Json;
-@{
+
+    // Deserialize allowed pages from session
     var json = Context.Session.GetString("PageUrls");
     List<string> allowedPages = new List<string>();
-
     if (!string.IsNullOrEmpty(json))
     {
-        allowedPages = JsonSerializer.Deserialize<List<string>>(json);
+        allowedPages = JsonSerializer.Deserialize<List<string>>(json) ?? new List<string>();
     }
 
-    // Helper function to check access
-    bool CanAccess(string url) => allowedPages.Contains(url, StringComparer.OrdinalIgnoreCase);
+    // Normalize URLs to start with '/'
+    allowedPages = allowedPages.Select(u => u.StartsWith("/") ? u : "/" + u).ToList();
+
+    // Group pages by first segment to form menus
+    var menuGroups = allowedPages
+        .Select(url =>
+        {
+            var segments = url.Trim('/').Split('/');
+            return new
+            {
+                MenuTitle = segments[0], // First segment = menu
+                PageTitle = segments.Length > 1 ? segments[1] : segments[0], // Second segment or fallback
+                Url = url
+            };
+        })
+        .GroupBy(p => p.MenuTitle)
+        .ToList();
 }
 
-@{
-    var menus = new[]
-    {
-        new {
-            Title = "Users",
-            Icon = "ri-user-line",
-            CollapseId = "sidebarUsers",
-            Items = new[] {
-                new { Title = "Register User", Url = "/User/Register" },
-                new { Title = "Users Management", Url = "/User/UsersManagement" }
-            }
-        },
-        new {
-            Title = "Designations",
-            Icon = "ri-vip-crown-2-line",
-            CollapseId = "sidebarDesignation",
-            Items = new[] {
-                new { Title = "Create Designation", Url = "/Designation/Index" },
-                new { Title = "Designations Management", Url = "/Designation/DesignationsManagement" }
-            }
-        },
-        new {
-            Title = "User Roles",
-            Icon = "ri-vip-crown-2-line",
-            CollapseId = "sidebarUserRoles",
-            Items = new[] {
-                new { Title = "Create UserRole", Url = "/UserRole/Index" },
-                new { Title = "UserRoles Management", Url = "/UserRole/UserRolesManagement" }
-            }
-        }
-        // Add more menu blocks here
-    };
-}
+
 
 <!DOCTYPE html>
 <html lang="en">
@@ -187,31 +170,26 @@
                                 <span>Dashboard</span>
                             </a>
                         </li>
-
-                        @foreach (var menu in menus)
+                        @foreach (var menu in menuGroups)
                         {
-                            var allowedItems = menu.Items.Where(i => CanAccess(i.Url)).ToList();
-                            if (allowedItems.Any())
-                            {
-                                <li class="side-nav-item">
-                                    <a data-bs-toggle="collapse" href="#@menu.CollapseId" aria-expanded="false" aria-controls="@menu.CollapseId" class="side-nav-link">
-                                        <i class="@menu.Icon"></i>
-                                        <span>@menu.Title</span>
-                                        <span class="menu-arrow"></span>
-                                    </a>
-                                    <div class="collapse" id="@menu.CollapseId">
-                                        <ul class="side-nav-second-level">
-                                            @foreach (var item in allowedItems)
-                                            {
-                                                <li>
-                                                    <a class="menu-item" href="@item.Url">@item.Title</a>
-                                                </li>
-                                            }
-                                        </ul>
-                                    </div>
-                                </li>
-                            }
+                            <li class="side-nav-item">
+                                <a data-bs-toggle="collapse" href="#@("sidebar" + menu.Key)" class="side-nav-link">
+                                    <span>@menu.Key</span>
+                                    <span class="menu-arrow"></span>
+                                </a>
+                                <div class="collapse" id="@("sidebar" + menu.Key)">
+                                    <ul class="side-nav-second-level">
+                                        @foreach (var item in menu)
+                                        {
+                                            <li>
+                                                <a href="@item.Url">@item.PageTitle</a>
+                                            </li>
+                                        }
+                                    </ul>
+                                </div>
+                            </li>
                         }
+
                     </ul>
                 </div>
             </div>
