@@ -15,6 +15,41 @@
     // Helper function to check access
     bool CanAccess(string url) => allowedPages.Contains(url, StringComparer.OrdinalIgnoreCase);
 }
+
+@{
+    var menus = new[]
+    {
+        new {
+            Title = "Users",
+            Icon = "ri-user-line",
+            CollapseId = "sidebarUsers",
+            Items = new[] {
+                new { Title = "Register User", Url = "/User/Register" },
+                new { Title = "Users Management", Url = "/User/UsersManagement" }
+            }
+        },
+        new {
+            Title = "Designations",
+            Icon = "ri-vip-crown-2-line",
+            CollapseId = "sidebarDesignation",
+            Items = new[] {
+                new { Title = "Create Designation", Url = "/Designation/Index" },
+                new { Title = "Designations Management", Url = "/Designation/DesignationsManagement" }
+            }
+        },
+        new {
+            Title = "User Roles",
+            Icon = "ri-vip-crown-2-line",
+            CollapseId = "sidebarUserRoles",
+            Items = new[] {
+                new { Title = "Create UserRole", Url = "/UserRole/Index" },
+                new { Title = "UserRoles Management", Url = "/UserRole/UserRolesManagement" }
+            }
+        }
+        // Add more menu blocks here
+    };
+}
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -55,17 +90,7 @@
             <div class="navbar-custom">
                 <div class="topbar container-fluid">
                     <div class="d-flex align-items-center gap-lg-2 gap-1">
-
                         <div class="logo-topbar">
-                            <a href="index.html" class="logo-light">
-                                <span class="logo-lg">
-                                    <img src="~/assets/images/logo.png" alt="logo">
-                                </span>
-                                <span class="logo-sm">
-                                    <img src="~/assets/images/logo-sm.png" alt="small logo">
-                                </span>
-                            </a>
-
                             <a href="index.html" class="logo-dark">
                                 <span class="logo-lg">
                                     <img src="~/assets/images/logo-dark.png" alt="dark logo">
@@ -75,44 +100,16 @@
                                 </span>
                             </a>
                         </div>
-
                         <button class="button-toggle-menu">
                             <i class="ri-menu-2-fill"></i>
                         </button>
-
-                        <button class="navbar-toggle" data-bs-toggle="collapse" data-bs-target="#topnav-menu-content">
-                            <div class="lines">
-                            </div>
-                        </button>
-
-                        <div class="app-search dropdown d-none d-lg-block">
-                            <form>
-                                <div class="input-group">
-                                    <input type="search" class="form-control dropdown-toggle" placeholder="Search..." id="top-search">
-                                    <span class="ri-search-line search-icon"></span>
-                                </div>
-                            </form>
-                        </div>
                     </div>
                     <ul class="topbar-menu d-flex align-items-center gap-3">
-                        <li class="dropdown d-lg-none">
-                            <a class="nav-link dropdown-toggle arrow-none" data-bs-toggle="dropdown" href="#" role="button" aria-haspopup="false" aria-expanded="false">
-                                <i class="ri-search-line fs-22"></i>
-                            </a>
-                            <div class="dropdown-menu dropdown-menu-animated dropdown-lg p-0">
-                                <form class="p-3">
-                                    <input type="search" class="form-control" placeholder="Search ..." aria-label="Recipient's username">
-                                </form>
-                            </div>
-                        </li>
-
                         <li class="d-none d-sm-inline-block">
                             <div class="nav-link" id="light-dark-mode" data-bs-toggle="tooltip" data-bs-placement="left" title="Theme Mode">
                                 <i class="ri-moon-line fs-22"></i>
                             </div>
                         </li>
-
-
                         <li class="d-none d-md-inline-block">
                             <a class="nav-link" href="#" data-toggle="fullscreen">
                                 <i class="ri-fullscreen-line fs-22"></i>
@@ -129,10 +126,6 @@
                                 </span>
                             </a>
                             <div class="dropdown-menu dropdown-menu-end dropdown-menu-animated profile-dropdown">
-                                <div class=" dropdown-header noti-title">
-                                    <h6 class="text-overflow m-0">Welcome !</h6>
-                                </div>
-
                                 <a href="pages-profile.html" class="dropdown-item">
                                     <i class="ri-account-circle-line fs-18 align-middle me-1"></i>
                                     <span>My Account</span>
@@ -141,11 +134,6 @@
                                 <a href="pages-profile.html" class="dropdown-item">
                                     <i class="ri-settings-4-line fs-18 align-middle me-1"></i>
                                     <span>Settings</span>
-                                </a>
-
-                                <a href="pages-faq.html" class="dropdown-item">
-                                    <i class="ri-customer-service-2-line fs-18 align-middle me-1"></i>
-                                    <span>Support</span>
                                 </a>
                                 <a href="/User/Login" class="dropdown-item">
                                     <i class="ri-logout-box-line fs-18 align-middle me-1"></i>
@@ -193,263 +181,37 @@
                     </div>
 
                     <ul class="side-nav">
-
-                        <li class="side-nav-title">Navigation</li>
-
                         <li class="side-nav-item">
                             <a href="/Home/Index" class="side-nav-link">
                                 <i class="ri-home-4-line"></i>
                                 <span>Dashboard</span>
                             </a>
                         </li>
-                        <li class="side-nav-title">Management - Master</li>
-                        @if (CanAccess("/User/Register") || CanAccess("/User/UsersManagement"))
+
+                        @foreach (var menu in menus)
                         {
-                            <li class="side-nav-item">
-                                <a data-bs-toggle="collapse" href="#sidebarUsers" aria-expanded="false" aria-controls="sidebarUsers" class="side-nav-link">
-                                    <i class="ri-user-line"></i>
-                                    <span>Users</span>
-                                    <span class="menu-arrow"></span>
-                                </a>
-                                <div class="collapse" id="sidebarUsers">
-                                    <ul class="side-nav-second-level">
-
-                                        @* Register User *@
-                                        @if (CanAccess("/User/Register"))
-                                        {
-                                            <li>
-                                                <a class="menu-item" href="/User/Register">Register User</a>
-                                            </li>
-                                        }
-
-                                        @* Users Management *@
-                                        @if (CanAccess("/User/UsersManagement"))
-                                        {
-                                            <li>
-                                                <a href="/User/UsersManagement">Users Management</a>
-                                            </li>
-                                        }
-
-                                    </ul>
-                                </div>
-                            </li>
+                            var allowedItems = menu.Items.Where(i => CanAccess(i.Url)).ToList();
+                            if (allowedItems.Any())
+                            {
+                                <li class="side-nav-item">
+                                    <a data-bs-toggle="collapse" href="#@menu.CollapseId" aria-expanded="false" aria-controls="@menu.CollapseId" class="side-nav-link">
+                                        <i class="@menu.Icon"></i>
+                                        <span>@menu.Title</span>
+                                        <span class="menu-arrow"></span>
+                                    </a>
+                                    <div class="collapse" id="@menu.CollapseId">
+                                        <ul class="side-nav-second-level">
+                                            @foreach (var item in allowedItems)
+                                            {
+                                                <li>
+                                                    <a class="menu-item" href="@item.Url">@item.Title</a>
+                                                </li>
+                                            }
+                                        </ul>
+                                    </div>
+                                </li>
+                            }
                         }
-                        @if (CanAccess("/Designation/Index") || CanAccess("/Designation/DesignationsManagement"))
-                        {
-                            <li class="side-nav-item">
-                                <a data-bs-toggle="collapse" href="#sidebarDesignation" aria-expanded="false" aria-controls="sidebarDesignation" class="side-nav-link">
-                                    <i class="ri-vip-crown-2-line"></i>
-                                    <span>Designations</span>
-                                    <span class="menu-arrow"></span>
-                                </a>
-                                <div class="collapse" id="sidebarDesignation">
-                                    <ul class="side-nav-second-level">
-
-                                        @* Register User *@
-                                        @if (CanAccess("/Designation/Index"))
-                                        {
-                                            <li>
-                                                <a class="menu-item" href="/Designation/Index">Create Designation</a>
-                                            </li>
-                                        }
-
-                                        @* Users Management *@
-                                        @if (CanAccess("/Designation/DesignationsManagement"))
-                                        {
-                                            <li>
-                                                <a href="/Designation/DesignationsManagement">Designations Management</a>
-                                            </li>
-                                        }
-
-                                    </ul>
-                                </div>
-                            </li>
-                        }
-                        @if (CanAccess("/Branch/Index") || CanAccess("/Branch/BranchesManagement"))
-                        {
-                            <li class="side-nav-item">
-                                <a data-bs-toggle="collapse" href="#sidebarBranch" aria-expanded="false" aria-controls="sidebarBranch" class="side-nav-link">
-                                    <i class="ri-route-line"></i>
-                                    <span>Branches</span>
-                                    <span class="menu-arrow"></span>
-                                </a>
-                                <div class="collapse" id="sidebarBranch">
-                                    <ul class="side-nav-second-level">
-
-                                        @* Register User *@
-                                        @if (CanAccess("/Branch/Index"))
-                                        {
-                                            <li>
-                                                <a class="menu-item" href="/Branch/Index">Create Branch</a>
-                                            </li>
-                                        }
-
-                                        @* Users Management *@
-                                        @if (CanAccess("/Branch/BranchesManagement"))
-                                        {
-                                            <li>
-                                                <a href="/Branch/BranchesManagement">Branches Management</a>
-                                            </li>
-                                        }
-
-                                    </ul>
-                                </div>
-                            </li>
-                        }
-                        @if (CanAccess("/Department/Index") || CanAccess("/Department/DepartmentsManagement"))
-                        {
-                            <li class="side-nav-item">
-                                <a data-bs-toggle="collapse" href="#sidebarDepartment" aria-expanded="false" aria-controls="sidebarDepartment" class="side-nav-link">
-                                    <i class="ri-suitcase-line"></i>
-                                    <span>Departments</span>
-                                    <span class="menu-arrow"></span>
-                                </a>
-                                <div class="collapse" id="sidebarDepartment">
-                                    <ul class="side-nav-second-level">
-
-                                        @* Register User *@
-                                        @if (CanAccess("/Department/Index"))
-                                        {
-                                            <li>
-                                                <a class="menu-item" href="/Department/Index">Create Department</a>
-                                            </li>
-                                        }
-
-                                        @* Users Management *@
-                                        @if (CanAccess("/Department/DepartmentsManagement"))
-                                        {
-                                            <li>
-                                                <a href="/Department/DepartmentsManagement">Departments Management</a>
-                                            </li>
-                                        }
-
-                                    </ul>
-                                </div>
-                            </li>
-                        }
-                        @if (CanAccess("/Product/Index") || CanAccess("/Product/ProductsManagement"))
-                        {
-                            <li class="side-nav-item">
-                                <a data-bs-toggle="collapse" href="#sidebarProduct" aria-expanded="false" aria-controls="sidebarProduct" class="side-nav-link">
-                                    <i class="ri-shopping-cart-line"></i>
-                                    <span>Products</span>
-                                    <span class="menu-arrow"></span>
-                                </a>
-                                <div class="collapse" id="sidebarProduct">
-                                    <ul class="side-nav-second-level">
-                                        @if (CanAccess("/Product/Index"))
-                                        {
-                                            <li>
-                                                <a class="menu-item" href="/Product/Index">Create Product</a>
-                                            </li>
-                                        }
-                                        @if (CanAccess("/Product/ProductsManagement"))
-                                        {
-                                            <li>
-                                                <a href="/Product/ProductsManagement">Products Management</a>
-                                            </li>
-                                        }
-
-                                    </ul>
-                                </div>
-                            </li>
-                        }
-                        @if (CanAccess("/Product/Index") || CanAccess("/Product/ProductsManagement"))
-                        {
-                            <li class="side-nav-item">
-                                <a data-bs-toggle="collapse" href="#sidebarPages" aria-expanded="false" aria-controls="sidebarPages" class="side-nav-link">
-                                    <i class="ri-shopping-cart-line"></i>
-                                    <span>Products</span>
-                                    <span class="menu-arrow"></span>
-                                </a>
-                                <div class="collapse" id="sidebarPages">
-                                    <ul class="side-nav-second-level">
-                                        @if (CanAccess("/Product/Index"))
-                                        {
-                                            <li>
-                                                <a class="menu-item" href="/Product/Index">Create Product</a>
-                                            </li>
-                                        }
-                                        @if (CanAccess("/Product/ProductsManagement"))
-                                        {
-                                            <li>
-                                                <a href="/Product/ProductsManagement">Products Management</a>
-                                            </li>
-                                        }
-
-                                    </ul>
-                                </div>
-                            </li>
-                        }
-                        <li class="side-nav-item">
-                            <a data-bs-toggle="collapse" href="#sidebarPages" aria-expanded="false" aria-controls="sidebarPages" class="side-nav-link">
-                                <i class="ri-pages-line"></i>
-                                <span>Pages</span>
-                                <span class="menu-arrow"></span>
-                            </a>
-                            <div class="collapse" id="sidebarPages">
-                                <ul class="side-nav-second-level">
-                                    <li>
-                                        <a href="/Page/Index">Create Page</a>
-                                    </li>
-                                    <li>
-                                        <a class="menu-item" href="/Page/PagesManagement">Pages Management</a>
-                                    </li>
-                                </ul>
-                            </div>
-                        </li>
-                        <li class="side-nav-item">
-                            <a data-bs-toggle="collapse" href="#sidebarRoles" aria-expanded="false" aria-controls="sidebarRoles" class="side-nav-link">
-                                <i class="ri-shield-keyhole-line"></i>
-                                <span>Roles</span>
-                                <span class="menu-arrow"></span>
-                            </a>
-                            <div class="collapse" id="sidebarRoles">
-                                <ul class="side-nav-second-level">
-                                    <li>
-                                        <a href="/Role/Index">Create Role</a>
-                                    </li>
-                                    <li>
-                                        <a href="/Role/RolesManagement">Roles Management</a>
-                                    </li>
-                                </ul>
-                            </div>
-                        </li>
-                        <li class="side-nav-title">Access Management</li>
-                        <li class="side-nav-item">
-                            <a data-bs-toggle="collapse" href="#sidebarUserRoles" aria-expanded="false" aria-controls="sidebarUserRoles" class="side-nav-link">
-                                <i class="ri-key-line"></i>
-                                <span>User Roles</span>
-                                <span class="menu-arrow"></span>
-                            </a>
-                            <div class="collapse" id="sidebarUserRoles">
-                                <ul class="side-nav-second-level">
-                                    <li>
-                                        <a href="/UserRole/Index">Create User Role</a>
-                                    </li>
-                                    <li>
-                                        <a href="/UserRole/UserRolesManagement">User Roles Management</a>
-                                    </li>
-                                </ul>
-                            </div>
-                        </li>
-                        <li class="side-nav-item">
-                            <a data-bs-toggle="collapse" href="#sidebarRolePages" aria-expanded="false" aria-controls="sidebarRolePages" class="side-nav-link">
-                                <i class="ri-folder-keyhole-line"></i>
-                                <span>Page Permissions</span>
-                                <span class="menu-arrow"></span>
-                            </a>
-                            <div class="collapse" id="sidebarRolePages">
-                                <ul class="side-nav-second-level">
-                                    <li>
-                                        <a href="/RolePagePermission/Index">Create Permission</a>
-                                    </li>
-                                    <li>
-                                        <a href="/RolePagePermission/RolePagePermissionsManagement">Permission Management</a>
-                                    </li>
-                                </ul>
-                            </div>
-                        </li>
                     </ul>
                 </div>
             </div>
