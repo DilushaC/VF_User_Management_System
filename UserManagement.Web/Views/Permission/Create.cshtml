@@ -43,6 +43,19 @@
                         </div>
                         <div class="row g-2">
                             <div class="mb-3 col-md-6">
+                                <label asp-for="ProductId" class="form-label">Product Name</label>
+                                <select id="ProductId"
+                                        asp-for="ProductId"
+                                        class="form-control select2"
+                                        data-placeholder="Select Product"
+                                        asp-items="ViewBag.Products">
+                                    <option></option>
+                                </select>
+                                <span asp-validation-for="RoleId" class="text-danger"></span>
+                            </div>
+                        </div>
+                        <div class="row g-2">
+                            <div class="mb-3 col-md-6">
                                 <label asp-for="PageIds" class="form-label">Page Name</label>
                                 <select id="PageIds"
                                         name="PageIds"
@@ -84,11 +97,44 @@
     $("#RoleId").select2({
         placeholder: "Select RoleId",
     });
-
+    $("#ProductId").select2({
+        width: "100%",
+    });
     $("#PageIds").select2({
         width: "100%",
         allowClear: true
     });
+
+    $("#ProductId").on("change", function () {
+    let productId = $(this).val();
+        if (productId) {
+            $.ajax({
+                url: '/Permission/GetPagesByProduct',
+                type: 'GET',
+                data: { productId: productId },
+                success: function (response) {
+                    if (response.success) {
+
+                        // Clear existing PageIds
+                        $("#PageIds").empty();
+
+                        // Append new page options
+                        response.data.forEach(page => {
+                            $("#PageIds").append(
+                                new Option(page.pageName, page.id)
+                            );
+                        });
+
+                        // Refresh Select2 dropdown
+                        $("#PageIds").trigger('change');
+                    }
+                }
+            });
+        } else {
+            $("#PageIds").empty().trigger('change');
+        }
+    });
+
 
     $("#RegisterForm").on("submit", function (e) {
     e.preventDefault(); // Stop default form submission

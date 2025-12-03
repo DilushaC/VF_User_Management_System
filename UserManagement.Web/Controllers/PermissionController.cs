@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc.Rendering;
 using UserManagement.Business.DatatableHandler;
 using UserManagement.Business.PageHandler;
+using UserManagement.Business.ProductHandler;
 using UserManagement.Business.RoleHandler;
 using UserManagement.Business.RolePagePermission;
 
@@ -12,13 +13,15 @@ namespace UserManagement.Web.Controllers
         private readonly IDataTableService _dataTableService;
         private readonly IRoleService _roleService;
         private readonly IPageService _pageService;
+        private readonly IProductService _productService;
         private readonly IRolePagePermissionService _rolePagePermissionService;
 
-        public PermissionController(IDataTableService dataTableService, IRoleService roleService,IPageService pageService,IRolePagePermissionService rolePagePermissionService)
+        public PermissionController(IDataTableService dataTableService, IRoleService roleService,IPageService pageService,IProductService productService,IRolePagePermissionService rolePagePermissionService)
         {
             _dataTableService = dataTableService;
             _roleService = roleService;
             _pageService = pageService;
+            _productService = productService;
             _rolePagePermissionService = rolePagePermissionService;
         }
         [HttpGet]
@@ -26,6 +29,7 @@ namespace UserManagement.Web.Controllers
         {
             var roles = _roleService.GetAllRolesList();
             var pages = _pageService.GetAllPagesList();
+            var products = _productService.GetAllActiveProductList();
 
             //viewbag for branches
             ViewBag.Pages = pages
@@ -45,8 +49,30 @@ namespace UserManagement.Web.Controllers
             })
             .ToList();
 
+            //viewbag for departments
+            ViewBag.Products = products
+            .Select(x => new SelectListItem
+            {
+                Value = x.Id.ToString(),
+                Text = x.ProductName
+            })
+            .ToList();
+
             return View();
         }
+
+        [HttpGet]
+        public async Task<IActionResult> GetPagesByProduct(int productId)
+        {
+            if (productId <= 0)
+                return Json(new { success = false, message = "Invalid product!" });
+
+            var pages = await _pageService.GetPagesByProduct(productId);
+
+            return Json(new { success = true, data = pages });
+        }
+
+
 
         public ActionResult Management()
         {

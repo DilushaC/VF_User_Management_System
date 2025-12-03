@@ -11,6 +11,7 @@ namespace UserManagement.Data.Models
         public int Id { get; set; }
         public int RoleId { get; set; }
         public int PageId { get; set; }
+        public int ProductId { get; set; }
         public bool CanEdit { get; set; }
         public string RoleName { get; set; }
         public string PageName { get; set; }

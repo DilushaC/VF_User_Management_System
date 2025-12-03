@@ -64,6 +64,53 @@ namespace UserManagement.Business.PageHandler
             }
         }
 
+        public async Task<List<PageModel>> GetPagesByProduct(int ProductId)
+        {
+            try
+            {
+                string query = @"
+                    SELECT 
+                        p.Id,
+                        p.PageName,
+                        p.ProductId,
+                        pr.ProductName,
+                        p.PageCode,
+                        p.IsActive
+                    FROM Pages p
+                    LEFT JOIN Products pr ON p.ProductId = pr.Id
+                    WHERE p.ProductId = @Id;
+                ";
+
+                DataTable data = await _connectionService.SingleQueryReturn(query, ProductId);
+
+                List<PageModel> pagesList = new List<PageModel>();
+
+                if (data == null || data.Rows.Count == 0)
+                    return pagesList;
+
+                foreach (DataRow row in data.Rows)
+                {
+                    pagesList.Add(new PageModel
+                    {
+                        Id = Convert.ToInt32(row["Id"]),
+                        PageName = row["PageName"].ToString(),
+                        ProductId = Convert.ToInt32(row["ProductId"]),
+                        ProductName = row["ProductName"] == DBNull.Value ? string.Empty : row["ProductName"].ToString(),
+                        PageCode = row["PageCode"].ToString(),
+                        IsActive = Convert.ToBoolean(row["IsActive"])
+                    });
+                }
+
+                return pagesList;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Error loading pages list", ex);
+            }
+        }
+
+
+
         public async Task<bool> CreatePageAsync(IFormCollection collection)
         {
             try
