@@ -8,6 +8,7 @@ using UserManagement.Business.DesignationHandler;
 using UserManagement.Business.RoleHandler;
 using UserManagement.Business.UserHandler;
 using UserManagement.Business.UserRoleHandler;
+using UserManagement.Data.Models;
 
 namespace UserManagement.Web.Controllers
 {
@@ -132,12 +133,13 @@ namespace UserManagement.Web.Controllers
             })
             .ToList();
 
-            var user = await _userRoleService.GetUserRoleByIdAsync(id);
-            if (user == null)
+            var userRoles = await _userRoleService.GetUserRolesByUserIdAsync(id);
+            var model = new UserRoleModel
             {
-                return NotFound();
-            }
-            return PartialView("_EditUserRolePartial", user);
+                UserName = userRoles[0].UserName.ToString(),
+                RoleIds = userRoles.Select(r => r.RoleId).ToList()
+            };
+            return PartialView("_EditUserRolePartial", model);
         }
 
 

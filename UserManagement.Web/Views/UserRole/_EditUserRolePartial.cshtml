@@ -13,15 +13,16 @@
     <input type="hidden" asp-for="Id" />
 
     <div class="modal-body">
-
-        <div class="mb-3 col-md-6">
-            <label class="form-label">User Name</label>
-            <input type="text" asp-for="UserName" class="form-control" readonly/>
-        </div>
-        <div class="mb-3  col-md-3">
+        <div class="mb-3  col-md-6">
             <label class="form-label">User Role</label>
-            <select id="RoleId" asp-for="RoleId" class="form-control select2" asp-items="ViewBag.UserRoles">
+            <select id="RoleIds"
+                    name="RoleIds"
+                    asp-for="RoleIds"
+                    class="form-control select2"
+                    asp-items="ViewBag.UserRoles"
+                    multiple="multiple">
             </select>
+
         </div>
 
     </div>
@@ -39,8 +40,9 @@
 <script src="~/assets/vendor/select2/js/select2.min.js"></script>
 
 <script>
-    $("#RoleId").select2({
-        placeholder: "Select User Role",
+    $("#RoleIds").select2({
+        placeholder: "Select User Roles",
+        width: '100%',
     });
 
     $("#updateUserRoleForm").on("submit", function (e) {

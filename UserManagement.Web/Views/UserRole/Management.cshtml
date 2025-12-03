@@ -45,7 +45,6 @@
                     <thead>
                         <tr>
                             <th>User Name</th>
-                            <th>Role Name</th>
                             <th>Edit</th>
                         </tr>
                     </thead>
@@ -90,14 +89,13 @@
         },
         columns: [
             { data: 'userName' },
-            { data: 'roleName' },
             {
-                data: 'id',
-                render: function (data) {
+                data: 'userId',
+                render: function (userId) {
                     return `
                         <button type="button"
                                 class="btn btn-sm btn-info edit-userRole-btn"
-                                data-id="${data}">
+                                data-userid="${userId}">
                             <i class="bi bi-pencil"></i>
                         </button>
                     `;
@@ -117,7 +115,7 @@
         const userRoleEditModal = new bootstrap.Modal(document.getElementById('userRoleEditModal'));
         const modalContent = $('#userRoleEditModal .modal-content');
         $('#basic-datatable').on('click', '.edit-userRole-btn', function () {
-            const Id = $(this).data('id');
+            const Id = $(this).data('userid');
 
             if (!Id) {
                 alert("User Role ID is missing!");

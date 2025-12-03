@@ -111,18 +111,18 @@ namespace UserManagement.Business.RolePagePermission
             try
             {
                 string query = @"
-            SELECT 
-                UR.Id,
-                UR.RoleId,
-                UR.PageId,
-                UR.CanEdit,
-                R.RoleName,
-                P.PageName
-            FROM RolePagePermissions UR
-            LEFT JOIN Roles R ON UR.RoleId = R.Id
-            LEFT JOIN Pages P ON UR.PageId = P.Id
-            WHERE UR.RoleId = (SELECT RoleId FROM RolePagePermissions WHERE Id = @Id);
-        ";
+                    SELECT 
+                        UR.Id,
+                        UR.RoleId,
+                        UR.PageId,
+                        UR.CanEdit,
+                        R.RoleName,
+                        P.PageName
+                    FROM RolePagePermissions UR
+                    LEFT JOIN Roles R ON UR.RoleId = R.Id
+                    LEFT JOIN Pages P ON UR.PageId = P.Id
+                    WHERE UR.RoleId = (SELECT RoleId FROM RolePagePermissions WHERE Id = @Id);
+                ";
 
                 DataTable data = await _connectionService.SingleQueryReturn(query, id);
 

@@ -62,47 +62,36 @@ namespace UserManagement.Business.UserRoleHandler
             try
             {
                 string Query = @"
-                    SELECT 
-                        UR.Id,
-                        UR.UserId,
-                        UR.RoleId,
-                        U.UserName,
-                        R.RoleName
-                    FROM UserRoles UR
-                    INNER JOIN Users U ON UR.UserId = U.Id
-                    INNER JOIN Roles R ON UR.RoleId = R.Id;
+                    SELECT DISTINCT
+                        U.Id AS UserId,
+                        U.UserName
+                    FROM Users U
+                    INNER JOIN UserRoles UR ON UR.UserId = U.Id;
                 ";
 
                 var Data = _connectionService.Return(Query);
 
                 List<UserRoleModel> userRoles = new List<UserRoleModel>();
 
-                for (int i = 0; i < Data.Rows.Count; i++)
+                foreach (DataRow row in Data.Rows)
                 {
-                    var row = Data.Rows[i];
-
-                    UserRoleModel model = new UserRoleModel()
+                    userRoles.Add(new UserRoleModel
                     {
-                        Id = row["Id"] == DBNull.Value ? 0 : Convert.ToInt32(row["Id"]),
-                        UserId = row["UserId"] == DBNull.Value ? 0 : Convert.ToInt32(row["UserId"]),
-                        RoleId = row["RoleId"] == DBNull.Value ? 0 : Convert.ToInt32(row["RoleId"]),
-
-                        UserName = row["UserName"] == DBNull.Value ? string.Empty : row["UserName"].ToString(),
-                        RoleName = row["RoleName"] == DBNull.Value ? string.Empty : row["RoleName"].ToString()
-                    };
-
-                    userRoles.Add(model);
+                        UserId = Convert.ToInt32(row["UserId"]),
+                        UserName = row["UserName"].ToString()
+                    });
                 }
 
                 return userRoles;
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw;
             }
         }
 
-        public async Task<UserRoleModel> GetUserRoleByIdAsync(int id)
+
+        public async Task<List<UserRoleModel>> GetUserRolesByUserIdAsync(int userId)
         {
             try
             {
@@ -110,40 +99,46 @@ namespace UserManagement.Business.UserRoleHandler
                     SELECT 
                         UR.Id,
                         UR.UserId,
-                        U.UserName,
                         UR.RoleId,
+                        U.UserName,
                         R.RoleName
                     FROM UserRoles UR
                     INNER JOIN Users U ON UR.UserId = U.Id
                     INNER JOIN Roles R ON UR.RoleId = R.Id
-                    WHERE UR.Id = @Id;
+                    WHERE UR.UserId = (SELECT Id FROM Users WHERE Id = @Id);
                 ";
 
-            DataTable data = await _connectionService.SingleQueryReturn(query, id);
+                // Pass userId directly as the single scalar parameter
+                DataTable data = await _connectionService.SingleQueryReturn(query, userId);
 
-            if (data == null || data.Rows.Count == 0)
-            {
-                return null;
-            }
+                List<UserRoleModel> rolesList = new List<UserRoleModel>();
 
-            DataRow row = data.Rows[0];
+                if (data == null || data.Rows.Count == 0)
+                    return rolesList;
 
-            UserRoleModel model = new UserRoleModel()
-            {
-                Id = Convert.ToInt32(row["Id"]),
-                UserId = Convert.ToInt32(row["UserId"]),
-                UserName = row["UserName"] == DBNull.Value ? string.Empty : row["UserName"].ToString(),
-                RoleId = Convert.ToInt32(row["RoleId"]),
-                RoleName = row["RoleName"] == DBNull.Value ? string.Empty : row["RoleName"].ToString(),
-            };
+                foreach (DataRow row in data.Rows)
+                {
+                    rolesList.Add(new UserRoleModel
+                    {
+                        Id = Convert.ToInt32(row["Id"]),
+                        UserId = Convert.ToInt32(row["UserId"]),
+                        UserName = row["UserName"].ToString(),
+                        RoleId = Convert.ToInt32(row["RoleId"]),
+                        RoleName = row["RoleName"].ToString()
+                    });
+                }
 
-            return model;
+                return rolesList;
             }
             catch (Exception ex)
             {
-                throw new Exception($"Failed to retrieve user-role with ID {id}.", ex);
+                throw new Exception("Error loading user roles", ex);
             }
         }
+
+
+
+
 
         public async Task<bool> UpdateUserRoleAsync(IFormCollection collection)
         {

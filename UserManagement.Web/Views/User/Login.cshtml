@@ -153,17 +153,17 @@
         function submitLogin() {
             var form = $("#loginForm");
             $.ajax({
-                url: form.attr("/User/Login"), // Uses the form's asp-action and asp-controller
+                url: form.attr("/User/Login"), 
                 type: "POST",
                 data: form.serialize(),
-                headers: { "X-Requested-With": "XMLHttpRequest" },   // Collects all form inputs
+                headers: { "X-Requested-With": "XMLHttpRequest" },
                 success: function (response) {
                     console.log(response.pageUrls);
-                    // ✅ If your controller returns JSON
                     if (response.success) {
+                        let username = response.loggedUser;
                         Swal.fire({
                             title: 'Successfully Login!',
-                            text: 'Welcome to User Management System.',
+                            text: "Welcome back "+ username + " 👋",
                             icon: 'success',
                             timer: 2000,
                             showConfirmButton: false

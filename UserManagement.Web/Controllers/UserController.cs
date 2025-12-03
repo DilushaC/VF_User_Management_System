@@ -152,7 +152,7 @@ namespace UserManagement.Web.Controllers
                 // Serialize and save to session
                 string pageUrlsJson = JsonSerializer.Serialize(normalizedUrls);
                 HttpContext.Session.SetString("PageUrls", pageUrlsJson);
-                return Json(new { success = true, redirectUrl = Url.Action("Index", "Home"), pageUrls = pages.PageUrls });
+                return Json(new { success = true, redirectUrl = Url.Action("Index", "Home"), pageUrls = pages.PageUrls, loggedUser = username });
             }
             else
             {
