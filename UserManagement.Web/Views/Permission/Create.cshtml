@@ -62,8 +62,7 @@
                                         asp-for="PageIds"
                                         class="form-control select2"
                                         multiple="multiple"
-                                        data-placeholder="Select Pages"
-                                        asp-items="ViewBag.Pages">
+                                        data-placeholder="Select Pages">
                                 </select>
                                 <span asp-validation-for="PageIds" class="text-danger"></span>
                             </div>
@@ -114,18 +113,12 @@
                 data: { productId: productId },
                 success: function (response) {
                     if (response.success) {
-
-                        // Clear existing PageIds
                         $("#PageIds").empty();
-
-                        // Append new page options
                         response.data.forEach(page => {
                             $("#PageIds").append(
                                 new Option(page.pageName, page.id)
                             );
                         });
-
-                        // Refresh Select2 dropdown
                         $("#PageIds").trigger('change');
                     }
                 }

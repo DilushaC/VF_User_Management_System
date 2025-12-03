@@ -28,17 +28,7 @@ namespace UserManagement.Web.Controllers
         public IActionResult Create()
         {
             var roles = _roleService.GetAllRolesList();
-            var pages = _pageService.GetAllPagesList();
             var products = _productService.GetAllActiveProductList();
-
-            //viewbag for branches
-            ViewBag.Pages = pages
-            .Select(x => new SelectListItem
-            {
-                Value = x.Id.ToString(),
-                Text = x.PageName
-            })
-            .ToList();
 
             //viewbag for departments
             ViewBag.Roles = roles

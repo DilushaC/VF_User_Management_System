@@ -78,7 +78,8 @@ namespace UserManagement.Business.PageHandler
                         p.IsActive
                     FROM Pages p
                     LEFT JOIN Products pr ON p.ProductId = pr.Id
-                    WHERE p.ProductId = @Id;
+                    WHERE p.ProductId = @Id
+                      AND p.IsActive = 1;   -- Only active pages
                 ";
 
                 DataTable data = await _connectionService.SingleQueryReturn(query, ProductId);
