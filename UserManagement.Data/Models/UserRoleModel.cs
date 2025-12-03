@@ -13,5 +13,6 @@ namespace UserManagement.Data.Models
         public int RoleId { get; set; }
         public string UserName { get; set; }
         public string RoleName { get; set; }
+        public List<int> RoleIds { get; set; } = new List<int>();
     }
 }

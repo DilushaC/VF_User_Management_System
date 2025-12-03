@@ -23,31 +23,39 @@ namespace UserManagement.Business.UserRoleHandler
         {
             try
             {
-                var userId = collection["UserId"].ToString();
-                var roleId = collection["RoleId"].ToString();
+                int userId = int.Parse(collection["UserId"]);
+
+                // multiple role IDs (List<string>)
+                var roleIds = collection["RoleIds"].ToList();
 
                 string sql = @"
-                INSERT INTO UserRoles
-                (UserId, RoleId)
-                VALUES
-                (@UserId, @RoleId);
-            ";
+                    INSERT INTO UserRoles
+                    (UserId, RoleId)
+                    VALUES
+                    (@UserId, @RoleId);
+                ";
 
-                var parameters = new DynamicParameters();
+                int insertedCount = 0;
 
-                parameters.Add("UserId", Convert.ToInt32(userId), DbType.Int32);
-                parameters.Add("RoleId", Convert.ToInt32(roleId), DbType.Int32);
+                foreach (var rid in roleIds)
+                {
+                    int roleId = int.Parse(rid);
 
-                int rows = _connectionService.ExecuteWithPara(sql, parameters);
+                    var parameters = new DynamicParameters();
+                    parameters.Add("UserId", userId, DbType.Int32);
+                    parameters.Add("RoleId", roleId, DbType.Int32);
 
-                return rows > 0;
+                    insertedCount += _connectionService.ExecuteWithPara(sql, parameters);
+                }
 
+                return insertedCount == roleIds.Count; // all inserted
             }
             catch
             {
                 return false;
             }
         }
+
 
         public List<UserRoleModel> GetAllUserRolesList()
         {

@@ -44,12 +44,13 @@
                         <div class="row g-2">
                             <div class="mb-3 col-md-6">
                                 <label asp-for="RoleId" class="form-label">User Role</label>
-                                <select id="RoleId"
-                                        asp-for="RoleId"
+                                <select id="RoleIds"
+                                        name="RoleIds"
+                                        asp-for="RoleIds"
                                         class="form-control select2"
-                                        data-placeholder="Select Role"
+                                        multiple="multiple"
+                                        data-placeholder="Select Roles"
                                         asp-items="ViewBag.Roles">
-                                    <option></option>
                                 </select>
                                 <span asp-validation-for="RoleId" class="text-danger"></span>
                             </div>
@@ -74,8 +75,10 @@
         placeholder: "Select UserId",
     });
 
-    $("#RoleId").select2({
+    $("#RoleIds").select2({
         placeholder: "Select User Role",
+        width: "100%",
+        allowClear: true
     });
 
     $("#RegisterForm").on("submit", function (e) {
