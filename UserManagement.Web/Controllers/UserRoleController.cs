@@ -136,6 +136,7 @@ namespace UserManagement.Web.Controllers
             var userRoles = await _userRoleService.GetUserRolesByUserIdAsync(id);
             var model = new UserRoleModel
             {
+                UserId = id,
                 UserName = userRoles[0].UserName.ToString(),
                 RoleIds = userRoles.Select(r => r.RoleId).ToList()
             };

@@ -64,49 +64,45 @@ namespace UserManagement.Business.RolePagePermission
             try
             {
                 string Query = @"
-                    SELECT 
-                        UR.Id,
-                        UR.RoleId,
-                        UR.PageId,
-                        UR.CanEdit,
+                    SELECT DISTINCT
+                        R.Id AS RoleId,
                         R.RoleName,
-                        P.PageName
-                    FROM RolePagePermissions UR
-                    INNER JOIN Roles R ON UR.RoleId = R.Id
-                    INNER JOIN Pages P ON UR.PageId = P.Id;
+                        CASE 
+                            WHEN EXISTS (
+                                SELECT 1
+                                FROM RolePagePermissions UR2
+                                WHERE UR2.RoleId = R.Id AND UR2.CanEdit = 1
+                            ) THEN 1
+                            ELSE 0
+                        END AS CanEdit
+                    FROM Roles R
+                    INNER JOIN RolePagePermissions UR ON UR.RoleId = R.Id;
                 ";
 
                 var Data = _connectionService.Return(Query);
 
                 List<RolePagePermissionModel> pagePermissions = new List<RolePagePermissionModel>();
 
-                for (int i = 0; i < Data.Rows.Count; i++)
+                foreach (DataRow row in Data.Rows)
                 {
-                    var row = Data.Rows[i];
-
-                    RolePagePermissionModel model = new RolePagePermissionModel()
+                    pagePermissions.Add(new RolePagePermissionModel
                     {
-                        Id = row["Id"] == DBNull.Value ? 0 : Convert.ToInt32(row["Id"]),
                         RoleId = row["RoleId"] == DBNull.Value ? 0 : Convert.ToInt32(row["RoleId"]),
-                        PageId = row["PageId"] == DBNull.Value ? 0 : Convert.ToInt32(row["PageId"]),
-                        CanEdit = Convert.ToBoolean(row["CanEdit"]),
-
-                        RoleName = row["RoleName"] == DBNull.Value ? string.Empty : row["RoleName"].ToString(),
-                        PageName = row["PageName"] == DBNull.Value ? string.Empty : row["PageName"].ToString()
-                    };
-
-                    pagePermissions.Add(model);
+                        RoleName = row["RoleName"].ToString(),
+                        CanEdit = row["CanEdit"] == DBNull.Value ? false : Convert.ToBoolean(row["CanEdit"])
+                    });
                 }
 
                 return pagePermissions;
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw;
             }
         }
 
-        public async Task<RolePagePermissionModel> GetRolePagePermissionByIdAsync(int id)
+
+        public async Task<RolePagePermissionModel> GetRolePagePermissionByIdAsync(int roleId)
         {
             try
             {
@@ -121,38 +117,39 @@ namespace UserManagement.Business.RolePagePermission
                     FROM RolePagePermissions UR
                     LEFT JOIN Roles R ON UR.RoleId = R.Id
                     LEFT JOIN Pages P ON UR.PageId = P.Id
-                    WHERE UR.RoleId = (SELECT RoleId FROM RolePagePermissions WHERE Id = @Id);
+                    WHERE UR.RoleId = (SELECT Id FROM Roles WHERE Id = @Id);
                 ";
 
-                DataTable data = await _connectionService.SingleQueryReturn(query, id);
+                // Pass roleId directly as the single scalar parameter
+                DataTable data = await _connectionService.SingleQueryReturn(query, roleId);
 
                 if (data == null || data.Rows.Count == 0)
                     return null;
 
-                RolePagePermissionModel model = new RolePagePermissionModel();
-                model.PageIds = new List<int>();
+                RolePagePermissionModel model = new RolePagePermissionModel
+                {
+                    PageIds = new List<int>(),
+                    RoleId = Convert.ToInt32(data.Rows[0]["RoleId"]),
+                    RoleName = data.Rows[0]["RoleName"].ToString(),
+                    CanEdit = false
+                };
 
-                // first row for base details
-                DataRow first = data.Rows[0];
-
-                model.RoleId = Convert.ToInt32(first["RoleId"]);
-                model.RoleName = first["RoleName"].ToString();
-                model.CanEdit = Convert.ToBoolean(first["CanEdit"]);
-
-                // add all PageIds
                 foreach (DataRow row in data.Rows)
                 {
-                    model.PageIds.Add(Convert.ToInt32(row["PageId"]));
+                    if (row["PageId"] != DBNull.Value)
+                        model.PageIds.Add(Convert.ToInt32(row["PageId"]));
+
+                    if (row["CanEdit"] != DBNull.Value && Convert.ToBoolean(row["CanEdit"]))
+                        model.CanEdit = true;
                 }
 
                 return model;
             }
             catch (Exception ex)
             {
-                throw new Exception("Error loading permission", ex);
+                throw new Exception("Error loading role page permissions", ex);
             }
         }
-
 
 
         public async Task<bool> UpdateRolePagePermissionAsync(IFormCollection collection)
@@ -171,9 +168,9 @@ namespace UserManagement.Business.RolePagePermission
 
                 // 2. Insert new permissions for each selected page
                 string insertSql = @"
-            INSERT INTO RolePagePermissions (RoleId, PageId, CanEdit)
-            VALUES (@RoleId, @PageId, @CanEdit);
-        ";
+                    INSERT INTO RolePagePermissions (RoleId, PageId, CanEdit)
+                    VALUES (@RoleId, @PageId, @CanEdit);
+                ";
 
                 foreach (var pid in pageIds)
                 {

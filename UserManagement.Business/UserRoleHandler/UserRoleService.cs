@@ -144,29 +144,76 @@ namespace UserManagement.Business.UserRoleHandler
         {
             try
             {
-                var Id = Convert.ToInt32(collection["Id"]);
-                var roleId = collection["RoleId"].ToString();
+                int userId = Convert.ToInt32(collection["UserId"]);
+                string[] roleIds = collection["RoleIds"];
 
-                string sql = @"
-                    UPDATE UserRoles
-                    SET 
-                        RoleId = @RoleId
-                    WHERE Id = @Id;
+                // 1. Delete existing permissions for the role
+                string deleteSql = "DELETE FROM UserRoles WHERE UserId = @UserId";
+                var deleteParams = new DynamicParameters();
+                deleteParams.Add("@UserId", userId, DbType.Int32);
+                _connectionService.ExecuteWithPara(deleteSql, deleteParams);
+
+                // 2. Insert new permissions for each selected page
+                string insertSql = @"
+                    INSERT INTO UserRoles (UserId, RoleId)
+                    VALUES (@UserId, @RoleId);
                 ";
 
-                var parameters = new DynamicParameters();
-                parameters.Add("Id", Id, DbType.Int32);
-                parameters.Add("RoleId", Convert.ToInt32(roleId), DbType.Int32);
+                foreach (var rid in roleIds)
+                {
+                    var insertParams = new DynamicParameters();
+                    insertParams.Add("@UserId", userId, DbType.Int32);
+                    insertParams.Add("@RoleId", Convert.ToInt32(rid), DbType.Int32);
 
-                int rows = _connectionService.ExecuteWithPara(sql, parameters);
-
-                return rows > 0;
+                    _connectionService.ExecuteWithPara(insertSql, insertParams);
+                }
+                return true;
             }
             catch (Exception ex)
             {
                 return false;
             }
         }
+
+
+        public async Task<bool> UpdateRolePagePermissionAsync(IFormCollection collection)
+        {
+            try
+            {
+                int roleId = Convert.ToInt32(collection["RoleId"]);
+                string[] pageIds = collection["PageIds"];
+                bool canEdit = collection["CanEdit"] == "true";
+
+                // 1. Delete existing permissions for the role
+                string deleteSql = "DELETE FROM RolePagePermissions WHERE RoleId = @RoleId";
+                var deleteParams = new DynamicParameters();
+                deleteParams.Add("@RoleId", roleId, DbType.Int32);
+                _connectionService.ExecuteWithPara(deleteSql, deleteParams);
+
+                // 2. Insert new permissions for each selected page
+                string insertSql = @"
+                    INSERT INTO RolePagePermissions (RoleId, PageId, CanEdit)
+                    VALUES (@RoleId, @PageId, @CanEdit);
+                ";
+
+                foreach (var pid in pageIds)
+                {
+                    var insertParams = new DynamicParameters();
+                    insertParams.Add("@RoleId", roleId, DbType.Int32);
+                    insertParams.Add("@PageId", Convert.ToInt32(pid), DbType.Int32);
+                    insertParams.Add("@CanEdit", canEdit, DbType.Boolean);
+
+                    _connectionService.ExecuteWithPara(insertSql, insertParams);
+                }
+
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
 
 
 

@@ -10,7 +10,7 @@
 </div>
 
 <form id="updateUserRoleForm" asp-action="LoadEditModal" asp-controller="UserRole" method="post">
-    <input type="hidden" asp-for="Id" />
+    <input type="hidden" asp-for="UserId" />
 
     <div class="modal-body">
         <div class="mb-3  col-md-6">
@@ -59,7 +59,7 @@
             return;
         }
         Swal.fire({
-            title: 'Update Role?',
+            title: 'Update User Role?',
             icon: 'warning',
             showCancelButton: true,
             confirmButtonText: 'Yes, Update',

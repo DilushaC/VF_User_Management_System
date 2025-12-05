@@ -33,26 +33,33 @@
                 <div class="card-body">
                     <h3 class="header">Create Designation</h3>
                     <br />
-                    <form asp-action="Create" asp-controller="Designation" method="post" id="RegisterForm">
+                    <form asp-action="Create" asp-controller="Designation" method="post" id="RegisterForm" novalidate>
                         <div class="row g-2">
-                            <div class="mb-3 col-md-6">
+                            <div class="mb-3 col-md-6 position-relative">
                                 <label asp-for="DesignationName" class="form-label">Designation Name</label>
-                                <input asp-for="DesignationName" class="form-control round" required />
-                                <span asp-validation-for="DesignationName" class="text-danger"></span>
+                                <input asp-for="DesignationName" class="form-control round" required
+                                       data-bs-toggle="tooltip" data-bs-placement="right" title="Designation Name is required" />
+                                <span asp-validation-for="DesignationName" class="invalid-tooltip">Designation Name is required</span>
                             </div>
                         </div>
+
                         <div class="row g-2">
-                            <div class="mb-3 col-md-2">
+                            <div class="mb-3 col-md-2 position-relative">
                                 <label asp-for="IsActive" class="form-label">Active Status</label>
-                                <select asp-for="IsActive" class="form-select">
+                                <select asp-for="IsActive" class="form-select" required
+                                        data-bs-toggle="tooltip" data-bs-placement="right" title="Select Active Status">
+                                    <option value="">Select</option>
                                     <option value="true">Active</option>
                                     <option value="false">Inactive</option>
                                 </select>
-                                <span asp-validation-for="IsActive" class="text-danger"></span>
+                                <span asp-validation-for="IsActive" class="invalid-tooltip">Active Status is required</span>
                             </div>
                         </div>
+
                         <button type="submit" class="btn btn-primary">Create Designation</button>
                     </form>
+
+
                 </div> <!-- end card-body -->
             </div> <!-- end card-->
         </div> <!-- end col -->
@@ -66,8 +73,14 @@
 
 <script>
     $("#RegisterForm").on("submit", function (e) {
-    e.preventDefault(); // Stop default form submission
-    let form = $(this);
+        e.preventDefault(); 
+        let form = $(this)[0]; 
+
+        if (!form.checkValidity()) {
+            $(this).addClass('was-validated');
+            return; 
+        }
+
         Swal.fire({
             title: 'Create Designation?',
             text: "Are you sure you want to create?",
@@ -87,7 +100,7 @@
                 $.ajax({
                     url: '/Designation/Create',
                     type: 'POST',
-                    data: form.serialize(),
+                    data: $("#RegisterForm").serialize(),
                     headers: { "X-Requested-With": "XMLHttpRequest" },
                     success: function (response) {
                         Swal.close();
@@ -98,21 +111,19 @@
                                 showConfirmButton: false,
                                 timer: 1500
                             }).then(() => {
-                                window.location.href = response.redirectUrl
-                                // Reset form and Select2 elements
+                                window.location.href = response.redirectUrl;
                             });
                         } else if (response.redirectUrl) {
-                            // Redirect if controller provides URL
                             window.location.href = response.redirectUrl;
                         } else {
                             Swal.fire({
                                 icon: 'error',
                                 title: 'Error',
-                                text: response.message || 'Failed to create user.'
+                                text: response.message || 'Failed to create designation.'
                             });
                         }
                     },
-                    error: function (xhr, status, error) {
+                    error: function () {
                         Swal.fire({
                             icon: 'error',
                             title: 'Error',
@@ -123,6 +134,7 @@
             }
         });
     });
+
 
 
 

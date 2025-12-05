@@ -45,7 +45,6 @@
                     <thead>
                         <tr>
                             <th>Role Name</th>
-                            <th>Page Name</th>
                             <th>Can Edit</th>
                             <th>Edit</th>
                         </tr>
@@ -91,7 +90,6 @@
         },
         columns: [
             { data: 'roleName' },
-            { data: 'pageName' },
             {
                 data: 'canEdit',
                 render: function (data, type, row) {
@@ -103,7 +101,7 @@
             },
             },
             {
-                data: 'id',
+                data: 'roleId',
                 render: function (data) {
                     return `
                         <button type="button"

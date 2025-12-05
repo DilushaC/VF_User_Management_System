@@ -27,36 +27,45 @@
                 <div class="card-body">
                     <h3 class="header">Create User Role</h3>
                     <br />
-                    <form asp-action="Create" asp-controller="UserRole" method="post" id="RegisterForm">
+                    <form asp-action="Create" asp-controller="UserRole" method="post" id="RegisterForm" novalidate>
                         <div class="row g-2">
-                            <div class="mb-3 col-md-6">
+                            <div class="mb-3 col-md-6 position-relative">
                                 <label asp-for="UserId" class="form-label">User Name</label>
                                 <select id="UserId"
                                         asp-for="UserId"
                                         class="form-control select2"
                                         data-placeholder="Select User"
+                                        data-bs-toggle="tooltip"
+                                        data-bs-placement="right"
+                                        title="Please select a user"
                                         asp-items="ViewBag.Users">
                                     <option></option>
                                 </select>
-                                <span asp-validation-for="UserId" class="text-danger"></span>
+                                <span asp-validation-for="UserId" class="invalid-tooltip">Please select a user</span>
                             </div>
                         </div>
+
                         <div class="row g-2">
-                            <div class="mb-3 col-md-6">
-                                <label asp-for="RoleId" class="form-label">User Role</label>
+                            <div class="mb-3 col-md-6 position-relative">
+                                <label asp-for="RoleIds" class="form-label">User Role</label>
                                 <select id="RoleIds"
                                         name="RoleIds"
                                         asp-for="RoleIds"
                                         class="form-control select2"
                                         multiple="multiple"
                                         data-placeholder="Select Roles"
+                                        data-bs-toggle="tooltip"
+                                        data-bs-placement="right"
+                                        title="Please select at least one role"
                                         asp-items="ViewBag.Roles">
                                 </select>
-                                <span asp-validation-for="RoleId" class="text-danger"></span>
+                                <span asp-validation-for="RoleIds" class="invalid-tooltip">Please select at least one role</span>
                             </div>
                         </div>
+
                         <button type="submit" class="btn btn-primary">Create User Role</button>
                     </form>
+
                 </div> <!-- end card-body -->
             </div> <!-- end card-->
         </div> <!-- end col -->
@@ -82,8 +91,27 @@
     });
 
     $("#RegisterForm").on("submit", function (e) {
-    e.preventDefault(); // Stop default form submission
-    let form = $(this);
+    e.preventDefault();
+    let form = $(this)[0];
+
+    // Custom validation for Select2 fields
+    let valid = true;
+
+    if (!$("#UserId").val()) {
+        valid = false;
+        $(this).addClass('was-validated');
+    }
+
+    if (!$("#RoleIds").val() || $("#RoleIds").val().length === 0) {
+        valid = false;
+        $(this).addClass('was-validated');
+    }
+
+    if (!form.checkValidity() || !valid) {
+        $(this).addClass('was-validated');
+        return;
+    }
+
         Swal.fire({
             title: 'Create User Role?',
             text: "Are you sure you want to create?",
