@@ -4,12 +4,6 @@
     ViewData["Title"] = "Create Page";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
-<meta charset="utf-8" />
-<title>Form Advanced | Attex - Bootstrap 5 Admin & Dashboard Template</title>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta content="A fully featured admin theme which can be used to build CRM, CMS, etc." name="description" />
-<meta content="Coderthemes" name="author" />
-
 
 <div class="row">
     <!-- start page title -->
@@ -33,56 +27,64 @@
                 <div class="card-body">
                     <h3 class="header">Create Page</h3>
                     <br />
-                    <form asp-action="Create" asp-controller="Page" method="post" id="RegisterForm">
+                    <form asp-action="Create" asp-controller="Page" method="post" id="RegisterForm" novalidate>
                         <div class="row g-2">
-                            <div class="mb-3 col-md-6">
+                            <div class="mb-3 col-md-6 position-relative">
                                 <label asp-for="PageName" class="form-label">Page Name</label>
-                                <input asp-for="PageName" class="form-control round" required />
-                                <span asp-validation-for="PageName" class="text-danger"></span>
+                                <input asp-for="PageName" class="form-control round" required
+                                       data-bs-toggle="tooltip" data-bs-placement="right" title="Page Name is required" />
+                                <span asp-validation-for="PageName" class="invalid-tooltip">Page Name is required</span>
                             </div>
                         </div>
                         <div class="row g-2">
-                            <div class="mb-3 col-md-6">
+                            <div class="mb-3 col-md-6 position-relative">
                                 <label asp-for="ProductId" class="form-label">Select Product</label>
                                 <select id="ProductId"
                                         asp-for="ProductId"
-                                        class="form-control select2"
+                                        class="form-control select2 round"
+                                        data-bs-toggle="tooltip"
+                                        data-bs-placement="right"
+                                        title="Product is required"
+                                        required
                                         data-placeholder="Select Base Product"
                                         asp-items="ViewBag.Products">
-                                    <option></option>
+                                    <option value="">Select Product</option>
                                 </select>
-                                <span asp-validation-for="ProductId" class="text-danger"></span>
+                                <span asp-validation-for="ProductId" class="invalid-tooltip">Product is required</span>
                             </div>
                         </div>
                         <div class="row g-2">
-                            <div class="mb-3 col-md-6">
+                            <div class="mb-3 col-md-6 position-relative">
                                 <label asp-for="PageUrl" class="form-label">Page URL</label>
-                                <input asp-for="PageUrl" class="form-control round" required />
-                                <span asp-validation-for="PageUrl" class="text-danger"></span>
+                                <input asp-for="PageUrl" class="form-control round" required
+                                       data-bs-toggle="tooltip" data-bs-placement="right" title="Page URL is required" />
+                                <span asp-validation-for="PageUrl" class="invalid-tooltip">Page URL is required</span>
                             </div>
                         </div>
                         <div class="row g-2">
-                            <div class="mb-3 col-md-2">
+                            <div class="mb-3 col-md-2 position-relative">
                                 <label asp-for="PageCode" class="form-label">Page Code</label>
-                                <input asp-for="PageCode" class="form-control round" required />
-                                <span asp-validation-for="PageCode" class="text-danger"></span>
+                                <input asp-for="PageCode" class="form-control round" required
+                                       data-bs-toggle="tooltip" data-bs-placement="right" title="Page Code is required" />
+                                <span asp-validation-for="PageCode" class="invalid-tooltip">Page Code is required</span>
                             </div>
                         </div>
                         <div class="row g-2">
-                            <div class="mb-3 col-md-6">
+                            <div class="mb-3 col-md-6 position-relative">
                                 <label asp-for="Description" class="form-label">Description</label>
-                                <textarea asp-for="Description" class="form-control round" required></textarea>
-                                <span asp-validation-for="Description" class="text-danger"></span>
+                                <textarea asp-for="Description" class="form-control round" required
+                                          data-bs-toggle="tooltip" data-bs-placement="right" title="Description is required"></textarea>
+                                <span asp-validation-for="Description" class="invalid-tooltip">Description is required</span>
                             </div>
                         </div>
                         <div class="row g-2">
                             <div class="mb-3 col-md-2">
                                 <label asp-for="IsActive" class="form-label">Active Status</label>
-                                <select asp-for="IsActive" class="form-select">
+                                <select asp-for="IsActive" class="form-select select2">
                                     <option value="true">Active</option>
                                     <option value="false">Inactive</option>
                                 </select>
-                                <span asp-validation-for="IsActive" class="text-danger"></span>
+                                <span asp-validation-for="IsActive" class="invalid-tooltip">Active Status is required</span>
                             </div>
                         </div>
                         <button type="submit" class="btn btn-primary">Create Page</button>
@@ -102,10 +104,18 @@
     $("#ProductId").select2({
         placeholder: "Select Product",
     });
+    $("#IsActive").select2({
+        placeholder: "Select Status",
+    });
 
     $("#RegisterForm").on("submit", function (e) {
-    e.preventDefault(); // Stop default form submission
-    let form = $(this);
+        e.preventDefault();
+        let form = $(this)[0];
+
+        if (!form.checkValidity()) {
+            $(this).addClass('was-validated');
+            return;
+        }
         Swal.fire({
             title: 'Create Page?',
             text: "Are you sure you want to create?",
@@ -125,7 +135,7 @@
                 $.ajax({
                     url: '/Page/Create',
                     type: 'POST',
-                    data: form.serialize(),
+                    data: $("#RegisterForm").serialize(),
                     headers: { "X-Requested-With": "XMLHttpRequest" },
                     success: function (response) {
                         Swal.close();

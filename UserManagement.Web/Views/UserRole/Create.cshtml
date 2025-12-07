@@ -123,7 +123,7 @@
                 $.ajax({
                     url: '/UserRole/Create',
                     type: 'POST',
-                    data: form.serialize(),
+                    data: $("#RegisterForm").serialize(),
                     headers: { "X-Requested-With": "XMLHttpRequest" },
                     success: function (response) {
                         Swal.close();

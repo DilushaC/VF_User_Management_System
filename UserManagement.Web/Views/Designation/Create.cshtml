@@ -41,9 +41,7 @@
                         <div class="row g-2">
                             <div class="mb-3 col-md-2 position-relative">
                                 <label asp-for="IsActive" class="form-label">Active Status</label>
-                                <select id="ActiveStatus" asp-for="IsActive" class="form-select select2" required
-                                        data-bs-toggle="tooltip" data-bs-placement="right" title="Select Active Status">
-                                    <option value="">Select</option>
+                                <select asp-for="IsActive" class="form-select select2">
                                     <option value="true">Active</option>
                                     <option value="false">Inactive</option>
                                 </select>
@@ -67,7 +65,7 @@
 <script src="~/assets/vendor/select2/js/select2.min.js"></script>
 
 <script>
-    $("#ActiveStatus").select2({
+    $("#IsActive").select2({
         placeholder: "Select Status",
     });
 
