@@ -33,42 +33,41 @@
                 <div class="card-body">
                     <h3 class="header">Register User</h3>
                     <br />
-                    <form asp-action="RegisterUser" asp-controller="User" method="post" id="RegisterForm">
+                    <form asp-action="RegisterUser" asp-controller="User" method="post" id="RegisterForm" novalidate>
                         <div class="row g-2">
-                            <div class="mb-3 col-md-6">
+                            <div class="mb-3 col-md-6 position-relative">
                                 <label asp-for="UserName" class="form-label">User Name</label>
-                                <input asp-for="UserName" class="form-control round"/>
-                                <span asp-validation-for="UserName" class="text-danger"></span>
+                                <input asp-for="UserName" class="form-control round" required
+                                       data-bs-toggle="tooltip" data-bs-placement="right" title="User Name is required" />
+                                <span asp-validation-for="UserName" class="invalid-tooltip">User Name is required</span>
                             </div>
                         </div>
-
                         <div class="row g-2">
-                            <div class="mb-3 col-md-6">
+                            <div class="mb-3 col-md-6 position-relative">
                                 <label asp-for="FirstName" class="form-label">First Name</label>
-                                <input asp-for="FirstName" class="form-control round" required />
-                                <span asp-validation-for="FirstName" class="text-danger"></span>
+                                <input asp-for="FirstName" class="form-control round" required
+                                       data-bs-toggle="tooltip" data-bs-placement="right" title="First Name is required" />
+                                <span asp-validation-for="FirstName" class="invalid-tooltip">First Name is required</span>
                             </div>
-
-                            <div class="mb-3 col-md-6">
+                            <div class="mb-3 col-md-6 position-relative">
                                 <label asp-for="LastName" class="form-label">Last Name</label>
-                                <input asp-for="LastName" class="form-control round" required />
-                                <span asp-validation-for="LastName" class="text-danger"></span>
+                                <input asp-for="LastName" class="form-control round" required
+                                       data-bs-toggle="tooltip" data-bs-placement="right" title="Last Name is required" />
+                                <span asp-validation-for="LastName" class="invalid-tooltip">Last Name is required</span>
                             </div>
                         </div>
-
                         <div class="row g-2">
-                            <div class="mb-3 col-md-6">
-                                <label asp-for="Email" class="form-label"></label>
-                                <input asp-for="Email" type="email" class="form-control round" placeholder="Enter your email" required />
-                                <span asp-validation-for="Email" class="text-danger"></span>
+                            <div class="mb-3 col-md-6 position-relative">
+                                <label asp-for="Email" class="form-label">Email</label>
+                                <input asp-for="Email" type="email" class="form-control round" required
+                                       data-bs-toggle="tooltip" data-bs-placement="right" title="Email is required" />
+                                <span asp-validation-for="Email" class="invalid-tooltip">Email is required</span>
                             </div>
                         </div>
-
-                        <div class="row g-2">
+@*                         <div class="row g-2">
                             <div class="mb-3 col-md-6">
                                 <label asp-for="Phone" class="form-label"></label>
                                 <input asp-for="Phone"
-                                       type="text"
                                        inputmode="numeric"
                                        maxlength="10"
                                        oninput="this.value = this.value.replace(/[^0-9]/g,'')"
@@ -76,49 +75,74 @@
                                        placeholder="Enter phone number"
                                        pattern="0\d{9}"
                                        title="Phone number must start with 0 and be 10 digits long"
-                                       required />
-                                <span asp-validation-for="Phone" class="text-danger"></span>
+                                       required
+                                       data-bs-toggle="tooltip" 
+                                       data-bs-placement="right"
+                                       title="Phone number is required" 
+                                       />
+                                <span asp-validation-for="Email" class="invalid-tooltip">Phone number is required</span>
+                            </div>
+                        </div> *@
+                        <div class="row g-2">
+                            <div class="mb-3 col-md-6 position-relative">
+                                <label asp-for="Phone" class="form-label">Phone</label>
+                                <input asp-for="Phone" type="number" class="form-control round" required
+                                       data-bs-toggle="tooltip" data-bs-placement="right" title="Phone is required" />
+                                <span asp-validation-for="Phone" class="invalid-tooltip">Phone is required</span>
                             </div>
                         </div>
                         <div class="row g-2">
-                            <div class="mb-3 col-md-6">
-                                <label asp-for="DesignationId" class="form-label">Select Designation</label>
-                                <select id="DesignationId"
-                                        asp-for="DesignationId"
-                                        class="form-control select2"
+                            <div class="mb-3 col-md-6 position-relative">
+                                <label asp-for="DesignationId" class="form-label">Designation Name</label>
+                                <select asp-for="DesignationId"
+                                        class="form-control select2 round"
+                                        required
                                         data-placeholder="Select Designation"
+                                        data-bs-toggle="tooltip"
+                                        data-bs-placement="right"
+                                        title="Please select a Designation"
                                         asp-items="ViewBag.Designations">
-                                    <option></option>
+                                    <option value="">Select Designation</option>
                                 </select>
-                                <span asp-validation-for="DesignationId" class="text-danger"></span>
+                                <span asp-validation-for="DesignationId" class="invalid-tooltip">
+                                    Please select a designation
+                                </span>
                             </div>
                         </div>
-
                         <div class="row g-2">
-                            <div class="mb-3 col-md-6">
-                                <label asp-for="PrimaryBranchId" class="form-label">Select Primary Branch</label>
-                                <select id="PrimaryBranchId"
-                                        asp-for="PrimaryBranchId"
-                                        class="form-control select2"
+                            <div class="mb-3 col-md-6 position-relative">
+                                <label asp-for="PrimaryBranchId" class="form-label">Branch Name</label>
+                                <select asp-for="PrimaryBranchId"
+                                        class="form-control select2 round"
+                                        required
                                         data-placeholder="Select Branch"
+                                        data-bs-toggle="tooltip"
+                                        data-bs-placement="right"
+                                        title="Please select a Branch"
                                         asp-items="ViewBag.Branches">
-                                    <option></option>
+                                    <option value="">Select Branch</option>
                                 </select>
-                                <span asp-validation-for="PrimaryBranchId" class="text-danger"></span>
+                                <span asp-validation-for="PrimaryBranchId" class="invalid-tooltip">
+                                    Please select a Branch
+                                </span>
                             </div>
                         </div>
-
                         <div class="row g-2">
-                            <div class="mb-3 col-md-6">
+                            <div class="mb-3 col-md-6 position-relative">
                                 <label asp-for="PrimaryDepartmentId" class="form-label">Select Primary Department</label>
-                                <select id="PrimaryDepartmentId"
-                                        asp-for="PrimaryDepartmentId"
-                                        class="form-control select2"
-                                        data-placeholder="Select Department"
+                                <select asp-for="PrimaryDepartmentId"
+                                        class="form-control select2 round"
+                                        required
+                                        data-placeholder="Select Primary Department"
+                                        data-bs-toggle="tooltip"
+                                        data-bs-placement="right"
+                                        title="Please select a Primary Department"
                                         asp-items="ViewBag.Departments">
-                                    <option></option>
+                                    <option value="">Select Department</option>
                                 </select>
-                                <span asp-validation-for="PrimaryDepartmentId" class="text-danger"></span>
+                                <span asp-validation-for="PrimaryDepartmentId" class="invalid-tooltip">
+                                    Please select a Primary Department
+                                </span>
                             </div>
                         </div>
                         <button type="submit" class="btn btn-primary">Create User</button>
@@ -151,8 +175,13 @@
     });
 
     $("#RegisterForm").on("submit", function (e) {
-    e.preventDefault(); // Stop default form submission
-    let form = $(this);
+        e.preventDefault();
+        let form = $(this)[0];
+
+        if (!form.checkValidity()) {
+            $(this).addClass('was-validated');
+            return;
+        }
         Swal.fire({
             title: 'Create User?',
             text: "Are you sure you want to create this user?",
