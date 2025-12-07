@@ -4,11 +4,6 @@
     ViewData["Title"] = "Create Designation";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
-<meta charset="utf-8" />
-<title>Form Advanced | Attex - Bootstrap 5 Admin & Dashboard Template</title>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta content="A fully featured admin theme which can be used to build CRM, CMS, etc." name="description" />
-<meta content="Coderthemes" name="author" />
 
 
 <div class="row">
@@ -46,7 +41,7 @@
                         <div class="row g-2">
                             <div class="mb-3 col-md-2 position-relative">
                                 <label asp-for="IsActive" class="form-label">Active Status</label>
-                                <select asp-for="IsActive" class="form-select" required
+                                <select id="ActiveStatus" asp-for="IsActive" class="form-select select2" required
                                         data-bs-toggle="tooltip" data-bs-placement="right" title="Select Active Status">
                                     <option value="">Select</option>
                                     <option value="true">Active</option>
@@ -72,6 +67,10 @@
 <script src="~/assets/vendor/select2/js/select2.min.js"></script>
 
 <script>
+    $("#ActiveStatus").select2({
+        placeholder: "Select Status",
+    });
+
     $("#RegisterForm").on("submit", function (e) {
         e.preventDefault(); 
         let form = $(this)[0]; 
