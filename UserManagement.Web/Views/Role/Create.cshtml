@@ -27,30 +27,31 @@
                 <div class="card-body">
                     <h3 class="header">Create Role</h3>
                     <br />
-                    <form asp-action="Create" asp-controller="Role" method="post" id="RegisterForm">
+                    <form asp-action="Create" asp-controller="Role" method="post" id="RegisterForm" novalidate>
                         <div class="row g-2">
-                            <div class="mb-3 col-md-6">
+                            <div class="mb-3 col-md-6 position-relative">
                                 <label asp-for="RoleName" class="form-label">Role Name</label>
-                                <input asp-for="RoleName" class="form-control round" required />
-                                <span asp-validation-for="RoleName" class="text-danger"></span>
+                                <input asp-for="RoleName" class="form-control round" required
+                                       data-bs-toggle="tooltip" data-bs-placement="right" title="Role Name is required" />
+                                <span asp-validation-for="RoleName" class="invalid-tooltip">Role Name is required</span>
                             </div>
                         </div>
                         <div class="row g-2">
-                            <div class="mb-3 col-md-6">
+                            <div class="mb-3 col-md-6 position-relative">
                                 <label asp-for="Description" class="form-label">Description</label>
-                                <textarea asp-for="Description" class="form-control round" required></textarea>
-                                <span asp-validation-for="Description" class="text-danger"></span>
+                                <textarea asp-for="Description" class="form-control round" required
+                                          data-bs-toggle="tooltip" data-bs-placement="right" title="Description is required"></textarea>
+                                <span asp-validation-for="Description" class="invalid-tooltip">Description is required</span>
                             </div>
                         </div>
-
                         <div class="row g-2">
-                            <div class="mb-3 col-md-2">
+                            <div class="mb-3 col-md-2 position-relative">
                                 <label asp-for="IsAdminAccount" class="form-label">Admin Account</label>
-                                <select asp-for="IsAdminAccount" class="form-select">
-                                    <option value="true">Yes</option>
-                                    <option value="false">No</option>
+                                <select asp-for="IsAdminAccount" class="form-select select2">
+                                    <option value="true">Active</option>
+                                    <option value="false">Inactive</option>
                                 </select>
-                                <span asp-validation-for="IsAdminAccount" class="text-danger"></span>
+                                <span asp-validation-for="IsAdminAccount" class="invalid-tooltip">Active Status is required</span>
                             </div>
                         </div>
                         <button type="submit" class="btn btn-primary">Create Role</button>
@@ -67,8 +68,13 @@
 
 <script>
     $("#RegisterForm").on("submit", function (e) {
-    e.preventDefault(); // Stop default form submission
-    let form = $(this);
+        e.preventDefault();
+        let form = $(this)[0];
+
+        if (!form.checkValidity()) {
+            $(this).addClass('was-validated');
+            return;
+        }
         Swal.fire({
             title: 'Create Role?',
             text: "Are you sure you want to create?",
