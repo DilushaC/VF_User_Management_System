@@ -191,6 +191,34 @@ namespace UserManagement.Business.DepartmentHandler
             }
         }
 
+        public async Task<bool> CheckDepartmentNameExists(IFormCollection collection)
+        {
+            try
+            {
+                var department = collection["DepartmentName"].ToString();
+
+                string sql = @"
+                    SELECT COUNT(*)
+                    FROM Department
+                    WHERE DepartmentName = @Department
+                ";
+
+                var parameters = new DynamicParameters();
+                parameters.Add("Department", department, DbType.String);
+
+                // Synchronous call wrapped in Task.FromResult
+                var result = _connectionService.ExecuteScalar(sql, parameters);
+
+                int count = Convert.ToInt32(result);
+
+                return await Task.FromResult(count > 0);
+            }
+            catch (Exception)
+            {
+                return await Task.FromResult(false);
+            }
+        }
+
 
     }
 }

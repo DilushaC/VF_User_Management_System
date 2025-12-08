@@ -115,5 +115,14 @@ namespace UserManagement.Web.Controllers
                 return Ok(new { success = false, message = $"Error: {ex.Message}" });
             }
         }
+
+        [HttpPost]
+        public async Task<IActionResult> CheckDepartmentName(IFormCollection collection)
+        {
+            // Pass the form collection directly to the service
+            bool exists = await _departmentService.CheckDepartmentNameExists(collection);
+
+            return Json(new { exists = exists });
+        }
     }
 }

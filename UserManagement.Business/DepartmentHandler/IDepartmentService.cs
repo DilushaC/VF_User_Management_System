@@ -15,5 +15,6 @@ namespace UserManagement.Business.DepartmentHandler
         Task<bool> CreateDepartmentAsync(IFormCollection collection);
         Task<DepartmentModel> GetDepartmentByIdAsync(int id);
         Task<bool> UpdateDepartmentAsync(IFormCollection collection);
+        Task<bool> CheckDepartmentNameExists(IFormCollection collection);
     }
 }

@@ -34,6 +34,7 @@
                                 <input asp-for="DepartmentName" class="form-control round" required
                                        data-bs-toggle="tooltip" data-bs-placement="right" title="Department Name is required" />
                                 <span asp-validation-for="DepartmentName" class="invalid-tooltip">Department Name is required</span>
+                                <small id="departmentName-status"></small>
                             </div>
                         </div>
                         <div class="row g-2">
@@ -60,9 +61,45 @@
 <script src="~/assets/vendor/select2/js/select2.min.js"></script>
 
 <script>
+    let departmentNameValid = false;
+
+    $("#DepartmentName").on('blur', function () {
+    let departmentName = $(this).val().trim();
+
+        if (departmentName.length < 2) {
+            $("#departmentName-status").html(`<span style="color:gray;">Minimum 2 characters required</span>`);
+            departmentNameValid = false;
+            return;
+        }
+
+        $.ajax({
+            url: '/Department/CheckDepartmentName',
+            type: 'POST',
+            data: { departmentName: departmentName },
+            success: function (res) {
+                if (res.exists) {
+                    departmentNameValid = false;
+                    $("#departmentName-status").html(`<span style="color:red;">❌ Department already exists</span>`);
+                } else {
+                    departmentNameValid = true;
+                    $("#departmentName-status").html(`<span style="color:green;">✔ Department available</span>`);
+                }
+            }
+        });
+    });
     $("#RegisterForm").on("submit", function (e) {
         e.preventDefault();
         let form = $(this)[0];
+
+        if (!departmentNameValid) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Department Already Exists',
+                text: 'Please choose another Department.'
+            });
+            return;
+        }
+
 
         if (!form.checkValidity()) {
             $(this).addClass('was-validated');
