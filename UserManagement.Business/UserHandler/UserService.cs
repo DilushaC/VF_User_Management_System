@@ -365,7 +365,6 @@ namespace UserManagement.Business.UserHandler
                     int roleId = Convert.ToInt32(roleData.Rows[0]["RoleId"]);
                     userModel.RoleId = roleId;
 
-                    // 3️⃣ Get PageIds from RolePagePermissions
                     string pagePermissionQuery = @"
                         SELECT PageId 
                         FROM RolePagePermissions 
@@ -375,14 +374,12 @@ namespace UserManagement.Business.UserHandler
 
                     if (pagePermData != null && pagePermData.Rows.Count > 0)
                     {
-                        // Build IN clause
                         List<int> pageIds = pagePermData.Rows.Cast<DataRow>()
                                             .Select(r => Convert.ToInt32(r["PageId"]))
                                             .ToList();
 
                         string idList = string.Join(",", pageIds);
 
-                        // 4️⃣ Get Page URLs
                         string pageUrlQuery = $@"
                             SELECT PageUrl 
                             FROM Pages 

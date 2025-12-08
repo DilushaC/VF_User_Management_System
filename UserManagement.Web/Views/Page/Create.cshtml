@@ -14,7 +14,7 @@
                     <ol class="breadcrumb m-0">
                         <li class="breadcrumb-item"><a href="javascript: void(0);">Management</a></li>
                         <li class="breadcrumb-item"><a href="javascript: void(0);">Pages</a></li>
-                        <li class="breadcrumb-item active">Create Page</li>
+                        <li class="breadcrumb-item active">@ViewData["Title"]</li>
                     </ol>
                 </div>
             </div>
@@ -70,6 +70,14 @@
                                 <span asp-validation-for="PageCode" class="invalid-tooltip">Page Code is required</span>
                             </div>
                         </div>
+@*                         <div class="row g-2">
+                            <div class="mb-3 col-md-1 position-relative">
+                                <label asp-for="PageLevel" class="form-label">Page Level</label>
+                                <input asp-for="PageLevel" type="number" class="form-control round" required
+                                       data-bs-toggle="tooltip" data-bs-placement="right" title="Page Level is required" />
+                                <span asp-validation-for="PageLevel" class="invalid-tooltip">Page Level is required</span>
+                            </div>
+                        </div> *@
                         <div class="row g-2">
                             <div class="mb-3 col-md-6 position-relative">
                                 <label asp-for="Description" class="form-label">Description</label>
@@ -126,7 +134,7 @@
                     pageNameValid = false;
                     $("#pageName-status").html(`<span style="color:red;">❌ Page already exists</span>`);
                 } else {
-                    productNameValid = true;
+                    pageNameValid = true;
                     $("#pageName-status").html(`<span style="color:green;">✔ Page available</span>`);
                 }
             }
@@ -141,7 +149,7 @@
             Swal.fire({
                 icon: 'error',
                 title: 'Page Already Exists',
-                text: 'Please choose another Page.'
+                text: 'Please Create another Page.'
             });
             return;
         }
