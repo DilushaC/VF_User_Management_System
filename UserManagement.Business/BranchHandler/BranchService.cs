@@ -189,5 +189,33 @@ namespace UserManagement.Business.BranchHandler
                 return false;
             }
         }
+
+        public async Task<bool> CheckBranchNameExists(IFormCollection collection)
+        {
+            try
+            {
+                var branch = collection["BranchName"].ToString();
+
+                string sql = @"
+                    SELECT COUNT(*)
+                    FROM Branch
+                    WHERE BranchName = @Branch
+                ";
+
+                var parameters = new DynamicParameters();
+                parameters.Add("Branch", branch, DbType.String);
+
+                // Synchronous call wrapped in Task.FromResult
+                var result = _connectionService.ExecuteScalar(sql, parameters);
+
+                int count = Convert.ToInt32(result);
+
+                return await Task.FromResult(count > 0);
+            }
+            catch (Exception)
+            {
+                return await Task.FromResult(false);
+            }
+        }
     }
 }

@@ -116,5 +116,14 @@ namespace UserManagement.Web.Controllers
             }
         }
 
+        [HttpPost]
+        public async Task<IActionResult> CheckBranchName(IFormCollection collection)
+        {
+            // Pass the form collection directly to the service
+            bool exists = await _branchService.CheckBranchNameExists(collection);
+
+            return Json(new { exists = exists });
+        }
+
     }
 }

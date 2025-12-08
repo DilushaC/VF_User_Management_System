@@ -4,12 +4,6 @@
     ViewData["Title"] = "Create Branch";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
-<meta charset="utf-8" />
-<title>Form Advanced | Attex - Bootstrap 5 Admin & Dashboard Template</title>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta content="A fully featured admin theme which can be used to build CRM, CMS, etc." name="description" />
-<meta content="Coderthemes" name="author" />
-
 
 <div class="row">
     <!-- start page title -->
@@ -40,6 +34,7 @@
                                 <input asp-for="BranchName" class="form-control round" required
                                        data-bs-toggle="tooltip" data-bs-placement="right" title="Branch Name is required" />
                                 <span asp-validation-for="BranchName" class="invalid-tooltip">Branch Name is required</span>
+                                <small id="branchName-status"></small>
                             </div>
                         </div>
                         <div class="row g-2">
@@ -66,9 +61,44 @@
 <script src="~/assets/vendor/select2/js/select2.min.js"></script>
 
 <script>
+    let branchNameValid = false;
+
+    $("#BranchName").on('blur', function () {
+    let branchName = $(this).val().trim();
+
+        if (branchName.length < 2) {
+            $("#branchName-status").html(`<span style="color:gray;">Minimum 2 characters required</span>`);
+            branchNameValid = false;
+            return;
+        }
+
+        $.ajax({
+            url: '/Branch/CheckBranchName',
+            type: 'POST',
+            data: { branchName: branchName },
+            success: function (res) {
+                if (res.exists) {
+                    productNameValid = false;
+                    $("#branchName-status").html(`<span style="color:red;">❌ Branch already exists</span>`);
+                } else {
+                    productNameValid = true;
+                    $("#branchName-status").html(`<span style="color:green;">✔ Branch available</span>`);
+                }
+            }
+        });
+    });
     $("#RegisterForm").on("submit", function (e) {
         e.preventDefault();
         let form = $(this)[0];
+
+        if (!branchNameValid) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Branch Already Exists',
+                text: 'Please choose another Branch.'
+            });
+            return;
+        }
 
         if (!form.checkValidity()) {
             $(this).addClass('was-validated');
