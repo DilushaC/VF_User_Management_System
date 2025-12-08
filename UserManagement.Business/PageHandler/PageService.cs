@@ -121,13 +121,14 @@ namespace UserManagement.Business.PageHandler
                 var description = collection["Description"].ToString();
                 var pageUrl = collection["PageUrl"].ToString();
                 var pageCode = collection["PageCode"].ToString();
+                var pageLevel = collection["PageLevel"].ToString();
                 var isActive = collection["IsActive"].ToString();
 
                 string sql = @"
                 INSERT INTO Pages
-                (PageName, ProductId, Description, PageUrl, PageCode, IsActive, CreatedDate )
+                (PageName, ProductId, Description, PageUrl, PageCode, PageLevel, IsActive, CreatedDate )
                 VALUES
-                (@PageName,@ProductId, @Description, @PageUrl, @PageCode, @IsActive, @CreatedDate);
+                (@PageName,@ProductId, @Description, @PageUrl, @PageCode, @IsActive, @PageLevel, @CreatedDate);
             ";
 
                 var parameters = new DynamicParameters();
@@ -137,6 +138,7 @@ namespace UserManagement.Business.PageHandler
                 parameters.Add("Description", description, DbType.String);
                 parameters.Add("PageUrl", pageUrl, DbType.String);
                 parameters.Add("PageCode", pageCode, DbType.String);
+                parameters.Add("PageLevel",Convert.ToInt32(pageLevel), DbType.Int32);
                 parameters.Add("IsActive", isActive, DbType.Boolean);
                 parameters.Add("CreatedDate", DateTime.Now, DbType.DateTime);
 
@@ -175,6 +177,7 @@ namespace UserManagement.Business.PageHandler
                     PageUrl = row["PageUrl"] == DBNull.Value ? string.Empty : row["PageUrl"].ToString(),
                     PageCode = row["PageCode"] == DBNull.Value ? string.Empty : row["PageCode"].ToString(),
                     ProductId = row["ProductId"] == DBNull.Value ? 0 : Convert.ToInt32(row["ProductId"]),
+                    PageLevel = row["PageLevel"] == DBNull.Value ? 0 : Convert.ToInt32(row["PageLevel"]),
                     Description = row["Description"] == DBNull.Value ? string.Empty : row["Description"].ToString(),
                     IsActive = row["IsActive"] != DBNull.Value && Convert.ToBoolean(row["IsActive"]),
                     CreatedDate = row["CreatedDate"] == DBNull.Value
@@ -200,6 +203,7 @@ namespace UserManagement.Business.PageHandler
                 var productId = collection["ProductId"].ToString();
                 var pageUrl = collection["PageUrl"].ToString();
                 var pageCode = collection["PageCode"].ToString();
+                var pageLevel = collection["PageLevel"].ToString();
                 var description = collection["Description"].ToString();
                 var isActive = Convert.ToBoolean(collection["IsActive"]);
 
@@ -210,6 +214,7 @@ namespace UserManagement.Business.PageHandler
                         ProductId = @ProductId,
                         PageUrl = @PageUrl,
                         PageCode = @PageCode,
+                        PageLevel = @PageLevel,
                         Description = @Description,
                         IsActive = @IsActive,
                         CreatedDate = @CreatedDate
@@ -222,6 +227,7 @@ namespace UserManagement.Business.PageHandler
                 parameters.Add("PageUrl", pageUrl, DbType.String);
                 parameters.Add("PageCode", pageCode, DbType.String);
                 parameters.Add("ProductId", Convert.ToInt32(productId), DbType.Int32);
+                parameters.Add("PageLevel", Convert.ToInt32(pageLevel), DbType.Int32);
                 parameters.Add("Description", description, DbType.String);
                 parameters.Add("IsActive", isActive, DbType.Boolean);
                 parameters.Add("CreatedDate", DateTime.Now, DbType.DateTime);

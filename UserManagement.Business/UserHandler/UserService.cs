@@ -379,11 +379,14 @@ namespace UserManagement.Business.UserHandler
                                             .ToList();
 
                         string idList = string.Join(",", pageIds);
-
                         string pageUrlQuery = $@"
-                            SELECT PageUrl 
-                            FROM Pages 
-                            WHERE Id IN ({idList}) AND IsActive = 1";
+                            SELECT PageUrl
+                            FROM Pages
+                            WHERE Id IN ({idList}) AND IsActive = 1
+                            ORDER BY 
+                                CASE WHEN PageLevel IS NULL THEN 1 ELSE 0 END,
+                                PageLevel ASC";
+
 
                         DataTable pageData = await _connectionService.SingleQueryReturn(pageUrlQuery,roleId);
 

@@ -70,14 +70,14 @@
                                 <span asp-validation-for="PageCode" class="invalid-tooltip">Page Code is required</span>
                             </div>
                         </div>
-@*                         <div class="row g-2">
+                        <div class="row g-2">
                             <div class="mb-3 col-md-1 position-relative">
                                 <label asp-for="PageLevel" class="form-label">Page Level</label>
-                                <input asp-for="PageLevel" type="number" class="form-control round" required
+                                <input asp-for="PageLevel" type="number" class="form-control round" required min="1"
                                        data-bs-toggle="tooltip" data-bs-placement="right" title="Page Level is required" />
                                 <span asp-validation-for="PageLevel" class="invalid-tooltip">Page Level is required</span>
                             </div>
-                        </div> *@
+                        </div>
                         <div class="row g-2">
                             <div class="mb-3 col-md-6 position-relative">
                                 <label asp-for="Description" class="form-label">Description</label>
