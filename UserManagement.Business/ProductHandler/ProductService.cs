@@ -196,5 +196,33 @@ namespace UserManagement.Business.ProductHandler
             }
         }
 
+        public async Task<bool> CheckProductNameExists(IFormCollection collection)
+        {
+            try
+            {
+                var product = collection["ProductName"].ToString();
+
+                string sql = @"
+                    SELECT COUNT(*)
+                    FROM Products
+                    WHERE ProductName = @Product
+                ";
+
+                var parameters = new DynamicParameters();
+                parameters.Add("Product", product, DbType.String);
+
+                // Synchronous call wrapped in Task.FromResult
+                var result = _connectionService.ExecuteScalar(sql, parameters);
+
+                int count = Convert.ToInt32(result);
+
+                return await Task.FromResult(count > 0);
+            }
+            catch (Exception)
+            {
+                return await Task.FromResult(false);
+            }
+        }
+
     }
 }

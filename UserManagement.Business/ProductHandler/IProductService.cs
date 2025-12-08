@@ -15,5 +15,6 @@ namespace UserManagement.Business.ProductHandler
         public List<ProductModel> GetAllActiveProductList();
         Task<ProductModel> GetProductByIdAsync(int id);
         Task<bool> UpdateProductAsync(IFormCollection collection);
+        Task<bool> CheckProductNameExists(IFormCollection collection);
     }
 }

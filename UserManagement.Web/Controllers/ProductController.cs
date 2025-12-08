@@ -120,6 +120,15 @@ namespace UserManagement.Web.Controllers
             }
         }
 
+        [HttpPost]
+        public async Task<IActionResult> CheckProductName(IFormCollection collection)
+        {
+            // Pass the form collection directly to the service
+            bool exists = await _productService.CheckProductNameExists(collection);
+
+            return Json(new { exists = exists });
+        }
+
 
     }
 }

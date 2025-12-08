@@ -34,6 +34,7 @@
                                 <input asp-for="ProductName" class="form-control round" required
                                        data-bs-toggle="tooltip" data-bs-placement="right" title="Product Name is required" />
                                 <span asp-validation-for="ProductName" class="invalid-tooltip">Product Name is required</span>
+                                <small id="productName-status"></small>
                             </div>
                         </div>
                         <div class="row g-2">
@@ -68,9 +69,44 @@
 <script src="~/assets/vendor/select2/js/select2.min.js"></script>
 
 <script>
+    let productNameValid = false;
+
+    $("#ProductName").on('blur', function () {
+    let productName = $(this).val().trim();
+
+        if (productName.length < 3) {
+            $("#productName-status").html(`<span style="color:gray;">Minimum 3 characters required</span>`);
+            productNameValid = false;
+            return;
+        }
+
+        $.ajax({
+            url: '/Product/CheckProductName',
+            type: 'POST',
+            data: { productName: productName },
+            success: function (res) {
+                if (res.exists) {
+                    productNameValid = false;
+                    $("#productName-status").html(`<span style="color:red;">❌ Product already exists</span>`);
+                } else {
+                    productNameValid = true;
+                    $("#productName-status").html(`<span style="color:green;">✔ Product available</span>`);
+                }
+            }
+        });
+    });
     $("#RegisterForm").on("submit", function (e) {
         e.preventDefault();
         let form = $(this)[0];
+
+        if (!productNameValid) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Product Already Exists',
+                text: 'Please choose another Product.'
+            });
+            return;
+        }
 
         if (!form.checkValidity()) {
             $(this).addClass('was-validated');
