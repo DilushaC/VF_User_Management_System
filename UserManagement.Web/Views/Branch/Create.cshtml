@@ -78,10 +78,10 @@
             data: { branchName: branchName },
             success: function (res) {
                 if (res.exists) {
-                    productNameValid = false;
+                    branchNameValid = false;
                     $("#branchName-status").html(`<span style="color:red;">❌ Branch already exists</span>`);
                 } else {
-                    productNameValid = true;
+                    branchNameValid = true;
                     $("#branchName-status").html(`<span style="color:green;">✔ Branch available</span>`);
                 }
             }
@@ -123,7 +123,7 @@
                 $.ajax({
                     url: '/Branch/Create',
                     type: 'POST',
-                    data: form.serialize(),
+                    data: $("#RegisterForm").serialize(),
                     headers: { "X-Requested-With": "XMLHttpRequest" },
                     success: function (response) {
                         Swal.close();

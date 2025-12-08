@@ -236,7 +236,7 @@
                             timer: 1500,
                             showConfirmButton: false
                         }).then(() => {
-                            window.location.href = '/User/UsersManagement';
+                            window.location.href = response.redirectUrl;
                         });
                     } else {
                         Swal.fire({
