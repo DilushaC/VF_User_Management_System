@@ -156,5 +156,33 @@ namespace UserManagement.Business.RoleHandler
                 return false;
             }
         }
+
+        public async Task<bool> CheckRoleNameExists(IFormCollection collection)
+        {
+            try
+            {
+                var role = collection["RoleName"].ToString();
+
+                string sql = @"
+                    SELECT COUNT(*)
+                    FROM Roles
+                    WHERE RoleName = @RoleName
+                ";
+
+                var parameters = new DynamicParameters();
+                parameters.Add("RoleName", role, DbType.String);
+
+                // Synchronous call wrapped in Task.FromResult
+                var result = _connectionService.ExecuteScalar(sql, parameters);
+
+                int count = Convert.ToInt32(result);
+
+                return await Task.FromResult(count > 0);
+            }
+            catch (Exception)
+            {
+                return await Task.FromResult(false);
+            }
+        }
     }
 }

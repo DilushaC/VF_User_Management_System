@@ -115,6 +115,15 @@ namespace UserManagement.Web.Controllers
                 return Ok(new { success = false, message = $"Error: {ex.Message}" });
             }
         }
+
+        [HttpPost]
+        public async Task<IActionResult> CheckRoleName(IFormCollection collection)
+        {
+            // Pass the form collection directly to the service
+            bool exists = await _roleService.CheckRoleNameExists(collection);
+
+            return Json(new { exists = exists });
+        }
     }
 }
 

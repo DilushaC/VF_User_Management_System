@@ -34,6 +34,7 @@
                                 <input asp-for="RoleName" class="form-control round" required
                                        data-bs-toggle="tooltip" data-bs-placement="right" title="Role Name is required" />
                                 <span asp-validation-for="RoleName" class="invalid-tooltip">Role Name is required</span>
+                                <small id="roleName-status"></small>
                             </div>
                         </div>
                         <div class="row g-2">
@@ -42,6 +43,7 @@
                                 <textarea asp-for="Description" class="form-control round" required
                                           data-bs-toggle="tooltip" data-bs-placement="right" title="Description is required"></textarea>
                                 <span asp-validation-for="Description" class="invalid-tooltip">Description is required</span>
+                                <small id="roleName-status"></small>
                             </div>
                         </div>
                         <div class="row g-2">
@@ -67,9 +69,46 @@
 
 
 <script>
+    let roleNameValid = false;
+
+    $("#RoleName").on('blur', function () {
+    let roleName = $(this).val().trim();
+
+        if (roleName.length < 2) {
+            $("#roleName-status").html(`<span style="color:gray;">Minimum 2 characters required</span>`);
+            roleNameValid = false;
+            return;
+        }
+
+        $.ajax({
+            url: '/Role/CheckRoleName',
+            type: 'POST',
+            data: { roleName: roleName },
+            success: function (res) {
+                if (res.exists) {
+                    roleNameValid = false;
+                    $("#roleName-status").html(`<span style="color:red;">❌ Role already exists</span>`);
+                } else {
+                    roleNameValid = true;
+                    $("#roleName-status").html(`<span style="color:green;">✔ Role available</span>`);
+                }
+            }
+        });
+    });
+
     $("#RegisterForm").on("submit", function (e) {
         e.preventDefault();
         let form = $(this)[0];
+
+
+        if (!roleNameValid) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Role Already Exists',
+                text: 'Please choose another Role.'
+            });
+            return;
+        }
 
         if (!form.checkValidity()) {
             $(this).addClass('was-validated');
