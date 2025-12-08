@@ -33,6 +33,7 @@ namespace UserManagement.Business.PageHandler
                         p.ProductId,
                         pr.ProductName,
                         p.PageCode,
+                        p.PageLevel,
                         p.IsActive
                     FROM Pages p
                     LEFT JOIN Products pr ON p.ProductId = pr.Id;
@@ -51,6 +52,8 @@ namespace UserManagement.Business.PageHandler
                         PageName = BRow["PageName"].ToString(),
                         ProductName = BRow["ProductName"] == DBNull.Value ? string.Empty : BRow["ProductName"].ToString(),
                         PageCode = BRow["PageCode"].ToString(),
+                        PageLevel = BRow["PageLevel"] == DBNull.Value ? null : Convert.ToInt32(BRow["PageLevel"]),
+
                         IsActive = Convert.ToBoolean(BRow["IsActive"]),
                     };
                     pagesList.Add(bModel);
