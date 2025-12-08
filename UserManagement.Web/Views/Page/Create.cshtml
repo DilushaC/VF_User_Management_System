@@ -74,7 +74,7 @@
                             <div class="mb-3 col-md-1 position-relative">
                                 <label asp-for="PageLevel" class="form-label">Page Level</label>
                                 <input asp-for="PageLevel" type="number" class="form-control round" required min="1"
-                                       data-bs-toggle="tooltip" data-bs-placement="right" title="Page Level is required" />
+                                       data-bs-toggle="tooltip" data-bs-placement="right" title="Product Selection is required" disabled />
                                 <span asp-validation-for="PageLevel" class="invalid-tooltip">Page Level is required</span>
                                 <small id="pageLevel-status"></small>
                             </div>
@@ -115,6 +115,19 @@
         placeholder: "Select Product",
     });
 
+    $("#ProductId").on('change', function () {
+        var productId = $(this).val();
+        if (productId) {
+            $("#PageLevel").prop('disabled', false);  
+            $("#PageLevel").val('');
+        } else {
+            $("#PageLevel").prop('disabled', true);   // Keep disabled if no product selected
+            $("#PageLevel").val('');                   // Optional: clear value
+            $("#pageLevel-status").html('');           // Optional: clear validation message
+        }
+    });
+
+
     let pageNameValid = false;
     let pageLevelValid = false;
 
@@ -153,7 +166,7 @@
             success: function (res) {
                 if (res.exists) {
                     pageLevelValid = false;
-                    $("#pageLevel-status").html(`<span style="color:red;">❌ Page Level already exists</span>`);
+                    $("#pageLevel-status").html(`<span style="color:red;">❌ Page Level exists</span>`);
                 } else {
                     pageLevelValid = true;
                     $("#pageLevel-status").html(`<span style="color:green;">✔ Page Level available</span>`);
@@ -178,7 +191,7 @@
         if (!pageLevelValid) {
             Swal.fire({
                 icon: 'error',
-                title: 'Page LevelAlready Exists',
+                title: 'Page Level Already Exists',
                 text: 'Please choose another Page Level.'
             });
             return;
