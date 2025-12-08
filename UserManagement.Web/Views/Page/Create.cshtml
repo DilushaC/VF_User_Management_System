@@ -76,6 +76,7 @@
                                 <input asp-for="PageLevel" type="number" class="form-control round" required min="1"
                                        data-bs-toggle="tooltip" data-bs-placement="right" title="Page Level is required" />
                                 <span asp-validation-for="PageLevel" class="invalid-tooltip">Page Level is required</span>
+                                <small id="pageLevel-status"></small>
                             </div>
                         </div>
                         <div class="row g-2">
@@ -115,6 +116,7 @@
     });
 
     let pageNameValid = false;
+    let pageLevelValid = false;
 
     $("#PageName").on('blur', function () {
     let pageName = $(this).val().trim();
@@ -141,6 +143,25 @@
         });
     });
 
+    $("#PageLevel").on('blur', function () {
+    let pageLevel = $(this).val().trim();
+    var productId = $("#ProductId").val();
+        $.ajax({
+            url: '/Page/CheckPageLevel',
+            type: 'POST',
+            data: { pageLevel: pageLevel,productId: productId },
+            success: function (res) {
+                if (res.exists) {
+                    pageLevelValid = false;
+                    $("#pageLevel-status").html(`<span style="color:red;">❌ Page Level already exists</span>`);
+                } else {
+                    pageLevelValid = true;
+                    $("#pageLevel-status").html(`<span style="color:green;">✔ Page Level available</span>`);
+                }
+            }
+        });
+    });
+
     $("#RegisterForm").on("submit", function (e) {
         e.preventDefault();
         let form = $(this)[0];
@@ -150,6 +171,15 @@
                 icon: 'error',
                 title: 'Page Already Exists',
                 text: 'Please Create another Page.'
+            });
+            return;
+        }
+
+        if (!pageLevelValid) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Page LevelAlready Exists',
+                text: 'Please choose another Page Level.'
             });
             return;
         }

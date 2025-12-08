@@ -154,5 +154,14 @@ namespace UserManagement.Web.Controllers
 
             return Json(new { exists = exists });
         }
+
+        [HttpPost]
+        public async Task<IActionResult> CheckPageLevel(IFormCollection collection)
+        {
+            // Pass the form collection directly to the service
+            bool exists = await _pageService.CheckPageLevelExists(collection);
+
+            return Json(new { exists = exists });
+        }
     }
 }

@@ -273,5 +273,36 @@ namespace UserManagement.Business.PageHandler
             }
         }
 
+        public async Task<bool> CheckPageLevelExists(IFormCollection collection)
+        {
+            try
+            {
+                var productId = collection["ProductId"].ToString();
+                var pageLevel = collection["PageLevel"].ToString();
+
+                string sql = @"
+                    SELECT COUNT(*)
+                    FROM Pages
+                    WHERE ProductId = @ProductId
+                    AND PageLevel = @PageLevel
+                ";
+
+                var parameters = new DynamicParameters();
+                parameters.Add("@ProductId", productId, DbType.Int32);
+                parameters.Add("@PageLevel", pageLevel, DbType.Int32);
+
+                // Synchronous call wrapped in Task.FromResult
+                var result = _connectionService.ExecuteScalar(sql, parameters);
+
+                int count = Convert.ToInt32(result);
+
+                return await Task.FromResult(count > 0);
+            }
+            catch (Exception)
+            {
+                return await Task.FromResult(false);
+            }
+        }
+
     }
 }
