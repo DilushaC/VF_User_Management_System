@@ -236,5 +236,33 @@ namespace UserManagement.Business.PageHandler
             }
         }
 
+        public async Task<bool> CheckPageNameExists(IFormCollection collection)
+        {
+            try
+            {
+                var pageName = collection["PageName"].ToString();
+
+                string sql = @"
+                    SELECT COUNT(*)
+                    FROM Pages
+                    WHERE PageName = @PageName
+                ";
+
+                var parameters = new DynamicParameters();
+                parameters.Add("PageName", pageName, DbType.String);
+
+                // Synchronous call wrapped in Task.FromResult
+                var result = _connectionService.ExecuteScalar(sql, parameters);
+
+                int count = Convert.ToInt32(result);
+
+                return await Task.FromResult(count > 0);
+            }
+            catch (Exception)
+            {
+                return await Task.FromResult(false);
+            }
+        }
+
     }
 }

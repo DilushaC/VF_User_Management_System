@@ -34,6 +34,7 @@
                                 <input asp-for="PageName" class="form-control round" required
                                        data-bs-toggle="tooltip" data-bs-placement="right" title="Page Name is required" />
                                 <span asp-validation-for="PageName" class="invalid-tooltip">Page Name is required</span>
+                                <small id="pageName-status"></small>
                             </div>
                         </div>
                         <div class="row g-2">
@@ -105,9 +106,45 @@
         placeholder: "Select Product",
     });
 
+    let pageNameValid = false;
+
+    $("#PageName").on('blur', function () {
+    let pageName = $(this).val().trim();
+
+        if (pageName.length < 3) {
+            $("#pageName-status").html(`<span style="color:gray;">Minimum 3 characters required</span>`);
+            pageNameValid = false;
+            return;
+        }
+
+        $.ajax({
+            url: '/Page/CheckPageName',
+            type: 'POST',
+            data: { pageName: pageName },
+            success: function (res) {
+                if (res.exists) {
+                    pageNameValid = false;
+                    $("#pageName-status").html(`<span style="color:red;">❌ Page already exists</span>`);
+                } else {
+                    productNameValid = true;
+                    $("#pageName-status").html(`<span style="color:green;">✔ Page available</span>`);
+                }
+            }
+        });
+    });
+
     $("#RegisterForm").on("submit", function (e) {
         e.preventDefault();
         let form = $(this)[0];
+
+        if (!pageNameValid) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Page Already Exists',
+                text: 'Please choose another Page.'
+            });
+            return;
+        }
 
         if (!form.checkValidity()) {
             $(this).addClass('was-validated');
