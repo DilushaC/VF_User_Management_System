@@ -2,6 +2,7 @@
     ViewData["Title"] = "Home Page";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
+<script src="~/assets/vendor/apexcharts/apexcharts.min.js"></script>
 
 <!-- Start Content-->
 <div class="row">
@@ -30,7 +31,7 @@
                     <div class="d-flex justify-content-between">
                         <div class="flex-grow-1 overflow-hidden">
                             <h5 class="text-muted fw-normal mt-0" title="Number of Customers">Customers</h5>
-                            <h3 class="my-3">200</h3>
+                            <h3 class="my-3">100</h3>
                             <p class="mb-0 text-muted text-truncate">
                                 <span class="badge bg-success me-1"><i class="ri-arrow-up-line"></i> 100</span>
                                 <span>Since last month</span>
@@ -124,55 +125,10 @@
             <div class="card">
                 <div class="d-flex card-header justify-content-between align-items-center">
                     <h4 class="header-title">Revenue</h4>
-                    <div class="dropdown">
-                        <a href="#" class="dropdown-toggle arrow-none card-drop" data-bs-toggle="dropdown" aria-expanded="false">
-                            <i class="ri-more-2-fill"></i>
-                        </a>
-                        <div class="dropdown-menu dropdown-menu-end">
-                            <!-- item-->
-                            <a href="javascript:void(0);" class="dropdown-item">Sales Report</a>
-                            <!-- item-->
-                            <a href="javascript:void(0);" class="dropdown-item">Export Report</a>
-                            <!-- item-->
-                            <a href="javascript:void(0);" class="dropdown-item">Profit</a>
-                            <!-- item-->
-                            <a href="javascript:void(0);" class="dropdown-item">Action</a>
-                        </div>
-                    </div>
-                </div>
-                <div class="card-body p-0">
-                    <div class="bg-light-subtle border-top border-bottom border-light">
-                        <div class="row text-center">
-                            <div class="col">
-                                <p class="text-muted mt-3"><i class="ri-donut-chart-fill"></i> Current Week</p>
-                                <h3 class="fw-normal mb-3">
-                                    <span>$1705.54</span>
-                                </h3>
-                            </div>
-                            <div class="col">
-                                <p class="text-muted mt-3"><i class="ri-donut-chart-fill"></i> Previous Week</p>
-                                <h3 class="fw-normal mb-3">
-                                    <span>$6,523.25 <i class="ri-corner-right-up-fill text-success"></i></span>
-                                </h3>
-                            </div>
-                            <div class="col">
-                                <p class="text-muted mt-3"><i class="ri-donut-chart-fill"></i> Conversation</p>
-                                <h3 class="fw-normal mb-3">
-                                    <span>8.27%</span>
-                                </h3>
-                            </div>
-                            <div class="col">
-                                <p class="text-muted mt-3"><i class="ri-donut-chart-fill"></i> Customers</p>
-                                <h3 class="fw-normal mb-3">
-                                    <span>69k <i class="ri-corner-right-down-line text-danger"></i></span>
-                                </h3>
-                            </div>
-                        </div>
-                    </div>
                 </div>
                 <div class="card-body pt-0">
                     <div dir="ltr">
-                        <div id="revenue-chart" class="apex-charts mt-3" data-colors="#3e60d5,#47ad77"></div>
+                        <div id="revenue-chart2" class="apex-charts mt-3" data-colors="#3e60d5,#47ad77"></div>
                     </div>
                 </div> <!-- end card-body-->
             </div> <!-- end card-->
@@ -209,9 +165,9 @@
 
                     <h5 class="mb-1 mt-0 fw-normal">Brooklyn, New York</h5>
                     <div class="progress-w-percent">
-                        <span class="progress-value fw-bold">72k </span>
+                        <span class="progress-value fw-bold">20k </span>
                         <div class="progress progress-sm">
-                            <div class="progress-bar" role="progressbar" style="width: 72%;" aria-valuenow="72" aria-valuemin="0" aria-valuemax="100"></div>
+                            <div class="progress-bar" role="progressbar" style="width: 20%;" aria-valuenow="72" aria-valuemin="0" aria-valuemax="100"></div>
                         </div>
                     </div>
 
@@ -235,3 +191,32 @@
         </div> <!-- end col-->
     </div>
 </div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+
+        var options = {
+            series: [{
+                name: "Revenue",
+                data: [10, 20, 15, 40, 30, 60, 50]  // ← manual values
+            }, {
+                name: "Expenses",
+                data: [5, 15, 10, 30, 20, 40, 35]   // ← manual values
+            }],
+            chart: {
+                height: 350,
+                type: "line"
+            },
+            stroke: {
+                curve: "smooth"
+            },
+            xaxis: {
+                categories: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul"]  // labels
+            }
+        };
+
+        var chart = new ApexCharts(document.querySelector("#revenue-chart2"), options);
+        chart.render();
+
+    });
+</script>
