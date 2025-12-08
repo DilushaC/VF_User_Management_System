@@ -238,5 +238,16 @@ namespace UserManagement.Web.Controllers
             }
         }
 
+        [HttpPost]
+        public async Task<IActionResult> CheckUsername(IFormCollection collection)
+        {
+            // Pass the form collection directly to the service
+            bool exists = await _userService.CheckUserNameExists(collection);
+
+            return Json(new { exists = exists });
+        }
+
+
+
     }
 }

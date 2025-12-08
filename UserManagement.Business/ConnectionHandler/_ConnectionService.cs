@@ -84,12 +84,13 @@ namespace UserManagement.Business.ConnectionHandler
         }
 
 
-        public object ExecuteScalar(string query)
+        public object ExecuteScalar(string query, object parameters = null)
         {
             using var connection = _context.CreateConnection();
-            var result = connection.ExecuteScalar(query);
+            var result = connection.ExecuteScalar(query, parameters);
             return result == DBNull.Value ? null : result;
         }
+
 
         public DataTable ExecuteQuery(string query)
         {

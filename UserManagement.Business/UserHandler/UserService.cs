@@ -408,6 +408,33 @@ namespace UserManagement.Business.UserHandler
             }
         }
 
+        public async Task<bool> CheckUserNameExists(IFormCollection collection)
+        {
+            try
+            {
+                var userName = collection["UserName"].ToString();
+
+                string sql = @"
+                    SELECT COUNT(*)
+                    FROM Users
+                    WHERE UserName = @UserName
+                ";
+
+                var parameters = new DynamicParameters();
+                parameters.Add("UserName", userName, DbType.String);
+
+                // Synchronous call wrapped in Task.FromResult
+                var result = _connectionService.ExecuteScalar(sql, parameters);
+
+                int count = Convert.ToInt32(result);
+
+                return await Task.FromResult(count > 0);
+            }
+            catch (Exception)
+            {
+                return await Task.FromResult(false);
+            }
+        }
 
 
     }

@@ -17,5 +17,7 @@ namespace UserManagement.Business.UserHandler
         public List<UserModel> GetAllActiveUsersList();
         Task<UserModel> GetUserByIdAsync(int id);
         Task<UserModel> GetPagesByUserId(int id);
+        Task<bool> CheckUserNameExists(IFormCollection collection);
+
     }
 }

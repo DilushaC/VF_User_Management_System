@@ -12,20 +12,20 @@
 
 
 <div class="row">
-    <!-- start page title -->
     <div class="row">
         <div class="col-12">
             <div class="page-title-box">
                 <div class="page-title-right">
                     <ol class="breadcrumb m-0">
-                        <li class="breadcrumb-item"><a href="javascript: void(0);">Management</a></li>
-                        <li class="breadcrumb-item"><a href="javascript: void(0);">Users</a></li>
+                        <li class="breadcrumb-item"><a href="javascript:void(0);">Management</a></li>
+                        <li class="breadcrumb-item"><a href="javascript:void(0);">Users</a></li>
                         <li class="breadcrumb-item active">Register User</li>
                     </ol>
                 </div>
             </div>
         </div>
     </div>
+
     <!-- Form row -->
     <div class="row">
         <div class="col-12">
@@ -33,74 +33,68 @@
                 <div class="card-body">
                     <h3 class="header">Register User</h3>
                     <br />
+
                     <form asp-action="RegisterUser" asp-controller="User" method="post" id="RegisterForm" novalidate>
+
+                        <!-- Username -->
                         <div class="row g-2">
                             <div class="mb-3 col-md-6 position-relative">
                                 <label asp-for="UserName" class="form-label">User Name</label>
-                                <input asp-for="UserName" class="form-control round" required
-                                       data-bs-toggle="tooltip" data-bs-placement="right" title="User Name is required" />
-                                <span asp-validation-for="UserName" class="invalid-tooltip">User Name is required</span>
+                                <input asp-for="UserName" class="form-control round"
+                                       id="UserName"
+                                       required
+                                       autocomplete="off"
+                                       data-bs-toggle="tooltip"
+                                       data-bs-placement="right"
+                                       title="User Name is required" />
+
+                                <span asp-validation-for="UserName" class="invalid-tooltip">
+                                    User Name is required
+                                </span>
+
+                                <small id="username-status"></small>
                             </div>
                         </div>
+
+                        <!-- First name + Last name -->
                         <div class="row g-2">
                             <div class="mb-3 col-md-6 position-relative">
                                 <label asp-for="FirstName" class="form-label">First Name</label>
-                                <input asp-for="FirstName" class="form-control round" required
-                                       data-bs-toggle="tooltip" data-bs-placement="right" title="First Name is required" />
+                                <input asp-for="FirstName" class="form-control round" required />
                                 <span asp-validation-for="FirstName" class="invalid-tooltip">First Name is required</span>
                             </div>
                             <div class="mb-3 col-md-6 position-relative">
                                 <label asp-for="LastName" class="form-label">Last Name</label>
-                                <input asp-for="LastName" class="form-control round" required
-                                       data-bs-toggle="tooltip" data-bs-placement="right" title="Last Name is required" />
+                                <input asp-for="LastName" class="form-control round" required />
                                 <span asp-validation-for="LastName" class="invalid-tooltip">Last Name is required</span>
                             </div>
                         </div>
+
+                        <!-- Email -->
                         <div class="row g-2">
                             <div class="mb-3 col-md-6 position-relative">
                                 <label asp-for="Email" class="form-label">Email</label>
-                                <input asp-for="Email" type="email" class="form-control round" required
-                                       data-bs-toggle="tooltip" data-bs-placement="right" title="Email is required" />
+                                <input asp-for="Email" type="email" class="form-control round" required />
                                 <span asp-validation-for="Email" class="invalid-tooltip">Email is required</span>
                             </div>
                         </div>
-@*                         <div class="row g-2">
-                            <div class="mb-3 col-md-6">
-                                <label asp-for="Phone" class="form-label"></label>
-                                <input asp-for="Phone"
-                                       inputmode="numeric"
-                                       maxlength="10"
-                                       oninput="this.value = this.value.replace(/[^0-9]/g,'')"
-                                       class="form-control round"
-                                       placeholder="Enter phone number"
-                                       pattern="0\d{9}"
-                                       title="Phone number must start with 0 and be 10 digits long"
-                                       required
-                                       data-bs-toggle="tooltip" 
-                                       data-bs-placement="right"
-                                       title="Phone number is required" 
-                                       />
-                                <span asp-validation-for="Email" class="invalid-tooltip">Phone number is required</span>
-                            </div>
-                        </div> *@
+
+                        <!-- Phone -->
                         <div class="row g-2">
                             <div class="mb-3 col-md-6 position-relative">
                                 <label asp-for="Phone" class="form-label">Phone</label>
-                                <input asp-for="Phone" type="number" class="form-control round" required
-                                       data-bs-toggle="tooltip" data-bs-placement="right" title="Phone is required" />
+                                <input asp-for="Phone" type="number" class="form-control round" required />
                                 <span asp-validation-for="Phone" class="invalid-tooltip">Phone is required</span>
                             </div>
                         </div>
+
+                        <!-- Designation -->
                         <div class="row g-2">
                             <div class="mb-3 col-md-6 position-relative">
                                 <label asp-for="DesignationId" class="form-label">Designation Name</label>
                                 <select asp-for="DesignationId"
                                         class="form-control select2 round"
                                         required
-                                        data-placeholder="Select Designation"
-                                        data-bs-toggle="tooltip"
-                                        data-bs-placement="right"
-                                        title="Please select a Designation"
                                         asp-items="ViewBag.Designations">
                                     <option value="">Select Designation</option>
                                 </select>
@@ -109,16 +103,14 @@
                                 </span>
                             </div>
                         </div>
+
+                        <!-- Branch -->
                         <div class="row g-2">
                             <div class="mb-3 col-md-6 position-relative">
                                 <label asp-for="PrimaryBranchId" class="form-label">Branch Name</label>
                                 <select asp-for="PrimaryBranchId"
                                         class="form-control select2 round"
                                         required
-                                        data-placeholder="Select Branch"
-                                        data-bs-toggle="tooltip"
-                                        data-bs-placement="right"
-                                        title="Please select a Branch"
                                         asp-items="ViewBag.Branches">
                                     <option value="">Select Branch</option>
                                 </select>
@@ -127,16 +119,14 @@
                                 </span>
                             </div>
                         </div>
+
+                        <!-- Department -->
                         <div class="row g-2">
                             <div class="mb-3 col-md-6 position-relative">
-                                <label asp-for="PrimaryDepartmentId" class="form-label">Select Primary Department</label>
+                                <label asp-for="PrimaryDepartmentId" class="form-label">Primary Department</label>
                                 <select asp-for="PrimaryDepartmentId"
                                         class="form-control select2 round"
                                         required
-                                        data-placeholder="Select Primary Department"
-                                        data-bs-toggle="tooltip"
-                                        data-bs-placement="right"
-                                        title="Please select a Primary Department"
                                         asp-items="ViewBag.Departments">
                                     <option value="">Select Department</option>
                                 </select>
@@ -145,104 +135,127 @@
                                 </span>
                             </div>
                         </div>
+
                         <button type="submit" class="btn btn-primary">Create User</button>
+
                     </form>
-                </div> <!-- end card-body -->
-            </div> <!-- end card-->
-        </div> <!-- end col -->
+                </div>
+            </div>
+        </div>
     </div>
 </div>
-<!-- Load jQuery only ONCE -->
+
+<!-- Scripts -->
 <script src="~/assets/lib/jquery/jquery.min.js"></script>
 <script src="~/assets/js/sweetalert2.all.min.js"></script>
-<!-- Load Select2 JS -->
 <script src="~/assets/vendor/select2/js/select2.min.js"></script>
 
 <script>
-    //select branch
-    $("#PrimaryBranchId").select2({
-        placeholder: "Select Branch",
-    });
 
-    //select department
-    $("#PrimaryDepartmentId").select2({
-        placeholder: "Select Department",
-    });
+    // Select2 Init
+    $("#PrimaryBranchId").select2({ placeholder: "Select Branch" });
+    $("#PrimaryDepartmentId").select2({ placeholder: "Select Department" });
+    $("#DesignationId").select2({ placeholder: "Select Designation" });
 
-    //select designation
-    $("#DesignationId").select2({
-        placeholder: "Select Desingation",
-    });
+    let usernameValid = false; // Track if username is available
 
-    $("#RegisterForm").on("submit", function (e) {
-        e.preventDefault();
-        let form = $(this)[0];
+    $("#UserName").on('blur', function () {
+        let username = $(this).val().trim();
 
-        if (!form.checkValidity()) {
-            $(this).addClass('was-validated');
+        if (username.length < 3) {
+            $("#username-status").html(`<span style="color:gray;">Minimum 3 characters required</span>`);
+            usernameValid = false;
             return;
         }
+
+        $.ajax({
+            url: '/User/CheckUsername',
+            type: 'POST',
+            data: { username: username },
+            success: function (res) {
+                if (res.exists) {
+                    usernameValid = false;
+                    $("#username-status").html(`<span style="color:red;">❌ Username already exists</span>`);
+                } else {
+                    usernameValid = true;
+                    $("#username-status").html(`<span style="color:green;">✔ Username available</span>`);
+                }
+            }
+        });
+    });
+
+    // Form Submit
+    $("#RegisterForm").on("submit", function (e) {
+        e.preventDefault();
+
+        let form = this;
+
+        if (!usernameValid) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Username Already Exists',
+                text: 'Please choose another username.'
+            });
+            return;
+        }
+
+        if (!form.checkValidity()) {
+            $(this).addClass("was-validated");
+            return;
+        }
+
         Swal.fire({
             title: 'Create User?',
-            text: "Are you sure you want to create this user?",
             icon: 'warning',
             showCancelButton: true,
             confirmButtonText: 'Yes, Save',
             cancelButtonText: 'Cancel'
         }).then((result) => {
-            if (result.isConfirmed) {
-                Swal.fire({
-                    title: 'Saving...',
-                    allowOutsideClick: false,
-                    didOpen: () => {
-                        Swal.showLoading();
-                    }
-                });
-                $.ajax({
-                    url: '/User/Register', 
-                    type: 'POST',
-                    data: form.serialize(),
-                    headers: { "X-Requested-With": "XMLHttpRequest" },
-                    success: function (response) {
-                        Swal.close(); 
-                        if (response.success) {
-                            Swal.fire({
-                                icon: 'success',
-                                title: 'User Created Successfully',
-                                showConfirmButton: false,
-                                timer: 1500
-                            }).then(() => {
-                                window.location.href = '/User/UsersManagement';
-                                // Reset form and Select2 elements
-                                form[0].reset();
-                                $("#PrimaryBranchId, #PrimaryDepartmentId, #DesignationId")
-                                    .val('')
-                                    .trigger('change');
-                            });
-                        } else if (response.redirectUrl) {
-                            // Redirect if controller provides URL
-                            window.location.href = response.redirectUrl;
-                        } else {
-                            Swal.fire({
-                                icon: 'error',
-                                title: 'Error',
-                                text: response.message || 'Failed to create user.'
-                            });
-                        }
-                    },
-                    error: function (xhr, status, error) {
+
+            if (!result.isConfirmed) return;
+
+            Swal.fire({
+                title: 'Saving...',
+                allowOutsideClick: false,
+                didOpen: () => Swal.showLoading()
+            });
+
+            $.ajax({
+                url: '/User/Register',
+                type: 'POST',
+                data: $(form).serialize(),
+                headers: { "X-Requested-With": "XMLHttpRequest" },
+
+                success: function (response) {
+                    Swal.close();
+
+                    if (response.success) {
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'User Created',
+                            timer: 1500,
+                            showConfirmButton: false
+                        }).then(() => {
+                            window.location.href = '/User/UsersManagement';
+                        });
+                    } else {
                         Swal.fire({
                             icon: 'error',
                             title: 'Error',
-                            text: 'Something went wrong! Please try again.'
+                            text: response.message || 'Failed to create user'
                         });
                     }
-                });
-            }
+                },
+                error: function () {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: 'Something went wrong!'
+                    });
+                }
+            });
+
         });
     });
 
-
-
 </script>
-
