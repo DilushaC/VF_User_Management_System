@@ -188,5 +188,33 @@ namespace UserManagement.Business.DesignationHandler
                 return false;
             }
         }
+
+        public async Task<bool> CheckDesignationNameExists(IFormCollection collection)
+        {
+            try
+            {
+                var designation = collection["DesignationName"].ToString();
+
+                string sql = @"
+                    SELECT COUNT(*)
+                    FROM Designation
+                    WHERE DesignationName = @Designation
+                ";
+
+                var parameters = new DynamicParameters();
+                parameters.Add("Designation", designation, DbType.String);
+
+                // Synchronous call wrapped in Task.FromResult
+                var result = _connectionService.ExecuteScalar(sql, parameters);
+
+                int count = Convert.ToInt32(result);
+
+                return await Task.FromResult(count > 0);
+            }
+            catch (Exception)
+            {
+                return await Task.FromResult(false);
+            }
+        }
     }
 }

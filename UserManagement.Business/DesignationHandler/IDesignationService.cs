@@ -15,6 +15,7 @@ namespace UserManagement.Business.DesignationHandler
         public List<DesignationModel> GetAllActiveDesignationList();
         Task<DesignationModel> GetDesignationByIdAsync(int id);
         Task<bool> UpdateDesignationAsync(IFormCollection collection);
+        Task<bool> CheckDesignationNameExists(IFormCollection collection);
 
     }
 }

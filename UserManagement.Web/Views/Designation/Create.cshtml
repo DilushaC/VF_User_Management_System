@@ -35,6 +35,7 @@
                                 <input asp-for="DesignationName" class="form-control round" required
                                        data-bs-toggle="tooltip" data-bs-placement="right" title="Designation Name is required" />
                                 <span asp-validation-for="DesignationName" class="invalid-tooltip">Designation Name is required</span>
+                                <small id="designationName-status"></small>
                             </div>
                         </div>
                         <div class="row g-2">
@@ -68,9 +69,46 @@
         placeholder: "Select Status",
     });
 
+    let designationNameValid = false;
+
+    $("#DesignationName").on('blur', function () {
+    let designationName = $(this).val().trim();
+
+        if (designationName.length < 3) {
+            $("#designationName-status").html(`<span style="color:gray;">Minimum 3 characters required</span>`);
+            designationNameValid = false;
+            return;
+        }
+
+        $.ajax({
+            url: '/Designation/CheckDesignationName',
+            type: 'POST',
+            data: { designationName: designationName },
+            success: function (res) {
+                if (res.exists) {
+                    designationNameValid = false;
+                    $("#designationName-status").html(`<span style="color:red;">❌ Designation already exists</span>`);
+                } else {
+                    designationNameValid = true;
+                    $("#designationName-status").html(`<span style="color:green;">✔ Designation available</span>`);
+                }
+            }
+        });
+    });
+
+
     $("#RegisterForm").on("submit", function (e) {
         e.preventDefault(); 
         let form = $(this)[0]; 
+
+        if (!designationNameValid) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Designation Already Exists',
+                text: 'Please choose another designation.'
+            });
+            return;
+        }
 
         if (!form.checkValidity()) {
             $(this).addClass('was-validated');

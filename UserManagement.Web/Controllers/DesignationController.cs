@@ -185,5 +185,14 @@ namespace UserManagement.Web.Controllers
                 return View();
             }
         }
+
+        [HttpPost]
+        public async Task<IActionResult> CheckDesignationName(IFormCollection collection)
+        {
+            // Pass the form collection directly to the service
+            bool exists = await _designationService.CheckDesignationNameExists(collection);
+
+            return Json(new { exists = exists });
+        }
     }
 }
