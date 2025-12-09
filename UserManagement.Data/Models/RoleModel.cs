@@ -11,6 +11,6 @@ namespace UserManagement.Data.Models
         public int Id { get; set; }
         public string RoleName { get; set; }
         public string Description { get; set; }
-        public bool IsAdminAccount { get; set; }
+        public bool IsActive { get; set; }
     }
 }

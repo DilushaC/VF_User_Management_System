@@ -45,7 +45,7 @@
                     <thead>
                         <tr>
                             <th>Role Name</th>
-                            <th>Admin Account</th>
+                            <th>Active</th>
                             <th>Edit</th>
                         </tr>
                     </thead>
@@ -91,7 +91,7 @@
         columns: [
             { data: 'roleName' },
             {
-                data: 'isAdminAccount',
+                data: 'isActive',
                 render: function (data, type, row) {
                     if (data === true || data === "Active") {
                         return '<span class="badge bg-success">Yes</span>';

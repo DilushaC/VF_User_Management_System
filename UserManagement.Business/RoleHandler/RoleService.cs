@@ -25,20 +25,20 @@ namespace UserManagement.Business.RoleHandler
             {
                 var roleName = collection["RoleName"].ToString();
                 var description = collection["Description"].ToString();
-                var isAdminAccount = collection["IsAdminAccount"].ToString();
+                var IsActive = collection["IsActive"].ToString();
 
                 string sql = @"
                 INSERT INTO Roles
-                (RoleName, Description, IsAdminAccount)
+                (RoleName, Description, IsActive)
                 VALUES
-                (@RoleName, @Description, @IsAdminAccount);
+                (@RoleName, @Description, @IsActive);
             ";
 
                 var parameters = new DynamicParameters();
 
                 parameters.Add("RoleName", roleName, DbType.String);
                 parameters.Add("Description", description, DbType.String);
-                parameters.Add("IsAdminAccount", isAdminAccount, DbType.Boolean);
+                parameters.Add("IsActive", IsActive, DbType.Boolean);
 
                 int rows = _connectionService.ExecuteWithPara(sql, parameters);
 
@@ -69,7 +69,7 @@ namespace UserManagement.Business.RoleHandler
                         Id = Convert.ToInt32(BRow["Id"]),
                         RoleName = BRow["RoleName"].ToString(),
                         Description = BRow["Description"].ToString(),
-                        IsAdminAccount = Convert.ToBoolean(BRow["IsAdminAccount"]),
+                        IsActive = Convert.ToBoolean(BRow["IsActive"]),
                     };
                     rolesList.Add(bModel);
                 }
@@ -92,7 +92,7 @@ namespace UserManagement.Business.RoleHandler
                                     Id,
                                     RoleName,
                                     Description,
-                                    IsAdminAccount
+                                    IsActive
                                 FROM 
                                     Roles
                                 WHERE 
@@ -112,7 +112,7 @@ namespace UserManagement.Business.RoleHandler
                     Id = Convert.ToInt32(row["Id"]),
                     RoleName = row["RoleName"] == DBNull.Value ? string.Empty : row["RoleName"].ToString(),
                     Description = row["Description"] == DBNull.Value ? string.Empty : row["Description"].ToString(),
-                    IsAdminAccount = row["IsAdminAccount"] != DBNull.Value && Convert.ToBoolean(row["IsAdminAccount"]),
+                    IsActive = row["IsActive"] != DBNull.Value && Convert.ToBoolean(row["IsActive"]),
                 };
 
                 return model;
@@ -130,14 +130,14 @@ namespace UserManagement.Business.RoleHandler
                 var Id = Convert.ToInt32(collection["Id"]);
                 var roleName = collection["RoleName"].ToString();
                 var description = collection["Description"].ToString();
-                var isAdminAccount = Convert.ToBoolean(collection["IsAdminAccount"]);
+                var isActive = Convert.ToBoolean(collection["IsActive"]);
 
                 string sql = @"
                     UPDATE Roles
                     SET 
                         RoleName = @RoleName,
                         Description = @Description,
-                        IsAdminAccount = @IsAdminAccount
+                        IsActive = @IsActive
                     WHERE Id = @Id;
                 ";
 
@@ -145,7 +145,7 @@ namespace UserManagement.Business.RoleHandler
                 parameters.Add("Id", Id, DbType.Int32);
                 parameters.Add("RoleName", roleName, DbType.String);
                 parameters.Add("Description", description, DbType.String);
-                parameters.Add("IsAdminAccount", isAdminAccount, DbType.Boolean);
+                parameters.Add("IsActive", isActive, DbType.Boolean);
 
                 int rows = _connectionService.ExecuteWithPara(sql, parameters);
 
