@@ -3,28 +3,48 @@
     var username = Context.Session.GetString("UserName");
     var userId = Context.Session.GetString("UserId");
     var pageURLs = Context.Session.GetString("PageUrls");
+
+    // List of menu URLs (split before '|')
     List<string> allowedPages = new List<string>();
+
+    // List of permissions (TRUE/FALSE part after '|')
+    List<string> pagePermissions = new List<string>();
+
     if (!string.IsNullOrEmpty(pageURLs))
     {
-        allowedPages = JsonSerializer.Deserialize<List<string>>(pageURLs) ?? new List<string>();
+        var allPages = JsonSerializer.Deserialize<List<string>>(pageURLs) ?? new List<string>();
+
+        // Split each URL and store URL and permission separately
+        foreach (var p in allPages)
+        {
+            var parts = p.Split('|');
+            var url = parts[0].StartsWith("/") ? parts[0] : "/" + parts[0];
+            allowedPages.Add(url);
+
+            // If permission exists, store it, otherwise default to false
+            pagePermissions.Add(parts.Length > 1 ? parts[1] : "false");
+        }
     }
 
-    allowedPages = allowedPages.Select(u => u.StartsWith("/") ? u : "/" + u).ToList();
-
+    // Build grouped menu
     var menuGroups = allowedPages
-        .Select(url =>
+        .Select((url, index) =>
         {
             var segments = url.Trim('/').Split('/');
             return new
             {
                 MenuTitle = segments[0],
                 PageTitle = segments.Length > 1 ? segments[1] : segments[0],
-                Url = url
+                Url = url,
+                Permission = pagePermissions[index]   // TRUE/FALSE from original
             };
         })
         .GroupBy(p => p.MenuTitle)
         .ToList();
 }
+
+
+
 
 
 
@@ -164,7 +184,9 @@
                                         @foreach (var item in menu)
                                         {
                                             <li>
-                                                <a href="@item.Url">@item.PageTitle</a>
+                                                <a href="@item.Url" class="menu-link" data-permission="@item.Permission">
+                                                    @item.PageTitle
+                                                </a>
                                             </li>
                                         }
                                     </ul>
@@ -233,8 +255,21 @@
     </script>
 
     <script>
-        console.log("PageUrls:", "@Context.Session.GetString("PageUrls")");
+        $(document).ready(function() {
+            $(".menu-link").click(function(e) {
+                e.preventDefault();
+                var url = $(this).attr("href");
+                var permission = $(this).data("permission");
+                if (url.indexOf('?') > -1) {
+                    url += '&permission=' + permission;
+                } else {
+                    url += '?permission=' + permission;
+                }
+                window.location.href = url;
+            });
+        });
     </script>
+
 
 
 </body>

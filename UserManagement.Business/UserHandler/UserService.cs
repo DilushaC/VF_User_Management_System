@@ -351,13 +351,13 @@ namespace UserManagement.Business.UserHandler
         {
             try
             {
-
                 UserModel userModel = new UserModel()
                 {
                     PageUrls = new List<string>()
                 };
 
-                string roleQuery = @"SELECT RoleId FROM UserRoles WHERE UserId ="+id;
+                // Get RoleId for the user
+                string roleQuery = $"SELECT RoleId FROM UserRoles WHERE UserId = {id}";
                 DataTable roleData = await _connectionService.SingleQueryReturn(roleQuery, id);
 
                 if (roleData != null && roleData.Rows.Count > 0)
@@ -365,37 +365,27 @@ namespace UserManagement.Business.UserHandler
                     int roleId = Convert.ToInt32(roleData.Rows[0]["RoleId"]);
                     userModel.RoleId = roleId;
 
-                    string pagePermissionQuery = @"
-                        SELECT PageId 
-                        FROM RolePagePermissions 
-                        WHERE RoleId ="+roleId;
+                    // Get PageUrl and CanEdit in one query
+                    string pageQuery = $@"
+                        SELECT p.PageUrl, r.CanEdit
+                        FROM Pages p
+                        INNER JOIN RolePagePermissions r ON p.Id = r.PageId
+                        WHERE r.RoleId = {roleId} AND p.IsActive = 1
+                        ORDER BY 
+                            CASE WHEN p.PageLevel IS NULL THEN 1 ELSE 0 END,
+                            p.PageLevel ASC";
 
-                    DataTable pagePermData = await _connectionService.SingleQueryReturn(pagePermissionQuery, roleId);
+                    DataTable pageData = await _connectionService.SingleQueryReturn(pageQuery, roleId);
 
-                    if (pagePermData != null && pagePermData.Rows.Count > 0)
+                    if (pageData != null)
                     {
-                        List<int> pageIds = pagePermData.Rows.Cast<DataRow>()
-                                            .Select(r => Convert.ToInt32(r["PageId"]))
-                                            .ToList();
-
-                        string idList = string.Join(",", pageIds);
-                        string pageUrlQuery = $@"
-                            SELECT PageUrl
-                            FROM Pages
-                            WHERE Id IN ({idList}) AND IsActive = 1
-                            ORDER BY 
-                                CASE WHEN PageLevel IS NULL THEN 1 ELSE 0 END,
-                                PageLevel ASC";
-
-
-                        DataTable pageData = await _connectionService.SingleQueryReturn(pageUrlQuery,roleId);
-
-                        if (pageData != null)
+                        foreach (DataRow p in pageData.Rows)
                         {
-                            foreach (DataRow p in pageData.Rows)
-                            {
-                                userModel.PageUrls.Add(p["PageUrl"].ToString());
-                            }
+                            string pageUrl = p["PageUrl"].ToString();
+                            bool canEdit = p["CanEdit"] != DBNull.Value && Convert.ToBoolean(p["CanEdit"]);
+
+                            // Store as "PageUrl|CanEdit" string, or you can create a tuple/class if needed
+                            userModel.PageUrls.Add($"{pageUrl}|{canEdit}");
                         }
                     }
                 }
@@ -407,6 +397,7 @@ namespace UserManagement.Business.UserHandler
                 throw new Exception($"Failed to retrieve user with ID {id}.", ex);
             }
         }
+
 
         public async Task<bool> CheckUserNameExists(IFormCollection collection)
         {

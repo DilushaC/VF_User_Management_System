@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using System.Security;
 using UserManagement.Business.BranchHandler;
 using UserManagement.Business.DatatableHandler;
 using UserManagement.Business.DepartmentHandler;
@@ -20,8 +21,13 @@ namespace UserManagement.Web.Controllers
             _dataTableService = dataTableService;
         }
 
-        public ActionResult Create()
+        [HttpGet]
+        public IActionResult Create(string permission)
         {
+            bool canEdit = permission?.ToLower() == "true";
+
+            ViewBag.CanEdit = canEdit;
+
             return View();
         }
 

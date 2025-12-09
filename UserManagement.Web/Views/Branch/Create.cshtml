@@ -28,26 +28,28 @@
                     <h3 class="header">@ViewData["Title"]</h3>
                     <br />
                     <form asp-action="Create" asp-controller="Branch" method="post" id="RegisterForm" novalidate>
-                        <div class="row g-2">
-                            <div class="mb-3 col-md-6 position-relative">
-                                <label asp-for="BranchName" class="form-label">Branch Name</label>
-                                <input asp-for="BranchName" class="form-control round" required
-                                       data-bs-toggle="tooltip" data-bs-placement="right" title="Branch Name is required" />
-                                <span asp-validation-for="BranchName" class="invalid-tooltip">Branch Name is required</span>
-                                <small id="branchName-status"></small>
+                        <fieldset @(ViewBag.CanEdit != null && !(bool)ViewBag.CanEdit ? "disabled" : "")>
+                            <div class="row g-2">
+                                <div class="mb-3 col-md-6 position-relative">
+                                    <label asp-for="BranchName" class="form-label">Branch Name</label>
+                                    <input asp-for="BranchName" class="form-control round" required
+                                           data-bs-toggle="tooltip" data-bs-placement="right" title="Branch Name is required" />
+                                    <span asp-validation-for="BranchName" class="invalid-tooltip">Branch Name is required</span>
+                                    <small id="branchName-status"></small>
+                                </div>
                             </div>
-                        </div>
-                        <div class="row g-2">
-                            <div class="mb-3 col-md-2 position-relative">
-                                <label asp-for="IsActive" class="form-label">Active Status</label>
-                                <select asp-for="IsActive" class="form-select select2">
-                                    <option value="true">Active</option>
-                                    <option value="false">Inactive</option>
-                                </select>
-                                <span asp-validation-for="IsActive" class="invalid-tooltip">Active Status is required</span>
+                            <div class="row g-2">
+                                <div class="mb-3 col-md-2 position-relative">
+                                    <label asp-for="IsActive" class="form-label">Active Status</label>
+                                    <select asp-for="IsActive" class="form-select select2">
+                                        <option value="true">Active</option>
+                                        <option value="false">Inactive</option>
+                                    </select>
+                                    <span asp-validation-for="IsActive" class="invalid-tooltip">Active Status is required</span>
+                                </div>
                             </div>
-                        </div>
-                        <button type="submit" class="btn btn-primary">Create Branch</button>
+                            <button type="submit" class="btn btn-primary">Create Branch</button>
+                        </fieldset>
                     </form>
                 </div> <!-- end card-body -->
             </div> <!-- end card-->
