@@ -167,8 +167,8 @@ namespace UserManagement.Web.Controllers
         [HttpGet]
         public ActionResult Register()
         {
-            var branches = _branchService.GetAllBranchList();
-            var departments = _departmentService.GetAllDepartmentList();
+            var branches = _branchService.GetAllActiveBranchList();
+            var departments = _departmentService.GetAllActiveDepartmentList();
             var designations = _designationService.GetAllActiveDesignationList();
 
             //viewbag for branches
