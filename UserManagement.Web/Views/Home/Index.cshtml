@@ -45,20 +45,10 @@
                         <a href="#" class="dropdown-toggle arrow-none card-drop" data-bs-toggle="dropdown" aria-expanded="false">
                             <i class="ri-more-2-fill"></i>
                         </a>
-                        <div class="dropdown-menu dropdown-menu-end">
-                            <!-- item-->
-                            <a href="javascript:void(0);" class="dropdown-item">Sales Report</a>
-                            <!-- item-->
-                            <a href="javascript:void(0);" class="dropdown-item">Export Report</a>
-                            <!-- item-->
-                            <a href="javascript:void(0);" class="dropdown-item">Profit</a>
-                            <!-- item-->
-                            <a href="javascript:void(0);" class="dropdown-item">Action</a>
-                        </div>
                     </div>
                 </div>
                 <div class="card-body pt-0">
-                    <div id="average-sales" class="apex-charts mb-3"
+                    <div id="average-sales1" class="apex-charts mb-3"
                          data-colors="#3e60d5,#47ad77,#fa5c7c,#16a7e9"></div>
                 </div> <!-- end card-body-->
             </div> <!-- end card-->
@@ -69,10 +59,34 @@
 <script>
     document.addEventListener("DOMContentLoaded", function () {
 
+        var gaugeOptions = {
+            chart: {
+                height: 300,
+                type: "radialBar"
+            },
+            series: [65], // Manual value
+            colors: ['#3e60d5'],
+            plotOptions: {
+                radialBar: {
+                    hollow: {
+                        size: "60%"
+                    }
+                }
+            }
+        };
+
+        var gauge = new ApexCharts(
+            document.querySelector("#average-sales1"),
+            gaugeOptions
+        );
+        gauge.render();
+
+
+
         var options = {
             series: [{
                 name: "Revenue",
-                data: [10, 20, 15, 40, 30, 60, 50]  // ← manual values
+                data: [100, 20, 15, 40, 30, 60, 50]  // ← manual values
             }, {
                 name: "Expenses",
                 data: [5, 15, 10, 30, 20, 40, 35]   // ← manual values

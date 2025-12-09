@@ -82,6 +82,37 @@ namespace UserManagement.Business.RoleHandler
             }
         }
 
+        public List<RoleModel> GetAllActiveRolesList()
+        {
+            try
+            {
+                string Query = $"SELECT * FROM Roles WHERE IsActive = 1";
+                var Data = _connectionService.Return(Query);
+                var Row = Data.Rows[0];
+
+                List<RoleModel> rolesList = new List<RoleModel>();
+
+                for (int i = 0; i < Data.Rows.Count; i++)
+                {
+                    var BRow = Data.Rows[i];
+                    RoleModel bModel = new RoleModel()
+                    {
+                        Id = Convert.ToInt32(BRow["Id"]),
+                        RoleName = BRow["RoleName"].ToString(),
+                        Description = BRow["Description"].ToString(),
+                        IsActive = Convert.ToBoolean(BRow["IsActive"]),
+                    };
+                    rolesList.Add(bModel);
+                }
+                return rolesList;
+
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
 
         public async Task<RoleModel> GetRoleByIdAsync(int id)
         {

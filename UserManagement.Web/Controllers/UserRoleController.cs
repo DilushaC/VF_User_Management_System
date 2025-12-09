@@ -30,7 +30,7 @@ namespace UserManagement.Web.Controllers
         public IActionResult Create()
         {
             var users = _userService.GetAllActiveUsersList();
-            var roles = _roleService.GetAllRolesList();
+            var roles = _roleService.GetAllActiveRolesList();
 
             //viewbag for branches
             ViewBag.Users = users
@@ -122,7 +122,7 @@ namespace UserManagement.Web.Controllers
         [HttpGet]
         public async Task<IActionResult> LoadEditModal(int id)
         {
-            var roles = _roleService.GetAllRolesList();
+            var roles = _roleService.GetAllActiveRolesList();
 
             //viewbag for branches
             ViewBag.UserRoles = roles
