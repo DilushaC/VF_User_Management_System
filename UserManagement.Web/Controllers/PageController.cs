@@ -24,8 +24,12 @@ namespace UserManagement.Web.Controllers
         }
 
         [HttpGet]
-        public IActionResult Create()
+        public IActionResult Create(string permission)
         {
+            bool canEdit = permission?.ToLower() == "true";
+
+            ViewBag.CanEdit = canEdit;
+
             var products = _productService.GetAllActiveProductList();
 
             //viewbag for branches

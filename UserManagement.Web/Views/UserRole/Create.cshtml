@@ -28,47 +28,49 @@
                     <h3 class="header">@ViewData["Title"]</h3>
                     <br />
                     <form asp-action="Create" asp-controller="UserRole" method="post" id="RegisterForm" novalidate>
-                        <div class="row g-2">
-                            <div class="mb-3 col-md-6 position-relative">
-                                <label asp-for="UserId" class="form-label">User Name</label>
-                                <select asp-for="UserId"
-                                        class="form-control select2 round"
-                                        required
-                                        data-placeholder="Select User"
-                                        data-bs-toggle="tooltip"
-                                        data-bs-placement="right"
-                                        title="Please select a user"
-                                        asp-items="ViewBag.Users">
-                                    <option value="">Select User</option>
-                                </select>
-                                <span asp-validation-for="UserId" class="invalid-tooltip">
-                                    Please select a user
-                                </span>
+                        <fieldset @(ViewBag.CanEdit != null && !(bool)ViewBag.CanEdit ? "disabled" : "")>
+                            <div class="row g-2">
+                                <div class="mb-3 col-md-6 position-relative">
+                                    <label asp-for="UserId" class="form-label">User Name</label>
+                                    <select asp-for="UserId"
+                                            class="form-control select2 round"
+                                            required
+                                            data-placeholder="Select User"
+                                            data-bs-toggle="tooltip"
+                                            data-bs-placement="right"
+                                            title="Please select a user"
+                                            asp-items="ViewBag.Users">
+                                        <option value="">Select User</option>
+                                    </select>
+                                    <span asp-validation-for="UserId" class="invalid-tooltip">
+                                        Please select a user
+                                    </span>
+                                </div>
                             </div>
-                        </div>
-                        <div class="row g-2">
-                            <div class="mb-3 col-md-6 position-relative">
-                                <label asp-for="RoleIds" class="form-label">User Role</label>
-                                <select asp-for="RoleIds"
-                                        id="RoleIds"
-                                        name="RoleIds"
-                                        class="form-control select2 round"
-                                        multiple="multiple"
-                                        required
-                                        data-placeholder="Select Roles"
-                                        data-bs-toggle="tooltip"
-                                        data-bs-placement="right"
-                                        title="Please select at least one role"
-                                        asp-items="ViewBag.Roles">
-                                </select>
-                                <span asp-validation-for="RoleIds" class="invalid-tooltip">
-                                    Please select at least one role
-                                </span>
+                            <div class="row g-2">
+                                <div class="mb-3 col-md-6 position-relative">
+                                    <label asp-for="RoleIds" class="form-label">User Role</label>
+                                    <select asp-for="RoleIds"
+                                            id="RoleIds"
+                                            name="RoleIds"
+                                            class="form-control select2 round"
+                                            multiple="multiple"
+                                            required
+                                            data-placeholder="Select Roles"
+                                            data-bs-toggle="tooltip"
+                                            data-bs-placement="right"
+                                            title="Please select at least one role"
+                                            asp-items="ViewBag.Roles">
+                                    </select>
+                                    <span asp-validation-for="RoleIds" class="invalid-tooltip">
+                                        Please select at least one role
+                                    </span>
+                                </div>
                             </div>
-                        </div>
 
 
-                        <button type="submit" class="btn btn-primary">Create User Role</button>
+                            <button type="submit" class="btn btn-primary">Create User Role</button>
+                        </fieldset>
                     </form>
 
                 </div> <!-- end card-body -->

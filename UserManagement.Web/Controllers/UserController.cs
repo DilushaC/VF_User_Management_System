@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using System.Collections.Generic;
+using System.Security;
 using System.Text.Json;
 using UserManagement.Business.BranchHandler;
 using UserManagement.Business.DatatableHandler;
@@ -165,8 +166,12 @@ namespace UserManagement.Web.Controllers
 
         //load user register page view
         [HttpGet]
-        public ActionResult Register()
+        public ActionResult Register(string permission)
         {
+            bool canEdit = permission?.ToLower() == "true";
+
+            ViewBag.CanEdit = canEdit;
+
             var branches = _branchService.GetAllActiveBranchList();
             var departments = _departmentService.GetAllActiveDepartmentList();
             var designations = _designationService.GetAllActiveDesignationList();

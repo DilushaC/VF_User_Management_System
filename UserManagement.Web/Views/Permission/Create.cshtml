@@ -28,74 +28,75 @@
                     <h3 class="header">@ViewData["Title"]</h3>
                     <br />
                     <form asp-action="Create" asp-controller="UserRole" method="post" id="RegisterForm" novalidate>
-                        <div class="row g-2">
-                            <div class="mb-3 col-md-6 position-relative">
-                                <label asp-for="RoleId" class="form-label">Role Name</label>
-                                <select asp-for="RoleId"
-                                        class="form-control select2 round"
-                                        required
-                                        data-placeholder="Select Role"
-                                        data-bs-toggle="tooltip"
-                                        data-bs-placement="right"
-                                        title="Please select a role"
-                                        asp-items="ViewBag.Roles">
-                                    <option value="">Select Role</option>
-                                </select>
-                                <span asp-validation-for="RoleId" class="invalid-tooltip">
-                                    Please select a Role
-                                </span>
+                        <fieldset @(ViewBag.CanEdit != null && !(bool)ViewBag.CanEdit ? "disabled" : "")>
+                            <div class="row g-2">
+                                <div class="mb-3 col-md-6 position-relative">
+                                    <label asp-for="RoleId" class="form-label">Role Name</label>
+                                    <select asp-for="RoleId"
+                                            class="form-control select2 round"
+                                            required
+                                            data-placeholder="Select Role"
+                                            data-bs-toggle="tooltip"
+                                            data-bs-placement="right"
+                                            title="Please select a role"
+                                            asp-items="ViewBag.Roles">
+                                        <option value="">Select Role</option>
+                                    </select>
+                                    <span asp-validation-for="RoleId" class="invalid-tooltip">
+                                        Please select a Role
+                                    </span>
+                                </div>
                             </div>
-                        </div>
-                        <div class="row g-2">
-                            <div class="mb-3 col-md-6 position-relative">
-                                <label asp-for="ProductId" class="form-label">Product Name</label>
-                                <select asp-for="ProductId"
-                                        class="form-control select2 round"
-                                        required
-                                        data-placeholder="Select Product"
-                                        data-bs-toggle="tooltip"
-                                        data-bs-placement="right"
-                                        title="Please select a product"
-                                        asp-items="ViewBag.Products">
-                                    <option value="">Select Product</option>
-                                </select>
-                                <span asp-validation-for="ProductId" class="invalid-tooltip">
-                                    Please select a Product
-                                </span>
+                            <div class="row g-2">
+                                <div class="mb-3 col-md-6 position-relative">
+                                    <label asp-for="ProductId" class="form-label">Product Name</label>
+                                    <select asp-for="ProductId"
+                                            class="form-control select2 round"
+                                            required
+                                            data-placeholder="Select Product"
+                                            data-bs-toggle="tooltip"
+                                            data-bs-placement="right"
+                                            title="Please select a product"
+                                            asp-items="ViewBag.Products">
+                                        <option value="">Select Product</option>
+                                    </select>
+                                    <span asp-validation-for="ProductId" class="invalid-tooltip">
+                                        Please select a Product
+                                    </span>
+                                </div>
                             </div>
-                        </div>
-                        <div class="row g-2">
-                            <div class="mb-3 col-md-6 position-relative">
-                                <label asp-for="PageIds" class="form-label">Page Name</label>
-                                <select asp-for="PageIds"
-                                        id="PageIds"
-                                        name="PageIds"
-                                        class="form-control select2 round"
-                                        multiple="multiple"
-                                        required
-                                        data-placeholder="Select Pages"
-                                        data-bs-toggle="tooltip"
-                                        data-bs-placement="right"
-                                        title="Please select at least one page"
-                                        asp-items="ViewBag.Pages"
-                                        >
-                                </select>
-                                <span asp-validation-for="PageIds" class="invalid-tooltip">
-                                    Please select at least one page
-                                </span>
+                            <div class="row g-2">
+                                <div class="mb-3 col-md-6 position-relative">
+                                    <label asp-for="PageIds" class="form-label">Page Name</label>
+                                    <select asp-for="PageIds"
+                                            id="PageIds"
+                                            name="PageIds"
+                                            class="form-control select2 round"
+                                            multiple="multiple"
+                                            required
+                                            data-placeholder="Select Pages"
+                                            data-bs-toggle="tooltip"
+                                            data-bs-placement="right"
+                                            title="Please select at least one page"
+                                            asp-items="ViewBag.Pages">
+                                    </select>
+                                    <span asp-validation-for="PageIds" class="invalid-tooltip">
+                                        Please select at least one page
+                                    </span>
+                                </div>
                             </div>
-                        </div>
-                        <div class="row g-2">
-                            <div class="mb-3 col-md-2">
-                                <label asp-for="CanEdit" class="form-label">Can Edit</label>
-                                <select asp-for="CanEdit" class="form-select">
-                                    <option value="true">Yes</option>
-                                    <option value="false">No</option>
-                                </select>
-                                <span asp-validation-for="CanEdit" class="text-danger"></span>
+                            <div class="row g-2">
+                                <div class="mb-3 col-md-2">
+                                    <label asp-for="CanEdit" class="form-label">Can Edit</label>
+                                    <select asp-for="CanEdit" class="form-select">
+                                        <option value="true">Yes</option>
+                                        <option value="false">No</option>
+                                    </select>
+                                    <span asp-validation-for="CanEdit" class="text-danger"></span>
+                                </div>
                             </div>
-                        </div>
-                        <button type="submit" class="btn btn-primary">Create Permission</button>
+                            <button type="submit" class="btn btn-primary">Create Permission</button>
+                        </fieldset>
                     </form>
                 </div> <!-- end card-body -->
             </div> <!-- end card-->

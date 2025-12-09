@@ -25,8 +25,12 @@ namespace UserManagement.Web.Controllers
             _rolePagePermissionService = rolePagePermissionService;
         }
         [HttpGet]
-        public IActionResult Create()
+        public IActionResult Create(string permission)
         {
+            bool canEdit = permission?.ToLower() == "true";
+
+            ViewBag.CanEdit = canEdit;
+
             var roles = _roleService.GetAllRolesList();
             var products = _productService.GetAllActiveProductList();
 
