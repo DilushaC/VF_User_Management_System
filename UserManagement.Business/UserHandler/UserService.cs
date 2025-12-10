@@ -1,4 +1,5 @@
-﻿using Dapper;
+﻿using ComplaintManagementSystem.Business.Authentication;
+using Dapper;
 using Microsoft.AspNetCore.Http;
 using System;
 using System.Collections.Generic;
@@ -18,11 +19,13 @@ namespace UserManagement.Business.UserHandler
     {
         private readonly _ConnectionService _connectionService;
         private readonly PasswordHelper _passwordHelper;
+        private readonly ADAuthentication _aDAuthentication;
 
-        public UserService(_ConnectionService connectionService, PasswordHelper passwordHelper)
+        public UserService(_ConnectionService connectionService, PasswordHelper passwordHelper,ADAuthentication aDAuthentication)
         {
             _connectionService = connectionService;
             _passwordHelper = passwordHelper;
+            _aDAuthentication = aDAuthentication;
         }
 
         public async Task<bool> CreateUserAsync(IFormCollection collection)
@@ -311,14 +314,17 @@ namespace UserManagement.Business.UserHandler
 
         public async Task<UserModel?> ValidateUserAsync(string username, string password)
         {
-            const string query = @"
+            var response = await _aDAuthentication.AuthenticatewithAD(username, password);
+            if (response.Status)
+            {
+                const string query = @"
                                     SELECT * 
                                     FROM Users 
                                     WHERE UserName = @UserName AND IsActive = 1";
 
-            var parameters = new DynamicParameters();
-            parameters.Add("@UserName", username);
-            var users = _connectionService.ReturnWithPara(query, parameters)
+                var parameters = new DynamicParameters();
+                parameters.Add("@UserName", username);
+                var users = _connectionService.ReturnWithPara(query, parameters)
                                           .AsEnumerable()
                                           .Select(row => new UserModel
                                           {
@@ -336,14 +342,19 @@ namespace UserManagement.Business.UserHandler
                                               CreatedDate = row.Field<DateTime?>("CreatedDate"),
                                               LastLoginDate = row.Field<DateTime?>("LastLoginDate")
                                           })
-                        .ToList();
+                                .ToList();
 
-            var user = users.FirstOrDefault();
-            if (user == null)
+                var user = users.FirstOrDefault();
+                if (user == null)
+                    return null;
+
+                //bool isValid = _passwordHelper.VerifyPassword(password, user.Password);
+                return user;
+            }
+            else
+            {
                 return null;
-
-            bool isValid = _passwordHelper.VerifyPassword(password, user.Password);
-            return isValid ? user : null;
+            }
         }
 
         //get user pages

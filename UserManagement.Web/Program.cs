@@ -1,3 +1,4 @@
+using ComplaintManagementSystem.Business.Authentication;
 using UserManagement.Business.BranchHandler;
 using UserManagement.Business.ConnectionHandler;
 using UserManagement.Business.DatatableHandler;
@@ -35,6 +36,7 @@ builder.Services.AddScoped<IRoleService, RoleService>();
 builder.Services.AddScoped<IUserRoleService, UserRoleService>();
 builder.Services.AddScoped<IRolePagePermissionService, RolePagePermissionService>();
 builder.Services.AddScoped<IDataTableService, DataTableService>();
+builder.Services.AddScoped<ADAuthentication>();
 
 
 // Add session services
