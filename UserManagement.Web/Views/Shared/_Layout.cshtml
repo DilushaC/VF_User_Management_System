@@ -3,6 +3,8 @@
 
 @{
     var username = Context.Session.GetString("UserName");
+    var designation = Context.Session.GetString("Designation");
+    var department = Context.Session.GetString("Department");
     var userId = Context.Session.GetString("UserId");
     var pageURLs = Context.Session.GetString("PageUrls");
 
@@ -108,6 +110,9 @@
                                 </span>
                                 <span class="d-lg-flex flex-column gap-1 d-none">
                                     <h5 class="my-0">@username</h5>
+                                    <small class="text-muted" style="font-size: 11px; margin-top: -4px;">
+                                        @designation - @department
+                                    </small>
                                 </span>
                             </a>
                             <div class="dropdown-menu dropdown-menu-end dropdown-menu-animated profile-dropdown">

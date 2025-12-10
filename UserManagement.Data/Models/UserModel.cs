@@ -7,7 +7,9 @@ namespace UserManagement.Data.Models
         public int Id { get; set; }
 
         public string UserName { get; set; } = null!;
-
+        public string DisplayName { get; set; } = null!;
+        public string DisplayDesignation { get; set; } = null!;
+        public string DisplayDepartment { get; set; } = null!;
         public string Password { get; set; } = null!; 
 
         public string FirstName { get; set; } = null!; 

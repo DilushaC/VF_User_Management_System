@@ -144,7 +144,9 @@ namespace UserManagement.Web.Controllers
             if (user != null)
             {
 
-                HttpContext.Session.SetString("UserName", user.UserName);
+                HttpContext.Session.SetString("UserName", user.DisplayName);
+                HttpContext.Session.SetString("Designation", user.DisplayDesignation);
+                HttpContext.Session.SetString("Department", user.DisplayDepartment);
                 HttpContext.Session.SetString("UserId", Convert.ToString(user.Id));
                 var pages = await _userService.GetPagesByUserId(user.Id);
                 List<string> normalizedUrls = pages.PageUrls
@@ -153,7 +155,7 @@ namespace UserManagement.Web.Controllers
                 // Serialize and save to session
                 string pageUrlsJson = JsonSerializer.Serialize(normalizedUrls);
                 HttpContext.Session.SetString("PageUrls", pageUrlsJson);
-                return Json(new { success = true, redirectUrl = Url.Action("Index", "Home"), pageUrls = pages.PageUrls, loggedUser = username });
+                return Json(new { success = true, redirectUrl = Url.Action("Index", "Home"), pageUrls = pages.PageUrls, loggedUser = user.DisplayName });
             }
             else
             {

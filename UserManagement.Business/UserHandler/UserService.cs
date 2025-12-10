@@ -329,6 +329,9 @@ namespace UserManagement.Business.UserHandler
                                           .Select(row => new UserModel
                                           {
                                               Id = row.Field<int>("Id"),
+                                              DisplayName = response.Data.DisplayName,
+                                              DisplayDesignation = response.Data.Title,
+                                              DisplayDepartment = response.Data.Department,
                                               UserName = row.Field<string>("UserName"),
                                               Password = row.Field<string>("Password"),
                                               FirstName = row.Field<string>("FirstName"),
