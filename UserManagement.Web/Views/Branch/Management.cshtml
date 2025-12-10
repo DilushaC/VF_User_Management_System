@@ -20,55 +20,42 @@
 
 <!-- Icons css -->
 <link href="~/assets/css/icons.min.css" rel="stylesheet" type="text/css" />
-<div class="row">
-    <div class="col-12">
-        <div class="page-title-box">
-            <div class="page-title-right">
-                <ol class="breadcrumb m-0">
-                    <li class="breadcrumb-item"><a href="javascript: void(0);">Management</a></li>
-                    <li class="breadcrumb-item"><a href="javascript: void(0);">Branches</a></li>
-                    <li class="breadcrumb-item active">@ViewData["Title"]</li>
-                </ol>
-            </div>
-        </div>
-        <div class="page-title-box">
-        </div>
-    </div>
-</div>
 
 <div class="row">
-    <div class="col-12">
-        <div class="card">
-            <div class="card-body">
-                <h3 class="page-title">@ViewData["Title"]</h3>
-                <br />
-                <table id="basic-datatable" class="table table-striped dt-responsive nowrap w-100">
-                    <thead>
-                        <tr>
-                            <th>Branch Name</th>
-                            <th>Active</th>
-                            <th>Edit</th>
-                        </tr>
-                    </thead>
+    <div class="row p-2">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body">
+                    <h3 class="page-title">@ViewData["Title"]</h3>
+                    <br />
+                    <table id="basic-datatable" class="table table-striped dt-responsive nowrap w-100">
+                        <thead>
+                            <tr>
+                                <th>Branch Name</th>
+                                <th>Active</th>
+                                <th>Edit</th>
+                            </tr>
+                        </thead>
 
-                    <tbody>
-                    </tbody>
-                </table>
+                        <tbody>
+                        </tbody>
+                    </table>
 
-            </div>
-        </div>
-    </div>
-</div>
-
-<div class="modal fade" id="branchEditModal" tabindex="-1" aria-labelledby="branchEditModalLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
-    <div class="modal-dialog modal-lg modal-dialog-centered">
-        <div class="modal-content">
-            <!-- Initial loading content -->
-            <div class="modal-body text-center py-5">
-                <div class="spinner-border text-primary" role="status">
-                    <span class="visually-hidden">Loading...</span>
                 </div>
-                <p class="mt-2">Loading branch details...</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="branchEditModal" tabindex="-1" aria-labelledby="branchEditModalLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
+        <div class="modal-dialog modal-lg modal-dialog-centered">
+            <div class="modal-content">
+                <!-- Initial loading content -->
+                <div class="modal-body text-center py-5">
+                    <div class="spinner-border text-primary" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
+                    <p class="mt-2">Loading branch details...</p>
+                </div>
             </div>
         </div>
     </div>

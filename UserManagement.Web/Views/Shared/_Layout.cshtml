@@ -179,7 +179,7 @@
                                         {
                                             <li>
                                                 <a href="@item.Url" class="menu-link" data-permission="@item.Permission">
-                                                    @item.PageTitle
+                                                    <i class="ri-play-mini-line"></i> @item.PageTitle
                                                 </a>
                                             </li>
                                         }
@@ -232,21 +232,6 @@
     <script src="~/assets/js/app.min.js"></script>
 
     @await RenderSectionAsync("Scripts", required: false)
-
-    <script>
-        document.addEventListener("DOMContentLoaded", function () {
-            // Collapse ALL sidebar menus on page load
-            document.querySelectorAll(".side-nav-item .collapse").forEach(function (el) {
-                el.classList.remove("show");
-            });
-
-            // Ensure toggle links are set to collapsed
-            document.querySelectorAll(".side-nav-item > a[data-bs-toggle='collapse']")
-                .forEach(function (a) {
-                    a.setAttribute("aria-expanded", "false");
-                });
-        });
-    </script>
 
     <script>
         $(document).ready(function() {
