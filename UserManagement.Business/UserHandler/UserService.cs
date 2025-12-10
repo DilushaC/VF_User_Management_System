@@ -332,26 +332,12 @@ namespace UserManagement.Business.UserHandler
                                               DisplayName = response.Data.DisplayName,
                                               DisplayDesignation = response.Data.Title,
                                               DisplayDepartment = response.Data.Department,
-                                              UserName = row.Field<string>("UserName"),
-                                              Password = row.Field<string>("Password"),
-                                              FirstName = row.Field<string>("FirstName"),
-                                              LastName = row.Field<string>("LastName"),
-                                              Email = row.Field<string>("Email"),
-                                              Phone = row.Field<string>("Phone"),
-                                              PrimaryBranchId = row.Field<int>("PrimaryBranchId"),
-                                              PrimaryDepartmentId = row.Field<int>("PrimaryDepartmentId"),
-                                              DesignationId = row.Field<int>("DesignationId"),
-                                              IsActive = row.Field<bool>("IsActive"),
-                                              CreatedDate = row.Field<DateTime?>("CreatedDate"),
-                                              LastLoginDate = row.Field<DateTime?>("LastLoginDate")
                                           })
                                 .ToList();
 
                 var user = users.FirstOrDefault();
                 if (user == null)
                     return null;
-
-                //bool isValid = _passwordHelper.VerifyPassword(password, user.Password);
                 return user;
             }
             else
@@ -381,7 +367,7 @@ namespace UserManagement.Business.UserHandler
 
                     // Get PageUrl and CanEdit in one query
                     string pageQuery = $@"
-                        SELECT p.PageUrl, r.CanEdit
+                        SELECT p.PageUrl, p.IconClass, r.CanEdit
                         FROM Pages p
                         INNER JOIN RolePagePermissions r ON p.Id = r.PageId
                         WHERE r.RoleId = {roleId} AND p.IsActive = 1
@@ -396,10 +382,11 @@ namespace UserManagement.Business.UserHandler
                         foreach (DataRow p in pageData.Rows)
                         {
                             string pageUrl = p["PageUrl"].ToString();
+                            string iconClass = p["IconClass"].ToString();
                             bool canEdit = p["CanEdit"] != DBNull.Value && Convert.ToBoolean(p["CanEdit"]);
 
                             // Store as "PageUrl|CanEdit" string, or you can create a tuple/class if needed
-                            userModel.PageUrls.Add($"{pageUrl}|{canEdit}");
+                            userModel.PageUrls.Add($"{pageUrl}|{iconClass}|{canEdit}");
                         }
                     }
                 }

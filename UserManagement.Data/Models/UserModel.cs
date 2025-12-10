@@ -10,7 +10,6 @@ namespace UserManagement.Data.Models
         public string DisplayName { get; set; } = null!;
         public string DisplayDesignation { get; set; } = null!;
         public string DisplayDepartment { get; set; } = null!;
-        public string Password { get; set; } = null!; 
 
         public string FirstName { get; set; } = null!; 
 

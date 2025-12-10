@@ -10,6 +10,7 @@
 
     List<string> allowedPages = new List<string>();
     List<string> pagePermissions = new List<string>();
+    List<string> iconClasses = new List<string>();
 
     if (!string.IsNullOrEmpty(pageURLs))
     {
@@ -20,7 +21,8 @@
             var parts = p.Split('|');
             var url = parts[0].StartsWith("/") ? parts[0] : "/" + parts[0];
             allowedPages.Add(url);
-            pagePermissions.Add(parts.Length > 1 ? parts[1] : "false");
+            iconClasses.Add(parts.Length > 1 ? parts[1] : "");
+            pagePermissions.Add(parts.Length > 2 ? parts[2] : "false");
         }
     }
 
@@ -33,6 +35,7 @@
                 MenuTitle = segments[0],
                 PageTitle = segments.Length > 1 ? segments[1] : segments[0],
                 Url = url,
+                IconClass = iconClasses[index],
                 Permission = pagePermissions[index]
             };
         })
@@ -184,10 +187,11 @@
                                         {
                                             <li>
                                                 <a href="@item.Url" class="menu-link" data-permission="@item.Permission">
-                                                    <i class="ri-play-mini-line"></i> @item.PageTitle
+                                                    <i class="@item.IconClass"></i> @item.PageTitle
                                                 </a>
                                             </li>
                                         }
+
                                     </ul>
                                 </div>
                             </li>

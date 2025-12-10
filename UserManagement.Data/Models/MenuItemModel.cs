@@ -10,6 +10,7 @@ namespace UserManagement.Data.Models
     {
         public string MenuTitle { get; set; } = string.Empty;
         public string PageTitle { get; set; } = string.Empty;
+        public string IconClass { get; set; } = string.Empty;
         public string Url { get; set; } = string.Empty;
         public string Permission { get; set; } = "false"; 
     }

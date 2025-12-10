@@ -158,9 +158,9 @@
                         let username = response.loggedUser;
                         Swal.fire({
                             title: 'Successfully Login!',
-                            text: "Welcome back "+ username + " 👋",
+                            text: "Welcome back "+ username,
                             icon: 'success',
-                            timer: 1000,
+                            timer: 1500,
                             showConfirmButton: false
                         }).then(() => {
                             window.location.href = response.redirectUrl;
@@ -181,43 +181,5 @@
             });
         }
     </script>
-
-    @*     <script type="text/javascript">
-
-        $("#Error").hide();
-        function submitLogin() {
-            var form = $("#loginForm");
-            $.ajax({
-                url: form.attr("/User/Login"),
-                type: "POST",
-                data: form.serialize(),
-                headers: { "X-Requested-With": "XMLHttpRequest" },
-                success: function (response) {
-                    if (response.success) {
-                        Swal.fire({
-                            title: 'Successfully Login!',
-                            text: 'Welcome to User Management System.',
-                            icon: 'success',
-                            timer: 2000,
-                            showConfirmButton: false
-                        }).then(() => {
-                            window.location.href = response.redirectUrl;
-                        });
-                    } else if(response.redirectUrl != null){
-                         window.location.href = response.redirectUrl
-                    } else{
-                        $("#Error").text("Invalid username or password!").show();
-                    }
-                },
-                error: function (xhr, status, error) {
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Error',
-                        text: 'Something went wrong! Please try again.'
-                    });
-                }
-            });
-        }
-    </script> *@
 </body>
 </html>
