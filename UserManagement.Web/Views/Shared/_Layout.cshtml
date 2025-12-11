@@ -141,10 +141,10 @@
 
                 <a href="index.html" class="logo logo-light">
                     <span class="logo-lg">
-                        <img src="~/assets/images/logo.png" alt="logo">
+                        <img src="~/assets/images/Vallibel-Logo.png" alt="logo">
                     </span>
                     <span class="logo-sm">
-                        <img src="~/assets/images/logo-sm.png" alt="small logo">
+                        <img src="~/assets/images/Vallibel-Logo.png" alt="small logo">
                     </span>
                 </a>
 
@@ -175,27 +175,31 @@
                         </li>
                         @foreach (var menu in menuGroups)
                         {
+                            var firstItem = menu.FirstOrDefault();
+                            var firstIcon = firstItem?.IconClass ?? "";
+
                             <li class="side-nav-item">
                                 <a data-bs-toggle="collapse" href="#@("sidebar" + menu.Key)" class="side-nav-link">
-                                    <i class="ri-play-mini-line"></i>
+                                    <i class="@firstIcon"></i>
                                     <span>@menu.Key</span>
                                     <span class="menu-arrow"></span>
                                 </a>
+
                                 <div class="collapse" id="@("sidebar" + menu.Key)">
                                     <ul class="side-nav-second-level">
                                         @foreach (var item in menu)
                                         {
                                             <li>
                                                 <a href="@item.Url" class="menu-link" data-permission="@item.Permission">
-                                                    <i class="@item.IconClass"></i> @item.PageTitle
+                                                   @item.PageTitle
                                                 </a>
                                             </li>
                                         }
-
                                     </ul>
                                 </div>
                             </li>
                         }
+
 
                     </ul>
                 </div>
