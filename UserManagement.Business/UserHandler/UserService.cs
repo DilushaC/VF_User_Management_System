@@ -391,13 +391,38 @@ namespace UserManagement.Business.UserHandler
 
                 int rows = _connectionService.ExecuteWithPara(sql, parameters);
 
-                return rows > 0;
+                if (rows == 0)
+                    return false;
+
+                string deleteSql = "DELETE FROM UserProducts WHERE UserId = @UserId";
+                var deleteParams = new DynamicParameters();
+                deleteParams.Add("UserId", userId, DbType.Int32);
+                _connectionService.ExecuteWithPara(deleteSql, deleteParams);
+
+                var productIds = collection["ProductIds"].ToList();
+
+                string insertSql = @"
+                    INSERT INTO UserProducts (UserId, ProductId)
+                    VALUES (@UserId, @ProductId);
+                ";
+
+                foreach (var pid in productIds)
+                {
+                    int productId = Convert.ToInt32(pid);
+                    var insertParams = new DynamicParameters();
+                    insertParams.Add("UserId", userId, DbType.Int32);
+                    insertParams.Add("ProductId", productId, DbType.Int32);
+                    _connectionService.ExecuteWithPara(insertSql, insertParams);
+                }
+
+                return true;
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 return false;
             }
         }
+
 
 
         public async Task<UserModel?> ValidateUserAsync(string username, string password)
