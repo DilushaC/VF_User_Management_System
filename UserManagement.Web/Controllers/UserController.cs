@@ -75,6 +75,15 @@ namespace UserManagement.Web.Controllers
             var branches = _branchService.GetAllActiveBranchList();
             var departments = _departmentService.GetAllActiveDepartmentList();
             var designations = _designationService.GetAllActiveDesignationList();
+            var products = _productService.GetAllActiveProductList();
+
+            ViewBag.Products = products
+            .Select(x => new SelectListItem
+            {
+                Value = x.Id.ToString(),
+                Text = x.ProductName
+            })
+            .ToList();
 
             //viewbag for branches
             ViewBag.Branches = branches

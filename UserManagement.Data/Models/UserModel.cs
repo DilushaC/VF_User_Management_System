@@ -5,7 +5,6 @@ namespace UserManagement.Data.Models
     public class UserModel
     {
         public int Id { get; set; }
-
         public string UserName { get; set; } = null!;
         public string DisplayName { get; set; } = null!;
         public string DisplayDesignation { get; set; } = null!;
@@ -35,5 +34,7 @@ namespace UserManagement.Data.Models
         public DateTime? LastLoginDate { get; set; }
         public int RoleId { get; set; }
         public List<string> PageUrls { get; set; } = new List<string>();
+        public List<int> ProductIds { get; set; } = new List<int>();
+
     }
 }

@@ -269,28 +269,29 @@ namespace UserManagement.Business.UserHandler
         {
             try
             {
+                // Get user info with joins
                 string Query = @"
-                SELECT 
-                    U.*, 
-                    B.BranchName AS PrimaryBranchName, 
-                    D.DepartmentName AS PrimaryDepartmentName, 
-                    G.DesignationName
-                FROM 
-                    Users U
-                LEFT JOIN 
-                    Branch B ON U.PrimaryBranchId = B.Id
-                LEFT JOIN 
-                    Department D ON U.PrimaryDepartmentId = D.Id
-                LEFT JOIN 
-                    Designation G ON U.DesignationId = G.Id
-                WHERE 
-                    U.Id = @Id"; 
+                    SELECT 
+                        U.*, 
+                        B.BranchName AS PrimaryBranchName, 
+                        D.DepartmentName AS PrimaryDepartmentName, 
+                        G.DesignationName
+                    FROM 
+                        Users U
+                    LEFT JOIN 
+                        Branch B ON U.PrimaryBranchId = B.Id
+                    LEFT JOIN 
+                        Department D ON U.PrimaryDepartmentId = D.Id
+                    LEFT JOIN 
+                        Designation G ON U.DesignationId = G.Id
+                    WHERE 
+                        U.Id = @Id";
 
                 DataTable Data = await _connectionService.SingleQueryReturn(Query, id);
 
                 if (Data == null || Data.Rows.Count == 0)
                 {
-                    return null; 
+                    return null;
                 }
 
                 DataRow BRow = Data.Rows[0];
@@ -314,20 +315,35 @@ namespace UserManagement.Business.UserHandler
 
                     IsActive = Convert.ToBoolean(BRow["IsActive"]),
                     CreatedDate = Convert.ToDateTime(BRow["CreatedDate"]),
-
                     LastLoginDate = BRow["LastLoginDate"] == DBNull.Value
                         ? DateTime.MinValue
                         : Convert.ToDateTime(BRow["LastLoginDate"]),
+
+                    ProductIds = new List<int>() // initialize
                 };
+
+                // Get UserProducts for this user
+                string productQuery = "SELECT ProductId FROM UserProducts WHERE UserId = @Id";
+                DataTable productData = await _connectionService.SingleQueryReturn(productQuery, id);
+
+                if (productData != null && productData.Rows.Count > 0)
+                {
+                    foreach (DataRow row in productData.Rows)
+                    {
+                        userModel.ProductIds.Add(Convert.ToInt32(row["ProductId"]));
+                    }
+                }
 
                 return userModel;
             }
             catch (Exception ex)
             {
-                // Log the exception (recommended)
                 throw new Exception($"Failed to retrieve user with ID {id}.", ex);
             }
         }
+
+
+
 
         public async Task<bool> UpdateUserAsync(IFormCollection collection)
         {

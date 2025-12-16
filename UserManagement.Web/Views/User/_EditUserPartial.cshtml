@@ -40,6 +40,28 @@
                 <input type="text" asp-for="Phone" class="form-control" />
             </div>
         </div>
+        <div class="row">
+            <div class="row g-2">
+                <div class="mb-3 col-md-6 position-relative">
+                    <label asp-for="ProductIds" class="form-label">Products</label>
+                    <select asp-for="ProductIds"
+                            id="ProductIds"
+                            name="ProductIds"
+                            class="form-control select2 round"
+                            multiple="multiple"
+                            required
+                            data-placeholder="Select Products"
+                            data-bs-toggle="tooltip"
+                            data-bs-placement="right"
+                            title="Please select at least one product"
+                            asp-items="ViewBag.Products">
+                    </select>
+                    <span asp-validation-for="ProductIds" class="invalid-tooltip">
+                        Please select at least one product
+                    </span>
+                </div>
+            </div>
+        </div>
 
         <div class="mb-3">
             <label class="form-label">Designation</label>
@@ -94,6 +116,9 @@
     });
     $("#Status").select2({
         placeholder: "Select Status",
+    });
+    $("#ProductIds").select2({
+        placeholder: "Select Product",
     });
 
     $("#updateUserForm").on("submit", function (e) {
