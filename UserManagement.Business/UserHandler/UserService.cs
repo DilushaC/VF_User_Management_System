@@ -431,33 +431,50 @@ namespace UserManagement.Business.UserHandler
             if (response.Status)
             {
                 const string query = @"
-                                    SELECT * 
-                                    FROM Users 
-                                    WHERE UserName = @UserName AND IsActive = 1";
+                    SELECT * 
+                    FROM Users 
+                    WHERE UserName = @UserName AND IsActive = 1";
 
                 var parameters = new DynamicParameters();
                 parameters.Add("@UserName", username);
+
                 var users = _connectionService.ReturnWithPara(query, parameters)
-                                          .AsEnumerable()
-                                          .Select(row => new UserModel
-                                          {
-                                              Id = row.Field<int>("Id"),
-                                              DisplayName = response.Data.DisplayName,
-                                              DisplayDesignation = response.Data.Title,
-                                              DisplayDepartment = response.Data.Department,
-                                          })
-                                .ToList();
+                                  .AsEnumerable()
+                                  .Select(row => new UserModel
+                                  {
+                                      Id = row.Field<int>("Id"),
+                                      DisplayName = response.Data.DisplayName,
+                                      DisplayDesignation = response.Data.Title,
+                                      DisplayDepartment = response.Data.Department,
+                                      ProductIds = new List<int>() // initialize
+                                  })
+                                  .ToList();
 
                 var user = users.FirstOrDefault();
                 if (user == null)
                     return null;
+
+                // Fetch ProductIds for this user
+                string productQuery = "SELECT ProductId FROM UserProducts WHERE UserId = @UserId";
+                var productParams = new DynamicParameters();
+                productParams.Add("@UserId", user.Id);
+
+                var productData = _connectionService.ReturnWithPara(productQuery, productParams);
+
+                if (productData != null && productData.Rows.Count > 0)
+                {
+                    foreach (var row in productData.AsEnumerable())
+                    {
+                        user.ProductIds.Add(row.Field<int>("ProductId"));
+                    }
+                }
+
                 return user;
             }
-            else
-            {
-                return null;
-            }
+
+            return null;
         }
+
 
         //get user pages
         public async Task<UserModel> GetPagesByUserId(int id)
