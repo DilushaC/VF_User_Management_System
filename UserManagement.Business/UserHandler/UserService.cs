@@ -28,53 +28,103 @@ namespace UserManagement.Business.UserHandler
             _aDAuthentication = aDAuthentication;
         }
 
-        public async Task<bool> CreateUserAsync(IFormCollection collection)
+        //public async Task<bool> CreateUserAsync(IFormCollection collection)
+        //{
+        //    try
+        //    {
+        //        // Extract values from collection
+        //        var userName = collection["UserName"].ToString();
+        //        var firstName = collection["FirstName"].ToString();
+        //        var lastName = collection["LastName"].ToString();
+        //        var email = collection["Email"].ToString();
+        //        var phone = collection["Phone"].ToString();
+        //        var designationId = collection["DesignationId"].ToString();
+        //        var primaryBranchId = collection["PrimaryBranchId"].ToString();
+        //        var primaryDepartmentId = collection["PrimaryDepartmentId"].ToString();
+
+        //        var password = "1234";
+        //        string encryptedPassword = _passwordHelper.ComputeHmac(password);
+
+        //        string sql = @"
+        //        INSERT INTO Users
+        //        (UserName, Password, FirstName, LastName, Email, Phone, DesignationId, PrimaryBranchId, PrimaryDepartmentId, IsActive, CreatedDate)
+        //        VALUES
+        //        (@UserName, @Password, @FirstName, @LastName, @Email, @Phone, @DesignationId, @PrimaryBranchId, @PrimaryDepartmentId,@IsActive, @CreatedDate);
+        //    ";
+
+        //        var parameters = new DynamicParameters();
+        //        parameters.Add("UserName", userName, DbType.String);
+        //        parameters.Add("Password", encryptedPassword, DbType.String);
+        //        parameters.Add("FirstName", firstName, DbType.String);
+        //        parameters.Add("LastName", lastName, DbType.String);
+        //        parameters.Add("Email", email, DbType.String);
+        //        parameters.Add("Phone", phone, DbType.String);
+        //        parameters.Add("DesignationId", Convert.ToInt32(designationId), DbType.Int32);
+        //        parameters.Add("PrimaryBranchId", Convert.ToInt32(primaryBranchId), DbType.Int32);
+        //        parameters.Add("PrimaryDepartmentId", Convert.ToInt32(primaryDepartmentId), DbType.Int32);
+        //        parameters.Add("IsActive", true, DbType.Boolean);
+        //        parameters.Add("CreatedDate", DateTime.Now, DbType.DateTime);
+
+        //        int rows = _connectionService.ExecuteWithPara(sql, parameters);
+
+        //        return rows > 0;
+
+        //    }
+        //    catch
+        //    {
+        //        return false;
+        //    }
+        //}
+
+        public async Task<(bool IsSuccess, int? UserId)> CreateUserAsync(IFormCollection collection)
         {
             try
             {
-                // Extract values from collection
-                var userName = collection["UserName"].ToString();
-                var firstName = collection["FirstName"].ToString();
-                var lastName = collection["LastName"].ToString();
-                var email = collection["Email"].ToString();
-                var phone = collection["Phone"].ToString();
-                var designationId = collection["DesignationId"].ToString();
-                var primaryBranchId = collection["PrimaryBranchId"].ToString();
-                var primaryDepartmentId = collection["PrimaryDepartmentId"].ToString();
-
-                var password = "1234";
-                string encryptedPassword = _passwordHelper.ComputeHmac(password);
-
                 string sql = @"
-                INSERT INTO Users
-                (UserName, Password, FirstName, LastName, Email, Phone, DesignationId, PrimaryBranchId, PrimaryDepartmentId, IsActive, CreatedDate)
-                VALUES
-                (@UserName, @Password, @FirstName, @LastName, @Email, @Phone, @DesignationId, @PrimaryBranchId, @PrimaryDepartmentId,@IsActive, @CreatedDate);
-            ";
+                    INSERT INTO Users
+                    (UserName, FirstName, LastName, Email, Phone,
+                     DesignationId, PrimaryBranchId, PrimaryDepartmentId,
+                     IsActive, CreatedDate)
+                    VALUES
+                    (@UserName, @FirstName, @LastName, @Email, @Phone,
+                     @DesignationId, @PrimaryBranchId, @PrimaryDepartmentId,
+                     @IsActive, @CreatedDate);
 
-                var parameters = new DynamicParameters();
-                parameters.Add("UserName", userName, DbType.String);
-                parameters.Add("Password", encryptedPassword, DbType.String);
-                parameters.Add("FirstName", firstName, DbType.String);
-                parameters.Add("LastName", lastName, DbType.String);
-                parameters.Add("Email", email, DbType.String);
-                parameters.Add("Phone", phone, DbType.String);
-                parameters.Add("DesignationId", Convert.ToInt32(designationId), DbType.Int32);
-                parameters.Add("PrimaryBranchId", Convert.ToInt32(primaryBranchId), DbType.Int32);
-                parameters.Add("PrimaryDepartmentId", Convert.ToInt32(primaryDepartmentId), DbType.Int32);
-                parameters.Add("IsActive", true, DbType.Boolean);
-                parameters.Add("CreatedDate", DateTime.Now, DbType.DateTime);
+                    SELECT CAST(SCOPE_IDENTITY() AS INT) AS UserId;
+                ";
 
-                int rows = _connectionService.ExecuteWithPara(sql, parameters);
+                var parameters = new
+                {
+                    UserName = collection["UserName"].ToString(),
+                    FirstName = collection["FirstName"].ToString(),
+                    LastName = collection["LastName"].ToString(),
+                    Email = collection["Email"].ToString(),
+                    Phone = collection["Phone"].ToString(),
+                    DesignationId = Convert.ToInt32(collection["DesignationId"]),
+                    PrimaryBranchId = Convert.ToInt32(collection["PrimaryBranchId"]),
+                    PrimaryDepartmentId = Convert.ToInt32(collection["PrimaryDepartmentId"]),
+                    IsActive = true,
+                    CreatedDate = DateTime.Now
+                };
 
-                return rows > 0;
+                DataTable dt = await _connectionService.SingleQueryReturnId(sql, parameters);
 
+                if (dt.Rows.Count > 0)
+                {
+                    int userId = Convert.ToInt32(dt.Rows[0]["UserId"]);
+                    return (true, userId);
+                }
+
+                return (false, null);
             }
             catch
             {
-                return false;
+                return (false, null);
             }
         }
+
+
+
 
         public List<UserModel> GetAllUsersList()
         {

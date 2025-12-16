@@ -7,6 +7,7 @@ using UserManagement.Business.BranchHandler;
 using UserManagement.Business.DatatableHandler;
 using UserManagement.Business.DepartmentHandler;
 using UserManagement.Business.DesignationHandler;
+using UserManagement.Business.ProductHandler;
 using UserManagement.Business.UserHandler;
 using UserManagement.Data.Models;
 using UserManagement.Presentation.Filters;
@@ -20,14 +21,16 @@ namespace UserManagement.Web.Controllers
         private readonly IBranchService _branchService;
         private readonly IDepartmentService _departmentService;
         private readonly IDesignationService _designationService;
+        private readonly IProductService _productService;
         private readonly IDataTableService _dataTableService;
 
-        public UserController(IUserService userService, IBranchService branchService,IDepartmentService departmentService,IDesignationService designationService,IDataTableService dataTableService)
+        public UserController(IUserService userService, IBranchService branchService,IDepartmentService departmentService,IDesignationService designationService,IProductService productService,IDataTableService dataTableService)
         {
             _userService = userService;
             _branchService = branchService;
             _departmentService = departmentService;
             _designationService = designationService;
+            _productService = productService;
             _dataTableService = dataTableService;
         }
 
@@ -177,8 +180,16 @@ namespace UserManagement.Web.Controllers
             var branches = _branchService.GetAllActiveBranchList();
             var departments = _departmentService.GetAllActiveDepartmentList();
             var designations = _designationService.GetAllActiveDesignationList();
+            var products = _productService.GetAllActiveProductList();
 
-            //viewbag for branches
+            ViewBag.Products = products
+            .Select(x => new SelectListItem
+            {
+                Value = x.Id.ToString(),
+                Text = x.ProductName
+            })
+            .ToList();
+
             ViewBag.Branches = branches
             .Select(x => new SelectListItem
             {
@@ -187,7 +198,6 @@ namespace UserManagement.Web.Controllers
             })
             .ToList();
 
-            //viewbag for departments
             ViewBag.Departments = departments
             .Select(x => new SelectListItem
             {
@@ -196,7 +206,6 @@ namespace UserManagement.Web.Controllers
             })
             .ToList();
 
-            //viewbag for desingations
             ViewBag.Designations = designations
             .Select(x => new SelectListItem
             {
@@ -214,7 +223,7 @@ namespace UserManagement.Web.Controllers
         {
             try
             {
-                bool created = await _userService.CreateUserAsync(collection);
+                var (created, userId) = await _userService.CreateUserAsync(collection);
 
                 if (created)
                 {

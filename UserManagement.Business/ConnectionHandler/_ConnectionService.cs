@@ -57,6 +57,18 @@ namespace UserManagement.Business.ConnectionHandler
             return dataTable;
         }
 
+        public async Task<DataTable> SingleQueryReturnId(string query, object parameters = null)
+        {
+            using var connection = _context.CreateConnection();
+            var dataTable = new DataTable();
+
+            using var reader = await connection.ExecuteReaderAsync(query, parameters);
+            dataTable.Load(reader);
+
+            return dataTable;
+        }
+
+
         public DataTable Return(string query)
         {
             using var connection = _context.CreateConnection();
