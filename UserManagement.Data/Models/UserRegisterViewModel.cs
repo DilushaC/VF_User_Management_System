@@ -16,5 +16,6 @@ namespace UserManagement.Data.Models
         public int PrimaryBranchId { get; set; }
         public int PrimaryDepartmentId { get; set; }
         public int DesignationId { get; set; }
+        public List<int> ProductIds { get; set; } = new List<int>();
     }
 }

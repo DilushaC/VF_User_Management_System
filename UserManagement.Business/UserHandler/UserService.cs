@@ -112,6 +112,28 @@ namespace UserManagement.Business.UserHandler
                 if (dt.Rows.Count > 0)
                 {
                     int userId = Convert.ToInt32(dt.Rows[0]["UserId"]);
+
+                    // multiple role IDs (List<string>)
+                    var productIds = collection["ProductIds"].ToList();
+
+                    string sql2 = @"
+                        INSERT INTO UserProducts
+                        (UserId, ProductId)
+                        VALUES
+                        (@UserId, @ProductId);
+                    ";
+
+                    int insertedCount = 0;
+
+                    foreach (var pid in productIds)
+                    {
+                        int productId = int.Parse(pid);
+                        var parameters2 = new DynamicParameters();
+                        parameters2.Add("UserId", userId, DbType.Int32);
+                        parameters2.Add("ProductId", productId, DbType.Int32);
+
+                        insertedCount += _connectionService.ExecuteWithPara(sql2, parameters2);
+                    }
                     return (true, userId);
                 }
 

@@ -67,6 +67,27 @@
                                 </div>
                             </div>
 
+                            <div class="row g-2">
+                                <div class="mb-3 col-md-6 position-relative">
+                                    <label asp-for="ProductIds" class="form-label">Products</label>
+                                    <select asp-for="ProductIds"
+                                            id="ProductIds"
+                                            name="ProductIds"
+                                            class="form-control select2 round"
+                                            multiple="multiple"
+                                            required
+                                            data-placeholder="Select Products"
+                                            data-bs-toggle="tooltip"
+                                            data-bs-placement="right"
+                                            title="Please select at least one product"
+                                            asp-items="ViewBag.Products">
+                                    </select>
+                                    <span asp-validation-for="ProductIds" class="invalid-tooltip">
+                                        Please select at least one product
+                                    </span>
+                                </div>
+                            </div>
+
                             <!-- Designation -->
                             <div class="row g-2">
                                 <div class="mb-3 col-md-6 position-relative">
@@ -135,6 +156,7 @@
     $("#PrimaryBranchId").select2({ placeholder: "Select Branch" });
     $("#PrimaryDepartmentId").select2({ placeholder: "Select Department" });
     $("#DesignationId").select2({ placeholder: "Select Designation" });
+    $("#ProductIds").select2({ placeholder: "Select Product" });
 
     let usernameValid = false; // Track if username is available
 
@@ -202,7 +224,7 @@
             $.ajax({
                 url: '/User/Register',
                 type: 'POST',
-                data: $(form).serialize(),
+                data: $("#RegisterForm").serialize(),
                 headers: { "X-Requested-With": "XMLHttpRequest" },
 
                 success: function (response) {
