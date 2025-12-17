@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.Extensions.Configuration;
 using System.Collections.Generic;
+using System.Linq;
 using System.Security;
 using System.Text.Json;
 using UserManagement.Business.BranchHandler;
@@ -23,8 +25,9 @@ namespace UserManagement.Web.Controllers
         private readonly IDesignationService _designationService;
         private readonly IProductService _productService;
         private readonly IDataTableService _dataTableService;
+        private readonly IConfiguration _configuration;
 
-        public UserController(IUserService userService, IBranchService branchService,IDepartmentService departmentService,IDesignationService designationService,IProductService productService,IDataTableService dataTableService)
+        public UserController(IUserService userService, IBranchService branchService,IDepartmentService departmentService,IDesignationService designationService,IProductService productService,IDataTableService dataTableService, IConfiguration configuration)
         {
             _userService = userService;
             _branchService = branchService;
@@ -32,6 +35,7 @@ namespace UserManagement.Web.Controllers
             _designationService = designationService;
             _productService = productService;
             _dataTableService = dataTableService;
+            _configuration = configuration;
         }
 
         //get all user list draw the initial data table
@@ -153,6 +157,17 @@ namespace UserManagement.Web.Controllers
         public async Task<IActionResult> Login(string username, string password)
         {
             UserModel user = await _userService.ValidateUserAsync(username, password);
+            int allowedProductId =
+                _configuration.GetValue<int>("AllowedProducts:ProductId");
+
+            if (user.ProductIds == null || !user.ProductIds.Contains(allowedProductId))
+            {
+                return Json(new
+                {
+                    success = false,
+                    message = "Unauthorized product access"
+                });
+            }
             if (user != null)
             {
 
