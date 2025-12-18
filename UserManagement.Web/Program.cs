@@ -13,6 +13,7 @@ using UserManagement.Business.UserHandler;
 using UserManagement.Business.UserRoleHandler;
 using UserManagement.Data.Context;
 using UserManagement.Presentation.Filters;
+using UserManagement.Web.Middleware;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -69,6 +70,8 @@ app.UseRouting();
 
 // Enable session before authorization
 app.UseSession();
+
+app.UseMiddleware<PageAuthorizationMiddleware>();
 
 app.UseAuthorization();
 

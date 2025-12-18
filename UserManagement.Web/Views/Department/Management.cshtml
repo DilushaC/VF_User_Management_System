@@ -73,7 +73,10 @@
         serverSide: true,
         ajax: {
             url: '/Department/GetDepartmentsPaged',
-            type: 'POST'
+            type: 'POST',
+            headers: {
+            "X-Requested-With": "XMLHttpRequest"  // Important: marks it as AJAX
+        }
         },
         columns: [
             { data: 'departmentName' },
