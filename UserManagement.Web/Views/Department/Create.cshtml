@@ -13,7 +13,7 @@
                     <h3 class="header">@ViewData["Title"]</h3>
                     <br />
                     <form asp-action="Create" asp-controller="Department" method="post" id="RegisterForm" novalidate>
-                        <fieldset @(ViewBag.CanEdit != null && !(bool)ViewBag.CanEdit ? "disabled" : "")>
+                        <fieldset>
                             <div class="row g-2">
                                 <div class="mb-3 col-md-6 position-relative">
                                     <label asp-for="DepartmentName" class="form-label">Department Name</label>

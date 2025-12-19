@@ -13,7 +13,7 @@
                     <br />
 
                     <form asp-action="RegisterUser" asp-controller="User" method="post" id="RegisterForm" novalidate>
-                        <fieldset @(ViewBag.CanEdit != null && !(bool)ViewBag.CanEdit ? "disabled" : "")>
+                        <fieldset>
 
                             <!-- Username -->
                             <div class="row g-2">

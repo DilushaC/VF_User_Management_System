@@ -357,6 +357,23 @@
                                 </ul>
                             </div>
                         </li>
+                        <li class="side-nav-item">
+                            <a data-bs-toggle="collapse" href="#sidebarMenus" aria-expanded="false" aria-controls="sidebarRolePages" class="side-nav-link">
+                                <i class="ri-folder-keyhole-line"></i>
+                                <span>Menu Items</span>
+                                <span class="menu-arrow"></span>
+                            </a>
+                            <div class="collapse" id="sidebarMenus">
+                                <ul class="side-nav-second-level">
+                                    <li>
+                                        <a href="/Menu/Create">Create Menu</a>
+                                    </li>
+                                    <li>
+                                        <a href="/Menu/Management">Menu Management</a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </li>
                     </ul>
                 </div>
             </div>
@@ -403,21 +420,6 @@
     <script src="~/assets/js/app.min.js"></script>
 
     @await RenderSectionAsync("Scripts", required: false)
-
-    <script>
-        document.addEventListener("DOMContentLoaded", function () {
-            // Collapse ALL sidebar menus on page load
-            document.querySelectorAll(".side-nav-item .collapse").forEach(function (el) {
-                el.classList.remove("show");
-            });
-
-            // Ensure toggle links are set to collapsed
-            document.querySelectorAll(".side-nav-item > a[data-bs-toggle='collapse']")
-                .forEach(function (a) {
-                    a.setAttribute("aria-expanded", "false");
-                });
-        });
-    </script>
 
 </body>
 </html>
