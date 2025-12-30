@@ -5,6 +5,7 @@ using UserManagement.Business.DatatableHandler;
 using UserManagement.Business.DepartmentHandler;
 using UserManagement.Business.DesignationHandler;
 using UserManagement.Business.Helpers;
+using UserManagement.Business.MenuItemHandler;
 using UserManagement.Business.PageHandler;
 using UserManagement.Business.ProductHandler;
 using UserManagement.Business.RoleHandler;
@@ -36,6 +37,7 @@ builder.Services.AddScoped<IPageService, PageService>();
 builder.Services.AddScoped<IRoleService, RoleService>();
 builder.Services.AddScoped<IUserRoleService, UserRoleService>();
 builder.Services.AddScoped<IRolePagePermissionService, RolePagePermissionService>();
+builder.Services.AddScoped<IMenuItemService, MenuItemService>();
 builder.Services.AddScoped<IDataTableService, DataTableService>();
 builder.Services.AddScoped<ADAuthentication>();
 

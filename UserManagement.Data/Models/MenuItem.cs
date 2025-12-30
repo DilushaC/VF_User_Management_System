@@ -8,7 +8,7 @@ namespace UserManagement.Data.Models
 {
     public class MenuItem
     {
-        public int MenuItemId { get; set; }
+        public int Id { get; set; }
         public int? ParentMenuItemId { get; set; }
         public string MenuTitle { get; set; } = string.Empty;
         public int PageId { get; set; }
@@ -16,5 +16,6 @@ namespace UserManagement.Data.Models
         public int DisplayOrder { get; set; }
         public bool IsActive { get; set; }
         public int ProductId { get; set; }
+        public List<int> PageIds { get; set; } = new List<int>();
     }
 }

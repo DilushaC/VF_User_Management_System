@@ -12,135 +12,113 @@
                 <div class="card-body">
                     <h3 class="header">@ViewData["Title"]</h3>
                     <br />
+
                     <form asp-action="Create" asp-controller="Page" method="post" id="RegisterForm" novalidate>
                         <fieldset>
+
+                            <!-- Menu Title -->
                             <div class="row g-2">
-                                <div class="mb-3 col-md-6 position-relative">
+                                <div class="mb-3 col-md-6">
                                     <label asp-for="MenuTitle" class="form-label">Menu Title</label>
-                                    <input asp-for="MenuTitle" class="form-control round" required
-                                           data-bs-toggle="tooltip" data-bs-placement="right" title="Menu name is required" />
-                                    <span asp-validation-for="MenuTitle" class="invalid-tooltip">Menu name is required</span>
-                                    <small id="menuTitle-status"></small>
+                                    <input asp-for="MenuTitle" class="form-control round" required />
+                                    <span asp-validation-for="MenuTitle" class="invalid-tooltip"></span>
                                 </div>
                             </div>
-                            <div class="row g-2">
-                                <div class="mb-3 col-md-6 position-relative form-check">
-                                    <input type="checkbox"
-                                           class="form-check-input"
-                                           id="IsMainMenu"
-                                           name="IsMainMenu" />
 
+                            <!-- Is Main Menu -->
+                            <div class="row g-2">
+                                <div class="mb-3 col-md-6 form-check">
+                                    <input type="checkbox" class="form-check-input" id="IsMainMenu" name="IsMainMenu">
                                     <label class="form-check-label" for="IsMainMenu">
                                         This is a Main Menu
                                     </label>
                                 </div>
                             </div>
-                            <div id="parentMenuContainer" class="row g-2">
-                                <div class="mb-3 col-md-6 position-relative">
-                                    <label asp-for="ParentMenuItemId" class="form-label">
-                                        Select Parent Menu
-                                    </label>
-                                    <select id="ParentMenuItemId"
-                                            asp-for="ParentMenuItemId"
-                                            class="form-control select2 round"
-                                            asp-items="ViewBag.Products">
-                                        <option value="">Select Parent</option>
-                                    </select>
-                                    <span asp-validation-for="ParentMenuItemId"
-                                          class="invalid-tooltip">
-                                        Parent Menu is required
-                                    </span>
-                                </div>
-                            </div>
-                            <div class="row g-2">
-                                <div class="mb-3 col-md-6 position-relative">
-                                    <label asp-for="ProductId" class="form-label">Select Product</label>
-                                    <select id="ProductId"
-                                            asp-for="ProductId"
-                                            class="form-control select2 round"
-                                            data-bs-toggle="tooltip"
-                                            data-bs-placement="right"
-                                            title="Product is required"
-                                            required
-                                            data-placeholder="Select Product"
-                                            asp-items="ViewBag.Products">
+
+                            <!-- Product -->
+                            <div id="productContainer" class="row g-2">
+                                <div class="mb-3 col-md-6">
+                                    <label class="form-label">Select Product</label>
+                                    <select id="ProductId" name="ProductId"
+                                            class="form-control select2 round" required>
                                         <option value="">Select Product</option>
+                                        @foreach (var item in ViewBag.Products)
+                                        {
+                                            <option value="@item.Value">@item.Text</option>
+                                        }
                                     </select>
-                                    <span asp-validation-for="ProductId" class="invalid-tooltip">Product is required</span>
                                 </div>
                             </div>
-                            <div class="row g-2">
-                                <div class="mb-3 form-check">
-                                    <input type="checkbox"
-                                           class="form-check-input"
-                                           id="IsDropdownMenu" />
 
-                                    <label class="form-check-label" for="IsDropdownMenu">
-                                        This menu is a Dropdown (no page)
-                                    </label>
+                            <!-- Parent Menu -->
+                            <div id="parentMenuContainer" class="row g-2">
+                                <div class="mb-3 col-md-6">
+                                    <label class="form-label">Select Parent Menu</label>
+                                    <select id="ParentMenuItemId" name="ParentMenuItemId"
+                                            class="form-control select2 round">
+                                        <option value="">Select Parent</option>
+                                        @foreach (var item in ViewBag.ParentMenus)
+                                        {
+                                            <option value="@item.Value">@item.Text</option>
+                                        }
+                                    </select>
                                 </div>
                             </div>
+
+                            <!-- Pages -->
                             <div id="pageContainer" class="row g-2">
-                                <div class="mb-3 col-md-6 position-relative">
-                                    <label asp-for="PageId" class="form-label">Select Page</label>
-
-                                    <select id="PageId"
-                                            asp-for="PageId"
+                                <div class="mb-3 col-md-6">
+                                    <label class="form-label">Page Name</label>
+                                    <select id="PageIds" name="PageIds"
                                             class="form-control select2 round"
-                                            asp-items="ViewBag.Pages">
-                                        <option value="">Select Page</option>
+                                            multiple="multiple">
                                     </select>
-
-                                    <span asp-validation-for="PageId"
-                                          class="invalid-tooltip">
-                                        Page is required
-                                    </span>
                                 </div>
                             </div>
 
-                            <div id="iconClassContainer" class="row g-2" style="display:none;">
-                                <div class="mb-3 col-md-2 position-relative">
-                                    <label asp-for="IconClass" class="form-label">Icon Class</label>
-                                    <input asp-for="IconClass"
-                                           id="IconClass"
+                            <!-- Icon Class -->
+                            <div id="iconClassContainer" class="row g-2 d-none">
+                                <div class="mb-3 col-md-2">
+                                    <label class="form-label">Icon Class</label>
+                                    <input id="IconClass" name="IconClass"
+                                           class="form-control round" />
+                                </div>
+                            </div>
+
+                            <!-- Menu Level -->
+                            <div id="displayOrderContainer" class="row g-2 d-none">
+                                <div class="mb-3 col-md-2">
+                                    <label class="form-label">Menu Level</label>
+                                    <input id="DisplayOrder" name="DisplayOrder"
+                                           type="number"
                                            class="form-control round"
-                                           data-bs-toggle="tooltip"
-                                           data-bs-placement="right"
-                                           title="Icon Class is required" />
-                                    <span asp-validation-for="IconClass"
-                                          class="invalid-tooltip">
-                                        Icon Class is required
-                                    </span>
+                                           min="1" />
                                 </div>
                             </div>
 
-                            <div class="row g-2">
-                                <div class="mb-3 col-md-1 position-relative">
-                                    <label asp-for="DisplayOrder" class="form-label">Page Level</label>
-                                    <input asp-for="DisplayOrder" type="number" class="form-control round" required min="1"
-                                           data-bs-toggle="tooltip" data-bs-placement="right" title="Product Selection is required" disabled />
-                                    <span asp-validation-for="DisplayOrder" class="invalid-tooltip">Display Order is required</span>
-                                    <small id="displayOrder-status"></small>
-                                </div>
-                            </div>
+                            <!-- Status -->
                             <div class="row g-2">
                                 <div class="mb-3 col-md-2">
-                                    <label asp-for="IsActive" class="form-label">Active Status</label>
-                                    <select asp-for="IsActive" class="form-select">
+                                    <label class="form-label">Active Status</label>
+                                    <select name="IsActive" class="form-select">
                                         <option value="true">Active</option>
                                         <option value="false">Inactive</option>
                                     </select>
-                                    <span asp-validation-for="IsActive" class="text-danger"></span>
                                 </div>
                             </div>
-                            <button type="submit" class="btn btn-primary">Create Menu Item</button>
+
+                            <button type="submit" class="btn btn-primary">
+                                Create Menu Item
+                            </button>
+
                         </fieldset>
                     </form>
-                </div> <!-- end card-body -->
-            </div> <!-- end card-->
-        </div> <!-- end col -->
+                </div>
+            </div>
+        </div>
     </div>
 </div>
+
 <!-- Load jQuery only ONCE -->
 <script src="~/assets/lib/jquery/jquery.min.js"></script>
 <script src="~/assets/js/sweetalert2.all.min.js"></script>
@@ -150,14 +128,17 @@
 <script>
     $("#ParentMenuItemId").select2({
         placeholder: "Select Parent Menu",
+        allowClear: true
     });
 
     $("#ProductId").select2({
         placeholder: "Select Product",
+        allowClear: true
     });
 
-    $("#PageId").select2({
+    $("#PageIds").select2({
         placeholder: "Select Page",
+        allowClear: true,
     });
 
     $("#ProductId").on('change', function () {
@@ -218,6 +199,32 @@
             }
         });
     });
+
+    $("#ProductId").on("change", function () {
+        let productId = $(this).val();
+        if (productId) {
+            $.ajax({
+                url: '/Permission/GetPagesByProduct',
+                type: 'GET',
+                data: { productId: productId },
+                success: function (response) {
+                    if (response.success) {
+                        $("#PageIds").empty();
+                        response.data.forEach(page => {
+                            $("#PageIds").append(
+                                new Option(page.pageName, page.id)
+                            );
+                        });
+                        $("#PageIds").trigger('change');
+                    }
+                }
+            });
+        } else {
+            $("#PageIds").empty().trigger('change');
+        }
+    });
+
+
 
     $("#RegisterForm").on("submit", function (e) {
         e.preventDefault();
@@ -301,66 +308,66 @@
         });
     });
 
-    document.getElementById('IsMainMenu').addEventListener('change', function () {
-    const container = document.getElementById('parentMenuContainer');
-    const parentSelect = document.getElementById('ParentMenuItemId');
-
-    if (this.checked) {
-        container.style.display = 'none';
-        parentSelect.value = ''; 
-        parentSelect.removeAttribute('required');
-    } else {
-        container.style.display = '';
-        parentSelect.setAttribute('required', 'required');
-        }
-    });
-
-
-    const dropdownCheckbox = document.getElementById('IsDropdownMenu');
-    const pageContainer = document.getElementById('pageContainer');
-    const pageSelect = document.getElementById('PageId');
-
-    dropdownCheckbox.addEventListener('change', function () {
-        if (this.checked) {
-            pageContainer.style.display = 'none';
-            pageSelect.value = '';
-            pageSelect.removeAttribute('required');
-        } else {
-            pageContainer.style.display = '';
-            pageSelect.setAttribute('required', 'required');
-        }
-    });
-
-    // Handle edit mode on load
-    window.addEventListener('DOMContentLoaded', () => {
-        dropdownCheckbox.dispatchEvent(new Event('change'));
-    });
-
-
     document.addEventListener('DOMContentLoaded', function () {
 
-        const checkbox = document.getElementById('IsDropdownMenu');
-        const iconContainer = document.getElementById('iconClassContainer');
-        const iconInput = document.getElementById('IconClass');
+        const isMainMenu = document.getElementById('IsMainMenu');
 
-        function toggleIconClass() {
-            if (checkbox.checked) {
-                iconContainer.style.display = '';
+        const parentMenuContainer = document.getElementById('parentMenuContainer');
+        const pageContainer = document.getElementById('pageContainer');
+        const iconContainer = document.getElementById('iconClassContainer');
+        const displayOrderContainer = document.getElementById('displayOrderContainer');
+
+        const parentSelect = document.getElementById('ParentMenuItemId');
+        const pageSelect = document.getElementById('PageIds');
+        const iconInput = document.getElementById('IconClass');
+        const displayOrderInput = document.getElementById('DisplayOrder');
+
+        function toggleMainMenu() {
+
+            if (isMainMenu.checked) {
+                // ===== MAIN MENU =====
+
+                parentMenuContainer.classList.add('d-none');
+                pageContainer.classList.add('d-none');
+
+                iconContainer.classList.remove('d-none');
+                displayOrderContainer.classList.remove('d-none');
+
+                parentSelect.value = '';
+                pageSelect.value = null;
+
+                parentSelect.removeAttribute('required');
+                pageSelect.removeAttribute('required');
+
                 iconInput.setAttribute('required', 'required');
+                displayOrderInput.setAttribute('required', 'required');
+
             } else {
-                iconContainer.style.display = 'none';
+                // ===== SUB MENU =====
+
+                parentMenuContainer.classList.remove('d-none');
+                pageContainer.classList.remove('d-none');
+
+                iconContainer.classList.add('d-none');
+                displayOrderContainer.classList.add('d-none');
+
                 iconInput.value = '';
+                displayOrderInput.value = '';
+
                 iconInput.removeAttribute('required');
+                displayOrderInput.removeAttribute('required');
+
+                parentSelect.setAttribute('required', 'required');
+                pageSelect.setAttribute('required', 'required');
             }
         }
 
-        // run once on page load (start hidden)
-        toggleIconClass();
+        // Init
+        toggleMainMenu();
 
-        // run on checkbox change
-        checkbox.addEventListener('change', toggleIconClass);
+        // Change
+        isMainMenu.addEventListener('change', toggleMainMenu);
     });
-
-
 </script>
+
 

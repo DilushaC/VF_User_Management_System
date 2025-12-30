@@ -15,12 +15,14 @@ namespace UserManagement.Web.Controllers
         private readonly IProductService _productService;
         private readonly IPageService _pageService;
         private readonly IDataTableService _dataTableService;
+        private readonly IMenuItemService _menuItemService;
 
-        public MenuController(IProductService productService, IDataTableService dataTableService, IPageService pageService)
+        public MenuController(IProductService productService, IDataTableService dataTableService, IPageService pageService, IMenuItemService menuItemService)
         {
             _productService = productService;
             _pageService = pageService;
             _dataTableService = dataTableService;
+            _menuItemService = menuItemService;
         }
 
         [HttpGet]
@@ -32,6 +34,7 @@ namespace UserManagement.Web.Controllers
 
             var products = _productService.GetAllActiveProductList();
             var pages = _pageService.GetAllPagesList();
+            var parentMenus = _menuItemService.GetAllMenuItemsList();
 
             //viewbag for branches
             ViewBag.Products = products
@@ -47,6 +50,14 @@ namespace UserManagement.Web.Controllers
             {
                 Value = x.Id.ToString(),
                 Text = x.PageName
+            })
+            .ToList();
+
+            ViewBag.ParentMenus = parentMenus
+            .Select(x => new SelectListItem
+            {
+                Value = x.Id.ToString(),
+                Text = x.MenuTitle
             })
             .ToList();
 
