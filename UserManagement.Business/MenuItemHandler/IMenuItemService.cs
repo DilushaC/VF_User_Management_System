@@ -11,5 +11,6 @@ namespace UserManagement.Business.PageHandler
     public interface IMenuItemService
     {
         public List<MenuItem> GetAllMenuItemsList();
+        Task<bool> CreateMenuItemAsync(IFormCollection collection);
     }
 }

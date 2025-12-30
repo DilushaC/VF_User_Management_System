@@ -96,7 +96,7 @@ namespace UserManagement.Web.Controllers
         {
             try
             {
-                bool created = await _pageService.CreatePageAsync(collection);
+                bool created = await _menuItemService.CreateMenuItemAsync(collection);
 
                 if (created)
                 {

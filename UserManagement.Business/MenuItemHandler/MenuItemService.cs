@@ -1,5 +1,8 @@
-﻿using System;
+﻿using Dapper;
+using Microsoft.AspNetCore.Http;
+using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -70,6 +73,46 @@ namespace UserManagement.Business.MenuItemHandler
             catch
             {
                 throw;
+            }
+        }
+
+        public async Task<bool> CreateMenuItemAsync(IFormCollection collection)
+        {
+            try
+            {
+                var menuTitle = collection["MenuTitle"].ToString();
+                var parentId = collection["ParentMenuId"].ToString();
+                var pageId = collection["PageId"].ToString();
+                var iconClass = collection["IconClass"].ToString();
+                var displayOrder = collection["DisplayOrder"].ToString();
+                var productId = collection["ProductId"].ToString();
+                var isActive = collection["IsActive"].ToString();
+
+                string sql = @"
+                INSERT INTO MenuItems
+                (MenuTitle, ParentMenuId, PageId, IconClass, DisplayOrder, ProductId, IsActive )
+                VALUES
+                (@MenuTitle,@ParentMenuId, @PageId, @IconClass, @DisplayOrder, @ProductId, @IsActive);
+            ";
+
+                var parameters = new DynamicParameters();
+
+                parameters.Add("MenuTitle", menuTitle, DbType.String);
+                parameters.Add("ParentMenuId", Convert.ToInt32(parentId), DbType.Int32);
+                parameters.Add("PageId", Convert.ToInt32(pageId), DbType.Int32);
+                parameters.Add("IconClass", iconClass, DbType.String);
+                parameters.Add("DisplayOrder", Convert.ToInt32(displayOrder), DbType.Int32);
+                parameters.Add("ProductId", Convert.ToInt32(productId), DbType.Int32);
+                parameters.Add("IsActive", isActive, DbType.Boolean);
+
+                int rows = _connectionService.ExecuteWithPara(sql, parameters);
+
+                return rows > 0;
+
+            }
+            catch
+            {
+                return false;
             }
         }
 

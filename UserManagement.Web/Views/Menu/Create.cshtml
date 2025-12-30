@@ -14,8 +14,8 @@
                     <br />
 
                     <form asp-action="Create" asp-controller="Page" method="post" id="RegisterForm" novalidate>
+                        <input type="hidden" id="PageId" name="PageId" />
                         <fieldset>
-
                             <!-- Menu Title -->
                             <div class="row g-2">
                                 <div class="mb-3 col-md-6">
@@ -39,28 +39,16 @@
                             <div id="productContainer" class="row g-2">
                                 <div class="mb-3 col-md-6">
                                     <label class="form-label">Select Product</label>
-                                    <select id="ProductId" name="ProductId"
-                                            class="form-control select2 round" required>
-                                        <option value="">Select Product</option>
-                                        @foreach (var item in ViewBag.Products)
-                                        {
-                                            <option value="@item.Value">@item.Text</option>
-                                        }
-                                    </select>
-                                </div>
-                            </div>
-
-                            <!-- Parent Menu -->
-                            <div id="parentMenuContainer" class="row g-2">
-                                <div class="mb-3 col-md-6">
-                                    <label class="form-label">Select Parent Menu</label>
-                                    <select id="ParentMenuItemId" name="ParentMenuItemId"
-                                            class="form-control select2 round">
-                                        <option value="">Select Parent</option>
-                                        @foreach (var item in ViewBag.ParentMenus)
-                                        {
-                                            <option value="@item.Value">@item.Text</option>
-                                        }
+                                    <select id="ProductId"
+                                            asp-for="ProductId"
+                                            class="form-control select2 round"
+                                            data-bs-toggle="tooltip"
+                                            data-bs-placement="right"
+                                            title="Product is required"
+                                            required
+                                            data-placeholder="Select Base Product"
+                                            asp-items="ViewBag.Products">
+                                        <option value="">Select Base Product</option>
                                     </select>
                                 </div>
                             </div>
@@ -70,8 +58,25 @@
                                 <div class="mb-3 col-md-6">
                                     <label class="form-label">Page Name</label>
                                     <select id="PageIds" name="PageIds"
+                                            class="form-control select2 round">
+                                    </select>
+                                </div>
+                            </div>
+
+                            <!-- Parent Menu -->
+                            <div id="parentMenuContainer" class="row g-2">
+                                <div class="mb-3 col-md-6">
+                                    <label class="form-label">Select Parent Menu</label>
+                                    <select id="ParentMenuItemId"
+                                            asp-for="ParentMenuItemId"
                                             class="form-control select2 round"
-                                            multiple="multiple">
+                                            data-bs-toggle="tooltip"
+                                            data-bs-placement="right"
+                                            title="Product is required"
+                                            required
+                                            data-placeholder="Select Parent Menu"
+                                            asp-items="ViewBag.ParentMenus">
+                                        <option value="">Select Parent Menu</option>
                                     </select>
                                 </div>
                             </div>
@@ -229,24 +234,6 @@
     $("#RegisterForm").on("submit", function (e) {
         e.preventDefault();
         let form = $(this)[0];
-
-        if (!pageNameValid) {
-            Swal.fire({
-                icon: 'error',
-                title: 'Page Already Exists',
-                text: 'Please Create another Page.'
-            });
-            return;
-        }
-
-        if (!pageLevelValid) {
-            Swal.fire({
-                icon: 'error',
-                title: 'Page Level Already Exists',
-                text: 'Please choose another Page Level.'
-            });
-            return;
-        }
 
         if (!form.checkValidity()) {
             $(this).addClass('was-validated');
