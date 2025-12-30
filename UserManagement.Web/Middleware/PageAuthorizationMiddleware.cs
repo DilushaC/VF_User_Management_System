@@ -15,9 +15,6 @@ namespace UserManagement.Web.Middleware
         {
             var path = context.Request.Path.Value?.ToLower();
 
-            // ===============================
-            // 1️⃣ Allow static files
-            // ===============================
             if (string.IsNullOrEmpty(path) ||
                 path == "/" ||
                 path == "/home" ||
@@ -30,18 +27,12 @@ namespace UserManagement.Web.Middleware
                 return;
             }
 
-            // ===============================
-            // 2️⃣ Allow login page & login POST
-            // ===============================
             if (path == "/user/login")
             {
                 await _next(context);
                 return;
             }
 
-            // ===============================
-            // 3️⃣ Allow AJAX / API requests
-            // ===============================
             if (context.Request.Headers["X-Requested-With"] == "XMLHttpRequest" ||
                 path.StartsWith("/api"))
             {
@@ -49,18 +40,12 @@ namespace UserManagement.Web.Middleware
                 return;
             }
 
-            // ===============================
-            // 4️⃣ If not logged in → redirect
-            // ===============================
             if (!context.Session.Keys.Contains("UserId"))
             {
                 context.Response.Redirect("/");
                 return;
             }
 
-            // ===============================
-            // 5️⃣ Page authorization check
-            // ===============================
             var pageUrlsJson = context.Session.GetString("PageUrls");
 
             if (string.IsNullOrEmpty(pageUrlsJson))
@@ -69,7 +54,6 @@ namespace UserManagement.Web.Middleware
                 return;
             }
 
-            // Extract only the page URL (before '|')
             var allowedPages = JsonSerializer
                 .Deserialize<List<string>>(pageUrlsJson)
                 ?.Select(p => p.Split('|')[0].ToLower())

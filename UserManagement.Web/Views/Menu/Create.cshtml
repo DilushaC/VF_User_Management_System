@@ -230,71 +230,6 @@
     });
 
 
-
-    $("#RegisterForm").on("submit", function (e) {
-        e.preventDefault();
-        let form = $(this)[0];
-
-        if (!form.checkValidity()) {
-            $(this).addClass('was-validated');
-            return;
-        }
-        Swal.fire({
-            title: 'Create Page?',
-            text: "Are you sure you want to create?",
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonText: 'Yes, Save',
-            cancelButtonText: 'Cancel'
-        }).then((result) => {
-            if (result.isConfirmed) {
-                Swal.fire({
-                    title: 'Saving...',
-                    allowOutsideClick: false,
-                    didOpen: () => {
-                        Swal.showLoading();
-                    }
-                });
-                $.ajax({
-                    url: '/Menu/Create',
-                    type: 'POST',
-                    data: $("#RegisterForm").serialize(),
-                    headers: { "X-Requested-With": "XMLHttpRequest" },
-                    success: function (response) {
-                        Swal.close();
-                        if (response.success) {
-                            Swal.fire({
-                                icon: 'success',
-                                title: response.message,
-                                showConfirmButton: false,
-                                timer: 1500
-                            }).then(() => {
-                                window.location.href = response.redirectUrl;
-                                // Reset form and Select2 elements
-                            });
-                        } else if (response.redirectUrl) {
-                            // Redirect if controller provides URL
-                            window.location.href = response.redirectUrl;
-                        } else {
-                            Swal.fire({
-                                icon: 'error',
-                                title: 'Error',
-                                text: response.message || 'Failed to create page.'
-                            });
-                        }
-                    },
-                    error: function (xhr, status, error) {
-                        Swal.fire({
-                            icon: 'error',
-                            title: 'Error',
-                            text: 'Something went wrong! Please try again.'
-                        });
-                    }
-                });
-            }
-        });
-    });
-
     document.addEventListener('DOMContentLoaded', function () {
 
         const isMainMenu = document.getElementById('IsMainMenu');
@@ -308,7 +243,11 @@
         const pageSelect = document.getElementById('PageIds');
         const iconInput = document.getElementById('IconClass');
         const displayOrderInput = document.getElementById('DisplayOrder');
+        const hiddenPageId = document.getElementById('PageId');
 
+        /* ===============================
+           TOGGLE UI BASED ON CHECKBOX
+        ================================ */
         function toggleMainMenu() {
 
             if (isMainMenu.checked) {
@@ -329,6 +268,9 @@
                 iconInput.setAttribute('required', 'required');
                 displayOrderInput.setAttribute('required', 'required');
 
+                // 🔥 FORCE PAGE ID = 1
+                hiddenPageId.value = 1;
+
             } else {
                 // ===== SUB MENU =====
 
@@ -346,14 +288,92 @@
 
                 parentSelect.setAttribute('required', 'required');
                 pageSelect.setAttribute('required', 'required');
+
+                hiddenPageId.value = '';
             }
         }
 
-        // Init
         toggleMainMenu();
-
-        // Change
         isMainMenu.addEventListener('change', toggleMainMenu);
+
+        /* ===============================
+           FORM SUBMIT (AJAX)
+        ================================ */
+        $("#RegisterForm").on("submit", function (e) {
+            e.preventDefault();
+
+            let form = this;
+
+            if (!form.checkValidity()) {
+                $(form).addClass('was-validated');
+                return;
+            }
+
+            // 🔐 FINAL PAGE ID ASSIGNMENT
+            if (isMainMenu.checked) {
+                hiddenPageId.value = 1;
+            } else {
+                const selectedPages = $("#PageIds").val();
+                hiddenPageId.value = selectedPages && selectedPages.length > 0
+                    ? selectedPages[0]
+                    : '';
+            }
+
+            Swal.fire({
+                title: 'Create Menu?',
+                text: "Are you sure you want to create?",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Yes, Save',
+                cancelButtonText: 'Cancel'
+            }).then((result) => {
+
+                if (result.isConfirmed) {
+
+                    Swal.fire({
+                        title: 'Saving...',
+                        allowOutsideClick: false,
+                        didOpen: () => Swal.showLoading()
+                    });
+
+                    $.ajax({
+                        url: '/Menu/Create',
+                        type: 'POST',
+                        data: $("#RegisterForm").serialize(),
+                        headers: { "X-Requested-With": "XMLHttpRequest" },
+
+                        success: function (response) {
+                            Swal.close();
+
+                            if (response.success) {
+                                Swal.fire({
+                                    icon: 'success',
+                                    title: response.message,
+                                    showConfirmButton: false,
+                                    timer: 1500
+                                }).then(() => {
+                                    window.location.href = response.redirectUrl;
+                                });
+                            } else {
+                                Swal.fire({
+                                    icon: 'error',
+                                    title: 'Error',
+                                    text: response.message || 'Failed to create menu.'
+                                });
+                            }
+                        },
+
+                        error: function () {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Error',
+                                text: 'Something went wrong! Please try again.'
+                            });
+                        }
+                    });
+                }
+            });
+        });
     });
 </script>
 
