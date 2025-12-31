@@ -85,9 +85,10 @@
 <script src="~/assets/js/sweetalert2.all.min.js"></script>
 
 <script>
-        $(document).ready(function () {
 
-        // Initialize Select2 for all relevant selects
+    $(document).ready(function () {
+
+        // Initialize Select2
         $('#ParentMenuItemId, #PageId, #ProductId, #Status').select2({ width: '100%' });
 
         const parentMenuContainer = $('#parentMenuContainer');
@@ -100,6 +101,14 @@
         const iconInput = $('#IconClass');
         const displayOrderInput = $('#DisplayOrder');
         const isMainMenuCheckbox = $('#IsMainMenu');
+
+        // Initialize checkbox based on ParentMenuItemId
+        var parentMenuId = '@(Model.ParentMenuItemId ?? 0)';
+        if (!parentMenuId || parentMenuId === "0") {
+            isMainMenuCheckbox.prop('checked', true);
+        } else {
+            isMainMenuCheckbox.prop('checked', false);
+        }
 
         function toggleFields() {
             if (isMainMenuCheckbox.is(':checked')) {
@@ -131,24 +140,17 @@
             }
         }
 
-        // Initial toggle on page load
+        // Initial toggle on load
         toggleFields();
 
-        // Toggle when Main Menu checkbox changes
+        // On checkbox change
         isMainMenuCheckbox.on('change', toggleFields);
 
-        // Optional: if you want dynamic Page field logic based on parent change
+        // Optional: toggle Page field when parent changes
         parentSelect.on('change', function () {
             if (isMainMenuCheckbox.is(':checked')) return; // ignore if main menu
-
-            const parentVal = parentSelect.val();
-            if (parentVal && parentVal !== "0") {
-                pageContainer.show();
-                pageSelect.attr('required', 'required');
-            } else {
-                pageContainer.show(); // still show Page dropdown even if parent empty
-                pageSelect.attr('required', 'required');
-            }
+            pageContainer.show();
+            pageSelect.attr('required', 'required');
         });
     });
 

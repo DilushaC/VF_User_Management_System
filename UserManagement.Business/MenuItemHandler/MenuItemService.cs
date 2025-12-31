@@ -80,6 +80,7 @@ namespace UserManagement.Business.MenuItemHandler
         {
             try
             {
+                // Collect values from form
                 string menuTitle = collection["MenuTitle"];
                 string parentIdStr = collection["ParentMenuItemId"];
                 string pageIdStr = collection["PageId"];
@@ -89,28 +90,42 @@ namespace UserManagement.Business.MenuItemHandler
                 string isActiveStr = collection["IsActive"];
                 string isMainMenuStr = collection["IsMainMenu"];
 
+                // Determine main menu checkbox
                 bool isMainMenu = isMainMenuStr == "on" || isMainMenuStr == "true";
 
+                // Parse numeric fields safely
                 int displayOrder = int.TryParse(displayOrderStr, out var d) ? d : 1;
-                int productId = int.TryParse(productIdStr, out var p) ? p : 0;
+                int? productId = int.TryParse(productIdStr, out var p) && p > 0 ? p : null;
                 bool isActive = isActiveStr == "true" || isActiveStr == "on";
 
+                // Initialize nullable fields
                 int? parentMenuId = null;
-                int? pageId = null;  
+                int? pageId = null;
 
                 if (isMainMenu)
                 {
+                    // Main menu: no parent, no page
                     parentMenuId = null;
-                    pageId = null;    
+                    pageId = null;
                     iconClass = string.IsNullOrWhiteSpace(iconClass) ? null : iconClass;
                 }
                 else
                 {
-                    parentMenuId = int.TryParse(parentIdStr, out var pid) ? pid : null;
-                    pageId = int.TryParse(pageIdStr, out var pgid) ? pgid : null;
-                    iconClass = null;
+                    // Submenu: parse parent menu if provided
+                    parentMenuId = int.TryParse(parentIdStr, out var pid) && pid > 0 ? pid : null;
+
+                    // Parse page ID: take first value if multiple are sent
+                    if (!string.IsNullOrEmpty(pageIdStr))
+                    {
+                        var firstValue = pageIdStr.Split(',').FirstOrDefault();
+                        if (int.TryParse(firstValue, out var pgid) && pgid > 0)
+                            pageId = pgid;
+                    }
+
+                    iconClass = null; // icon not used for submenus
                 }
 
+                // Prepare SQL and parameters
                 string sql = @"
                     INSERT INTO MenuItems
                     (MenuTitle, ParentMenuId, PageId, IconClass, DisplayOrder, ProductId, IsActive)
@@ -121,10 +136,10 @@ namespace UserManagement.Business.MenuItemHandler
                 var parameters = new DynamicParameters();
                 parameters.Add("@MenuTitle", menuTitle, DbType.String);
                 parameters.Add("@ParentMenuId", parentMenuId, DbType.Int32);
-                parameters.Add("@PageId", pageId, DbType.Int32);   // NULL allowed
+                parameters.Add("@PageId", pageId, DbType.Int32);
                 parameters.Add("@IconClass", iconClass, DbType.String);
                 parameters.Add("@DisplayOrder", displayOrder, DbType.Int32);
-                parameters.Add("@ProductId", productId == 0 ? null : productId, DbType.Int32);
+                parameters.Add("@ProductId", productId, DbType.Int32);
                 parameters.Add("@IsActive", isActive, DbType.Boolean);
 
                 int rows = _connectionService.ExecuteWithPara(sql, parameters);
@@ -135,6 +150,8 @@ namespace UserManagement.Business.MenuItemHandler
                 throw;
             }
         }
+
+
 
 
         public List<MenuItem> GetAllMenuList()
