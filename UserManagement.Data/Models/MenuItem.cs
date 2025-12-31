@@ -11,6 +11,8 @@ namespace UserManagement.Data.Models
         public int Id { get; set; }
 
         public int? ParentMenuItemId { get; set; }
+        public string ParentMenuTitle { get; set; } = string.Empty;
+
 
         public string MenuTitle { get; set; } = string.Empty;
 

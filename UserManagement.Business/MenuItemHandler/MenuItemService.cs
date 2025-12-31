@@ -142,20 +142,23 @@ namespace UserManagement.Business.MenuItemHandler
             try
             {
                 string query = @"
-                    SELECT  
-                        m.Id,
-                        m.MenuTitle,
-                        m.ParentMenuId,
-                        m.PageId,
-                        ISNULL(p.PageName, '') AS PageName,
-                        m.IconClass,
-                        ISNULL(m.DisplayOrder, 0) AS DisplayOrder,
-                        m.IsActive,
-                        m.ProductId,
-                        ISNULL(pr.ProductName, '') AS ProductName
-                    FROM MenuItems m
-                    LEFT JOIN Pages p ON m.PageId = p.Id
-                    LEFT JOIN Products pr ON m.ProductId = pr.Id
+                SELECT  
+                    m.Id,
+                    m.MenuTitle,
+                    m.ParentMenuId,
+                    pm.MenuTitle AS ParentMenuTitle,
+                    m.PageId,
+                    ISNULL(p.PageName, '') AS PageName,
+                    m.IconClass,
+                    ISNULL(m.DisplayOrder, 0) AS DisplayOrder,
+                    m.IsActive,
+                    m.ProductId,
+                    ISNULL(pr.ProductName, '') AS ProductName
+                FROM MenuItems m
+                LEFT JOIN MenuItems pm ON m.ParentMenuId = pm.Id   -- Self join to get parent title
+                LEFT JOIN Pages p ON m.PageId = p.Id
+                LEFT JOIN Products pr ON m.ProductId = pr.Id
+
                 ";
 
                 var data = _connectionService.Return(query);
@@ -172,8 +175,12 @@ namespace UserManagement.Business.MenuItemHandler
                         Id = row["Id"] != DBNull.Value ? Convert.ToInt32(row["Id"]) : 0,
                         MenuTitle = row["MenuTitle"]?.ToString() ?? string.Empty,
                         ParentMenuItemId = row["ParentMenuId"] != DBNull.Value
-                                            ? Convert.ToInt32(row["ParentMenuId"])
-                                            : (int?)null,
+                        ? Convert.ToInt32(row["ParentMenuId"])
+                        : (int?)null,
+                        ParentMenuTitle = row.Table.Columns.Contains("ParentMenuTitle") && row["ParentMenuTitle"] != DBNull.Value
+                        ? row["ParentMenuTitle"].ToString()
+                        : string.Empty,
+
                         PageId = row["PageId"] != DBNull.Value
                                             ? Convert.ToInt32(row["PageId"])
                                             : (int?)null,
@@ -242,7 +249,7 @@ namespace UserManagement.Business.MenuItemHandler
             {
                 var Id = Convert.ToInt32(collection["Id"]);
                 var menuTitle = collection["MenuTitle"].ToString();
-                var parentMenuId = collection["ParentMenuId"].ToString();
+                var parentMenuId = collection["ParentMenuItemId"].ToString();
                 var pageId = collection["PageId"].ToString();
                 var iconClass = collection["IconClass"].ToString();
                 var displayOrder = collection["DisplayOrder"].ToString();
@@ -265,7 +272,7 @@ namespace UserManagement.Business.MenuItemHandler
                 var parameters = new DynamicParameters();
                 parameters.Add("Id", Id, DbType.Int32);
                 parameters.Add("MenuTitle", menuTitle, DbType.String);
-                parameters.Add("ParentMenuId", 0);
+                parameters.Add("ParentMenuId", Convert.ToInt32(parentMenuId), DbType.Int32);
                 parameters.Add("PageId", Convert.ToInt32(pageId), DbType.Int32);
                 parameters.Add("IconClass", iconClass, DbType.String);
                 parameters.Add("DisplayOrder", Convert.ToInt32(displayOrder), DbType.Int32);
