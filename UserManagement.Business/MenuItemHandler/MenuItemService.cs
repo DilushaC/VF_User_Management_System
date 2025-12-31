@@ -34,7 +34,8 @@ namespace UserManagement.Business.MenuItemHandler
                         DisplayOrder,
                         IsActive,
                         ProductId
-                    FROM MenuItems;
+                    FROM MenuItems
+                    WHERE ParentMenuId IS NULL;
                 ";
 
                 var data = _connectionService.Return(query);
