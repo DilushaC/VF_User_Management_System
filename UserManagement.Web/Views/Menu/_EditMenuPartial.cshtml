@@ -96,6 +96,7 @@
 <script>
     $("#ParentMenuItemId").select2({
         placeholder: "Select Parent Menu",
+        allowClear: true
     });
 
     $("#PageId").select2({
@@ -169,6 +170,16 @@
             }
         });
     });
+
+    $(document).ready(function () {
+        var parentMenuDiv = $('#ParentMenuItemId').closest('.mb-3');
+        if (!@Model.ParentMenuItemId) {
+            parentMenuDiv.hide(); // hide if null
+        } else {
+            parentMenuDiv.show(); // show if exists
+        }
+    });
+
 </script>
 
 

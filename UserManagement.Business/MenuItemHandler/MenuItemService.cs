@@ -81,7 +81,7 @@ namespace UserManagement.Business.MenuItemHandler
             try
             {
                 string menuTitle = collection["MenuTitle"];
-                string parentIdStr = collection["ParentMenuId"];
+                string parentIdStr = collection["ParentMenuItemId"];
                 string pageIdStr = collection["PageId"];
                 string iconClass = collection["IconClass"];
                 string displayOrderStr = collection["DisplayOrder"];
@@ -96,18 +96,18 @@ namespace UserManagement.Business.MenuItemHandler
                 bool isActive = isActiveStr == "true" || isActiveStr == "on";
 
                 int? parentMenuId = null;
-                int pageId;
+                int? pageId = null;   // ✅ nullable
 
                 if (isMainMenu)
                 {
                     parentMenuId = null;
-                    pageId = 1; 
+                    pageId = null;     // ✅ MAIN MENU = NO PAGE
                     iconClass = string.IsNullOrWhiteSpace(iconClass) ? null : iconClass;
                 }
                 else
                 {
                     parentMenuId = int.TryParse(parentIdStr, out var pid) ? pid : null;
-                    pageId = int.TryParse(pageIdStr, out var pgid) ? pgid : 0;
+                    pageId = int.TryParse(pageIdStr, out var pgid) ? pgid : null;
                     iconClass = null;
                 }
 
@@ -121,21 +121,21 @@ namespace UserManagement.Business.MenuItemHandler
                 var parameters = new DynamicParameters();
                 parameters.Add("@MenuTitle", menuTitle, DbType.String);
                 parameters.Add("@ParentMenuId", parentMenuId, DbType.Int32);
-                parameters.Add("@PageId", pageId, DbType.Int32);
+                parameters.Add("@PageId", pageId, DbType.Int32);   // NULL allowed
                 parameters.Add("@IconClass", iconClass, DbType.String);
                 parameters.Add("@DisplayOrder", displayOrder, DbType.Int32);
-                parameters.Add("@ProductId", productId, DbType.Int32);
+                parameters.Add("@ProductId", productId == 0 ? null : productId, DbType.Int32);
                 parameters.Add("@IsActive", isActive, DbType.Boolean);
 
                 int rows = _connectionService.ExecuteWithPara(sql, parameters);
-
                 return rows > 0;
             }
-            catch (Exception ex)
+            catch
             {
                 throw;
             }
         }
+
 
         public List<MenuItem> GetAllMenuList()
         {

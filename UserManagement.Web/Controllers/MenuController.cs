@@ -100,7 +100,7 @@ namespace UserManagement.Web.Controllers
                     {
                         success = true,
                         message = "Page created successfully",
-                        redirectUrl = Url.Action("Management", "Page")
+                        redirectUrl = Url.Action("Management", "Menu")
                     });
                 }
                 else

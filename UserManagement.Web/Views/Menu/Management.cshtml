@@ -81,7 +81,12 @@
         },
         columns: [
             { data: 'menuTitle' },
-            { data: 'parentMenuTitle', render: function(data){ return data ?? ''; } },
+            {
+              data: 'parentMenuTitle',
+                render: function(data){
+                    return data && data.trim() !== '' ? data : '<strong>Main Menu</strong>';
+                }
+            },
             { data: 'pageName' },
             { data: 'iconClass' },
             { data: 'productName' },

@@ -57,8 +57,16 @@
                             <div id="pageContainer" class="row g-2">
                                 <div class="mb-3 col-md-6">
                                     <label class="form-label">Page Name</label>
-                                    <select id="PageIds" name="PageIds"
-                                            class="form-control select2 round">
+                                    <select id="PageIds"
+                                            asp-for="PageId"
+                                            class="form-control select2 round"
+                                            data-bs-toggle="tooltip"
+                                            data-bs-placement="right"
+                                            title="Page is required"
+                                            required
+                                            data-placeholder="Select Page"
+                                            asp-items="ViewBag.Pages">
+                                        <option value="">Select Page</option>
                                     </select>
                                 </div>
                             </div>
@@ -72,7 +80,7 @@
                                             class="form-control select2 round"
                                             data-bs-toggle="tooltip"
                                             data-bs-placement="right"
-                                            title="Product is required"
+                                            title="Parent Menu required"
                                             required
                                             data-placeholder="Select Parent Menu"
                                             asp-items="ViewBag.ParentMenus">
@@ -296,9 +304,6 @@
         toggleMainMenu();
         isMainMenu.addEventListener('change', toggleMainMenu);
 
-        /* ===============================
-           FORM SUBMIT (AJAX)
-        ================================ */
         $("#RegisterForm").on("submit", function (e) {
             e.preventDefault();
 
@@ -309,7 +314,6 @@
                 return;
             }
 
-            // 🔐 FINAL PAGE ID ASSIGNMENT
             if (isMainMenu.checked) {
                 hiddenPageId.value = 1;
             } else {
