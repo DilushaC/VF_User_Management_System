@@ -74,18 +74,14 @@ namespace UserManagement.Web.Controllers
         {
             var dtRequest = _dataTableService.BuildRequest(Request);
 
-            // Build query
-            var query = _pageService.GetAllPagesList().AsQueryable();
+            var query = _menuItemService.GetAllMenuList().AsQueryable();
 
-            // Custom search (your logic)
             if (!string.IsNullOrWhiteSpace(dtRequest.SearchValue))
             {
                 string s = dtRequest.SearchValue;
                 query = query.Where(u =>
                     u.PageName.ToLower().Contains(s));
             }
-
-            // Execute paging using common handler
             var response = _dataTableService.ApplyDataTable(query, dtRequest);
 
             return Json(response);
@@ -131,8 +127,9 @@ namespace UserManagement.Web.Controllers
         public async Task<IActionResult> LoadEditModal(int id)
         {
             var products = _productService.GetAllActiveProductList();
+            var pages = _pageService.GetAllPagesList();
+            var parentMenus = _menuItemService.GetAllMenuItemsList();
 
-            //viewbag for branches
             ViewBag.Products = products
             .Select(x => new SelectListItem
             {
@@ -141,12 +138,28 @@ namespace UserManagement.Web.Controllers
             })
             .ToList();
 
-            var user = await _pageService.GetPageByIdAsync(id);
+            ViewBag.Pages = pages
+            .Select(x => new SelectListItem
+            {
+                Value = x.Id.ToString(),
+                Text = x.PageName
+            })
+            .ToList();
+
+            ViewBag.ParentMenus = parentMenus
+            .Select(x => new SelectListItem
+            {
+                Value = x.Id.ToString(),
+                Text = x.MenuTitle
+            })
+            .ToList();
+
+            var user = await _menuItemService.GetMenuByIdAsync(id);
             if (user == null)
             {
                 return NotFound();
             }
-            return PartialView("_EditPagePartial", user);
+            return PartialView("_EditMenuPartial", user);
         }
 
 
@@ -155,14 +168,14 @@ namespace UserManagement.Web.Controllers
         {
             try
             {
-                var result = await _pageService.UpdatePageAsync(form);
+                var result = await _menuItemService.UpdateMenuAsync(form);
 
                 if (!result)
                 {
-                    return Ok(new { success = false, message = "Failed to update Page." });
+                    return Ok(new { success = false, message = "Failed to update Menu." });
                 }
 
-                return Ok(new { success = true, message = "Page updated successfully.", redirectUrl = Url.Action("Management", "Page") });
+                return Ok(new { success = true, message = "Menu updated successfully.", redirectUrl = Url.Action("Management", "Menu") });
             }
             catch (Exception ex)
             {

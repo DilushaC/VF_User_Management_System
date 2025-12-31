@@ -1,5 +1,174 @@
-﻿@*
-    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-*@
+﻿@using UserManagement.Data.Models
+@model MenuItem
 @{
+    Layout = null;
 }
+
+<div class="modal-header">
+    <h5 class="modal-title" id="userEditModalLabel">Edit Menu: @Model.MenuTitle</h5>
+    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+</div>
+
+<form id="updateMenuForm" asp-action="LoadEditModal" asp-controller="Menu" method="post">
+    <input type="hidden" asp-for="Id" />
+
+    <div class="modal-body">
+
+        <div class="mb-3 col-md-6">
+            <label class="form-label">Menu Title</label>
+            <input type="text" asp-for="MenuTitle" class="form-control" />
+        </div>
+        <div class="row g-2">
+            <div class="mb-3 col-md-6 position-relative">
+                <label asp-for="ParentMenuItemId" class="form-label">Parent Menu</label>
+                <select asp-for="ParentMenuItemId"
+                        id="ParentMenuItemId"
+                        name="ParentMenuItemId"
+                        class="form-control select2 round"
+                        required
+                        data-placeholder="Select Parent Menu"
+                        data-bs-toggle="tooltip"
+                        data-bs-placement="right"
+                        title="Select Parent Menu"
+                        asp-items="ViewBag.ParentMenus">
+                </select>
+                <span asp-validation-for="ParentMenuItemId" class="invalid-tooltip">
+                    Please select at least one product
+                </span>
+            </div>
+        </div>
+        <div class="row g-2">
+            <div class="mb-3 col-md-6 position-relative">
+                <label asp-for="PageId" class="form-label">Page</label>
+                <select asp-for="PageId"
+                        id="PageId"
+                        name="PageId"
+                        class="form-control select2 round"
+                        required
+                        data-placeholder="Select Page"
+                        data-bs-toggle="tooltip"
+                        data-bs-placement="right"
+                        title="Select Page"
+                        asp-items="ViewBag.Pages">
+                </select>
+                <span asp-validation-for="PageId" class="invalid-tooltip">
+                    Please select a page
+                </span>
+            </div>
+        </div>
+        <div class="row">
+            <div class="mb-3 col-md-6">
+                <label class="form-label">Icon Class</label>
+                <input type="text" asp-for="IconClass" class="form-control" required />
+            </div>
+            <div class="mb-3 col-md-3">
+                <label class="form-label">Display Order</label>
+                <input type="text" type="number" asp-for="DisplayOrder" class="form-control" required />
+            </div>
+        </div>
+        <div class="mb-3 col-md-6">
+            <label class="form-label">Product</label>
+            <select id="ProductId" asp-for="ProductId" class="form-control select2" asp-items="ViewBag.Products">
+            </select>
+        </div>
+        <div class="mb-3  col-md-3">
+            <label class="form-label">Status</label>
+            <select id="Status" asp-for="IsActive" class="form-control select2">
+                <option value="true">Active</option>
+                <option value="false">Inactive</option>
+            </select>
+        </div>
+
+    </div>
+
+    <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+        <button type="submit" class="btn btn-primary">Save Changes</button>
+    </div>
+</form>
+
+<!-- Load jQuery only ONCE -->
+<script src="~/assets/lib/jquery/jquery.min.js"></script>
+<script src="~/assets/js/sweetalert2.all.min.js"></script>
+<!-- Load Select2 JS -->
+<script src="~/assets/vendor/select2/js/select2.min.js"></script>
+
+<script>
+    $("#ParentMenuItemId").select2({
+        placeholder: "Select Parent Menu",
+    });
+
+    $("#PageId").select2({
+        placeholder: "Select Page",
+    });
+
+    $("#ProductId").select2({
+        placeholder: "Select Product",
+    });
+
+    $("#Status").select2({
+        placeholder: "Select Status",
+    });
+
+    $("#updateMenuForm").on("submit", function (e) {
+        debugger;
+        e.preventDefault();
+        let form = $(this);
+
+        if (!form[0].checkValidity()) {
+            Swal.fire({
+                icon: "warning",
+                title: "Missing Information",
+                text: "Please fill in all required fields."
+            });
+            return;
+        }
+        Swal.fire({
+            title: 'Update Page?',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: 'Yes, Update',
+            cancelButtonText: 'Cancel'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                Swal.fire({
+                    title: 'Updating...',
+                    allowOutsideClick: false,
+                    didOpen: () => {
+                        Swal.showLoading();
+                    }
+                });
+                $.ajax({
+                    url: '/Menu/LoadEditModal',
+                    type: 'POST',
+                    data: form.serialize(),
+                    headers: { "X-Requested-With": "XMLHttpRequest" },
+                    success: function (response) {
+                        Swal.close();
+
+                        Swal.fire({
+                            icon: response.success ? 'success' : 'error',
+                            title: response.success ? 'Success' : 'Error',
+                            text: response.message
+                        }).then(() => {
+                            if (response.success) {
+                                const modal = bootstrap.Modal.getInstance(document.getElementById("menuEditModal"));
+                                modal.hide();
+                                window.location.href = response.redirectUrl;
+                            }
+                        });
+                    },
+                    error: function (xhr) {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error',
+                            text: xhr.responseJSON?.message || 'Something went wrong! Please try again.'
+                        });
+                    }
+                });
+            }
+        });
+    });
+</script>
+
+
