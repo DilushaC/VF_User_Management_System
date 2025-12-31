@@ -5,72 +5,66 @@
 }
 
 <div class="modal-header">
-    <h5 class="modal-title" id="userEditModalLabel">Edit Menu: @Model.MenuTitle</h5>
+    <h5 class="modal-title">Edit Menu: @Model.MenuTitle</h5>
     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
 </div>
 
-<form id="updateMenuForm" asp-action="LoadEditModal" asp-controller="Menu" method="post">
+<form id="updateMenuForm" asp-action="UpdateMenuByIdAsync" asp-controller="Menu" method="post">
     <input type="hidden" asp-for="Id" />
 
     <div class="modal-body">
 
+        <!-- Menu Title -->
         <div class="mb-3 col-md-6">
             <label class="form-label">Menu Title</label>
-            <input type="text" asp-for="MenuTitle" class="form-control" />
+            <input type="text" asp-for="MenuTitle" class="form-control" required />
         </div>
-        <div class="row g-2">
-            <div class="mb-3 col-md-6 position-relative">
-                <label asp-for="ParentMenuItemId" class="form-label">Parent Menu</label>
-                <select asp-for="ParentMenuItemId"
-                        id="ParentMenuItemId"
-                        name="ParentMenuItemId"
-                        class="form-control select2 round"
-                        required
-                        data-placeholder="Select Parent Menu"
-                        data-bs-toggle="tooltip"
-                        data-bs-placement="right"
-                        title="Select Parent Menu"
-                        asp-items="ViewBag.ParentMenus">
-                </select>
-                <span asp-validation-for="ParentMenuItemId" class="invalid-tooltip">
-                    Please select at least one product
-                </span>
+
+        <!-- Main Menu Checkbox -->
+        <div class="mb-3 col-md-6">
+            <div class="form-check">
+                <input type="checkbox" class="form-check-input" id="IsMainMenu" name="IsMainMenu" @(Model.ParentMenuItemId == null ? "checked" : "") />
+                <label class="form-check-label" for="IsMainMenu">Is Main Menu</label>
             </div>
         </div>
-        <div class="row g-2">
-            <div class="mb-3 col-md-6 position-relative">
-                <label asp-for="PageId" class="form-label">Page</label>
-                <select asp-for="PageId"
-                        id="PageId"
-                        name="PageId"
-                        class="form-control select2 round"
-                        required
-                        data-placeholder="Select Page"
-                        data-bs-toggle="tooltip"
-                        data-bs-placement="right"
-                        title="Select Page"
-                        asp-items="ViewBag.Pages">
-                </select>
-                <span asp-validation-for="PageId" class="invalid-tooltip">
-                    Please select a page
-                </span>
-            </div>
-        </div>
-        <div class="row">
+
+        <!-- Parent Menu -->
+        <div class="row g-2" id="parentMenuContainer">
             <div class="mb-3 col-md-6">
-                <label class="form-label">Icon Class</label>
-                <input type="text" asp-for="IconClass" class="form-control" required />
-            </div>
-            <div class="mb-3 col-md-3">
-                <label class="form-label">Display Order</label>
-                <input type="text" type="number" asp-for="DisplayOrder" class="form-control" required />
+                <label class="form-label">Parent Menu</label>
+                <select id="ParentMenuItemId" name="ParentMenuItemId" class="form-control select2" data-placeholder="Select Parent Menu" asp-items="ViewBag.ParentMenus">
+                </select>
             </div>
         </div>
+
+        <!-- Page -->
+        <div class="row g-2" id="pageContainer">
+            <div class="mb-3 col-md-6">
+                <label class="form-label">Page</label>
+                <select id="PageId" name="PageId" class="form-control select2" data-placeholder="Select Page" asp-items="ViewBag.Pages">
+                </select>
+            </div>
+        </div>
+
+        <!-- Icon & Display Order -->
+        <div class="row">
+            <div class="mb-3 col-md-6" id="iconClassContainer">
+                <label class="form-label">Icon Class</label>
+                <input type="text" asp-for="IconClass" class="form-control" />
+            </div>
+            <div class="mb-3 col-md-3" id="displayOrderContainer">
+                <label class="form-label">Display Order</label>
+                <input type="number" asp-for="DisplayOrder" class="form-control" />
+            </div>
+        </div>
+
+        <!-- Product -->
         <div class="mb-3 col-md-6">
             <label class="form-label">Product</label>
-            <select id="ProductId" asp-for="ProductId" class="form-control select2" asp-items="ViewBag.Products">
-            </select>
+            <select id="ProductId" asp-for="ProductId" class="form-control select2" asp-items="ViewBag.Products"></select>
         </div>
+
+        <!-- Status -->
         <div class="mb-3  col-md-3">
             <label class="form-label">Status</label>
             <select id="Status" asp-for="IsActive" class="form-control select2">
@@ -78,7 +72,6 @@
                 <option value="false">Inactive</option>
             </select>
         </div>
-
     </div>
 
     <div class="modal-footer">
@@ -87,66 +80,110 @@
     </div>
 </form>
 
-<!-- Load jQuery only ONCE -->
 <script src="~/assets/lib/jquery/jquery.min.js"></script>
-<script src="~/assets/js/sweetalert2.all.min.js"></script>
-<!-- Load Select2 JS -->
 <script src="~/assets/vendor/select2/js/select2.min.js"></script>
+<script src="~/assets/js/sweetalert2.all.min.js"></script>
 
 <script>
-    $("#ParentMenuItemId").select2({
-        placeholder: "Select Parent Menu",
-        allowClear: true
+        $(document).ready(function () {
+
+        // Initialize Select2 for all relevant selects
+        $('#ParentMenuItemId, #PageId, #ProductId, #Status').select2({ width: '100%' });
+
+        const parentMenuContainer = $('#parentMenuContainer');
+        const pageContainer = $('#pageContainer');
+        const iconContainer = $('#iconClassContainer');
+        const displayOrderContainer = $('#displayOrderContainer');
+
+        const parentSelect = $('#ParentMenuItemId');
+        const pageSelect = $('#PageId');
+        const iconInput = $('#IconClass');
+        const displayOrderInput = $('#DisplayOrder');
+        const isMainMenuCheckbox = $('#IsMainMenu');
+
+        function toggleFields() {
+            if (isMainMenuCheckbox.is(':checked')) {
+                // Main Menu: hide parent & page, show icon & display order
+                parentMenuContainer.hide();
+                pageContainer.hide();
+                iconContainer.show();
+                displayOrderContainer.show();
+
+                parentSelect.val(null).trigger('change');
+                pageSelect.val(null).trigger('change');
+
+                parentSelect.removeAttr('required');
+                pageSelect.removeAttr('required');
+                iconInput.attr('required', 'required');
+                displayOrderInput.attr('required', 'required');
+            } else {
+                // Sub Menu: show parent, page, product; hide icon & display order
+                parentMenuContainer.show();
+                pageContainer.show(); // ALWAYS show page for submenus
+                iconContainer.hide();
+                displayOrderContainer.hide();
+
+                iconInput.removeAttr('required');
+                displayOrderInput.removeAttr('required');
+
+                parentSelect.attr('required', 'required');
+                pageSelect.attr('required', 'required');
+            }
+        }
+
+        // Initial toggle on page load
+        toggleFields();
+
+        // Toggle when Main Menu checkbox changes
+        isMainMenuCheckbox.on('change', toggleFields);
+
+        // Optional: if you want dynamic Page field logic based on parent change
+        parentSelect.on('change', function () {
+            if (isMainMenuCheckbox.is(':checked')) return; // ignore if main menu
+
+            const parentVal = parentSelect.val();
+            if (parentVal && parentVal !== "0") {
+                pageContainer.show();
+                pageSelect.attr('required', 'required');
+            } else {
+                pageContainer.show(); // still show Page dropdown even if parent empty
+                pageSelect.attr('required', 'required');
+            }
+        });
     });
 
-    $("#PageId").select2({
-        placeholder: "Select Page",
-    });
 
-    $("#ProductId").select2({
-        placeholder: "Select Product",
-    });
-
-    $("#Status").select2({
-        placeholder: "Select Status",
-    });
-
-    $("#updateMenuForm").on("submit", function (e) {
-        debugger;
+    // Form submission
+    $('#updateMenuForm').on('submit', function (e) {
         e.preventDefault();
         let form = $(this);
 
         if (!form[0].checkValidity()) {
             Swal.fire({
-                icon: "warning",
-                title: "Missing Information",
-                text: "Please fill in all required fields."
+                icon: 'warning',
+                title: 'Missing Information',
+                text: 'Please fill in all required fields.'
             });
             return;
         }
+
         Swal.fire({
-            title: 'Update Page?',
+            title: 'Update Menu?',
             icon: 'warning',
             showCancelButton: true,
             confirmButtonText: 'Yes, Update',
             cancelButtonText: 'Cancel'
         }).then((result) => {
             if (result.isConfirmed) {
-                Swal.fire({
-                    title: 'Updating...',
-                    allowOutsideClick: false,
-                    didOpen: () => {
-                        Swal.showLoading();
-                    }
-                });
+                Swal.fire({ title: 'Updating...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
+
                 $.ajax({
-                    url: '/Menu/LoadEditModal',
+                    url: '/Menu/UpdateMenuByIdAsync',
                     type: 'POST',
                     data: form.serialize(),
-                    headers: { "X-Requested-With": "XMLHttpRequest" },
+                    headers: { 'X-Requested-With': 'XMLHttpRequest' },
                     success: function (response) {
                         Swal.close();
-
                         Swal.fire({
                             icon: response.success ? 'success' : 'error',
                             title: response.success ? 'Success' : 'Error',
@@ -163,23 +200,12 @@
                         Swal.fire({
                             icon: 'error',
                             title: 'Error',
-                            text: xhr.responseJSON?.message || 'Something went wrong! Please try again.'
+                            text: xhr.responseJSON?.message || 'Something went wrong!'
                         });
                     }
                 });
             }
         });
-    });
 
-    $(document).ready(function () {
-        var parentMenuDiv = $('#ParentMenuItemId').closest('.mb-3');
-        if (!@Model.ParentMenuItemId) {
-            parentMenuDiv.hide(); // hide if null
-        } else {
-            parentMenuDiv.show(); // show if exists
-        }
     });
-
 </script>
-
-

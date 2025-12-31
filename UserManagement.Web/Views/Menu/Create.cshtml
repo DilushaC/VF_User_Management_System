@@ -253,13 +253,9 @@
         const displayOrderInput = document.getElementById('DisplayOrder');
         const hiddenPageId = document.getElementById('PageId');
 
-        /* ===============================
-           TOGGLE UI BASED ON CHECKBOX
-        ================================ */
         function toggleMainMenu() {
 
             if (isMainMenu.checked) {
-                // ===== MAIN MENU =====
 
                 parentMenuContainer.classList.add('d-none');
                 pageContainer.classList.add('d-none');
@@ -276,11 +272,10 @@
                 iconInput.setAttribute('required', 'required');
                 displayOrderInput.setAttribute('required', 'required');
 
-                // 🔥 FORCE PAGE ID = 1
                 hiddenPageId.value = 1;
 
             } else {
-                // ===== SUB MENU =====
+
 
                 parentMenuContainer.classList.remove('d-none');
                 pageContainer.classList.remove('d-none');
