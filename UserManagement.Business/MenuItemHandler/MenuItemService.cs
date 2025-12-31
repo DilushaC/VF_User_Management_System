@@ -96,12 +96,12 @@ namespace UserManagement.Business.MenuItemHandler
                 bool isActive = isActiveStr == "true" || isActiveStr == "on";
 
                 int? parentMenuId = null;
-                int? pageId = null;   // ✅ nullable
+                int? pageId = null;  
 
                 if (isMainMenu)
                 {
                     parentMenuId = null;
-                    pageId = null;     // ✅ MAIN MENU = NO PAGE
+                    pageId = null;    
                     iconClass = string.IsNullOrWhiteSpace(iconClass) ? null : iconClass;
                 }
                 else
@@ -247,14 +247,29 @@ namespace UserManagement.Business.MenuItemHandler
         {
             try
             {
-                var Id = Convert.ToInt32(collection["Id"]);
-                var menuTitle = collection["MenuTitle"].ToString();
-                var parentMenuId = collection["ParentMenuItemId"].ToString();
-                var pageId = collection["PageId"].ToString();
-                var iconClass = collection["IconClass"].ToString();
-                var displayOrder = collection["DisplayOrder"].ToString();
-                var productId = collection["ProductId"].ToString();
-                var isActive = Convert.ToBoolean(collection["IsActive"]);
+                int id = Convert.ToInt32(collection["Id"]);
+                string menuTitle = collection["MenuTitle"];
+                string parentMenuStr = collection["ParentMenuItemId"];
+                string pageIdStr = collection["PageId"];
+                string iconClass = collection["IconClass"];
+                string displayOrderStr = collection["DisplayOrder"];
+                string productIdStr = collection["ProductId"];
+                bool isActive = collection["IsActive"] == "true" || collection["IsActive"] == "on";
+
+                int displayOrder = int.TryParse(displayOrderStr, out var d) ? d : 1;
+
+                int? parentMenuId = null;
+                int? pageId = null;
+                int? productId = null;
+
+                if (int.TryParse(parentMenuStr, out var pmid))
+                    parentMenuId = pmid;
+
+                if (int.TryParse(pageIdStr, out var pgid))
+                    pageId = pgid;
+
+                if (int.TryParse(productIdStr, out var prid))
+                    productId = prid;
 
                 string sql = @"
                     UPDATE MenuItems
@@ -270,23 +285,23 @@ namespace UserManagement.Business.MenuItemHandler
                 ";
 
                 var parameters = new DynamicParameters();
-                parameters.Add("Id", Id, DbType.Int32);
-                parameters.Add("MenuTitle", menuTitle, DbType.String);
-                parameters.Add("ParentMenuId", Convert.ToInt32(parentMenuId), DbType.Int32);
-                parameters.Add("PageId", Convert.ToInt32(pageId), DbType.Int32);
-                parameters.Add("IconClass", iconClass, DbType.String);
-                parameters.Add("DisplayOrder", Convert.ToInt32(displayOrder), DbType.Int32);
-                parameters.Add("ProductId", Convert.ToInt32(productId), DbType.Int32);
-                parameters.Add("IsActive", isActive, DbType.Boolean);
+                parameters.Add("@Id", id, DbType.Int32);
+                parameters.Add("@MenuTitle", menuTitle, DbType.String);
+                parameters.Add("@ParentMenuId", parentMenuId, DbType.Int32);
+                parameters.Add("@PageId", pageId, DbType.Int32);
+                parameters.Add("@IconClass", string.IsNullOrWhiteSpace(iconClass) ? null : iconClass, DbType.String);
+                parameters.Add("@DisplayOrder", displayOrder, DbType.Int32);
+                parameters.Add("@ProductId", productId, DbType.Int32);
+                parameters.Add("@IsActive", isActive, DbType.Boolean);
 
                 int rows = _connectionService.ExecuteWithPara(sql, parameters);
-
                 return rows > 0;
             }
-            catch (Exception ex)
+            catch
             {
                 return false;
             }
         }
+
     }
 }
