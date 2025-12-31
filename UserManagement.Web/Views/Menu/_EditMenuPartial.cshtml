@@ -20,19 +20,12 @@
             <input type="text" asp-for="MenuTitle" class="form-control" required />
         </div>
 
-        <!-- Main Menu Checkbox -->
-        <div class="mb-3 col-md-6">
-            <div class="form-check">
-                <input type="checkbox" class="form-check-input" id="IsMainMenu" name="IsMainMenu" @(Model.ParentMenuItemId == null ? "checked" : "") />
-                <label class="form-check-label" for="IsMainMenu">Is Main Menu</label>
-            </div>
-        </div>
-
         <!-- Parent Menu -->
         <div class="row g-2" id="parentMenuContainer">
             <div class="mb-3 col-md-6">
                 <label class="form-label">Parent Menu</label>
                 <select id="ParentMenuItemId" name="ParentMenuItemId" class="form-control select2" data-placeholder="Select Parent Menu" asp-items="ViewBag.ParentMenus">
+                    <option value="">Select Parent Menu</option>
                 </select>
             </div>
         </div>
@@ -42,6 +35,7 @@
             <div class="mb-3 col-md-6">
                 <label class="form-label">Page</label>
                 <select id="PageId" name="PageId" class="form-control select2" data-placeholder="Select Page" asp-items="ViewBag.Pages">
+                    <option value="">Select Page</option>
                 </select>
             </div>
         </div>
@@ -61,17 +55,20 @@
         <!-- Product -->
         <div class="mb-3 col-md-6">
             <label class="form-label">Product</label>
-            <select id="ProductId" asp-for="ProductId" class="form-control select2" asp-items="ViewBag.Products"></select>
+            <select id="ProductId" asp-for="ProductId" class="form-control select2" asp-items="ViewBag.Products">
+                <option value="">Select Product</option>
+            </select>
         </div>
 
         <!-- Status -->
-        <div class="mb-3  col-md-3">
+        <div class="mb-3 col-md-3">
             <label class="form-label">Status</label>
             <select id="Status" asp-for="IsActive" class="form-control select2">
                 <option value="true">Active</option>
                 <option value="false">Inactive</option>
             </select>
         </div>
+
     </div>
 
     <div class="modal-footer">
@@ -85,7 +82,6 @@
 <script src="~/assets/js/sweetalert2.all.min.js"></script>
 
 <script>
-
     $(document).ready(function () {
 
         // Initialize Select2
@@ -100,18 +96,16 @@
         const pageSelect = $('#PageId');
         const iconInput = $('#IconClass');
         const displayOrderInput = $('#DisplayOrder');
-        const isMainMenuCheckbox = $('#IsMainMenu');
 
-        // Initialize checkbox based on ParentMenuItemId
-        var parentMenuId = '@(Model.ParentMenuItemId ?? 0)';
-        if (!parentMenuId || parentMenuId === "0") {
-            isMainMenuCheckbox.prop('checked', true);
-        } else {
-            isMainMenuCheckbox.prop('checked', false);
-        }
+        // Set initial values from model
+        parentSelect.val('@Model.ParentMenuItemId').trigger('change');
+        pageSelect.val('@Model.PageId').trigger('change');
 
         function toggleFields() {
-            if (isMainMenuCheckbox.is(':checked')) {
+            const parentVal = parentSelect.val();
+            const isMainMenu = !parentVal || parentVal === "0";
+
+            if (isMainMenu) {
                 // Main Menu: hide parent & page, show icon & display order
                 parentMenuContainer.hide();
                 pageContainer.hide();
@@ -126,9 +120,9 @@
                 iconInput.attr('required', 'required');
                 displayOrderInput.attr('required', 'required');
             } else {
-                // Sub Menu: show parent, page, product; hide icon & display order
+                // Sub Menu: show parent & page, hide icon & display order
                 parentMenuContainer.show();
-                pageContainer.show(); // ALWAYS show page for submenus
+                pageContainer.show();
                 iconContainer.hide();
                 displayOrderContainer.hide();
 
@@ -140,73 +134,65 @@
             }
         }
 
-        // Initial toggle on load
+        // Initial toggle
         toggleFields();
 
-        // On checkbox change
-        isMainMenuCheckbox.on('change', toggleFields);
+        // On Parent Menu change
+        parentSelect.on('change', toggleFields);
 
-        // Optional: toggle Page field when parent changes
-        parentSelect.on('change', function () {
-            if (isMainMenuCheckbox.is(':checked')) return; // ignore if main menu
-            pageContainer.show();
-            pageSelect.attr('required', 'required');
-        });
-    });
+        // Form submission
+        $('#updateMenuForm').on('submit', function (e) {
+            e.preventDefault();
+            let form = $(this);
 
-
-    // Form submission
-    $('#updateMenuForm').on('submit', function (e) {
-        e.preventDefault();
-        let form = $(this);
-
-        if (!form[0].checkValidity()) {
-            Swal.fire({
-                icon: 'warning',
-                title: 'Missing Information',
-                text: 'Please fill in all required fields.'
-            });
-            return;
-        }
-
-        Swal.fire({
-            title: 'Update Menu?',
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonText: 'Yes, Update',
-            cancelButtonText: 'Cancel'
-        }).then((result) => {
-            if (result.isConfirmed) {
-                Swal.fire({ title: 'Updating...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
-
-                $.ajax({
-                    url: '/Menu/UpdateMenuByIdAsync',
-                    type: 'POST',
-                    data: form.serialize(),
-                    headers: { 'X-Requested-With': 'XMLHttpRequest' },
-                    success: function (response) {
-                        Swal.close();
-                        Swal.fire({
-                            icon: response.success ? 'success' : 'error',
-                            title: response.success ? 'Success' : 'Error',
-                            text: response.message
-                        }).then(() => {
-                            if (response.success) {
-                                const modal = bootstrap.Modal.getInstance(document.getElementById("menuEditModal"));
-                                modal.hide();
-                                window.location.href = response.redirectUrl;
-                            }
-                        });
-                    },
-                    error: function (xhr) {
-                        Swal.fire({
-                            icon: 'error',
-                            title: 'Error',
-                            text: xhr.responseJSON?.message || 'Something went wrong!'
-                        });
-                    }
+            if (!form[0].checkValidity()) {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Missing Information',
+                    text: 'Please fill in all required fields.'
                 });
+                return;
             }
+
+            Swal.fire({
+                title: 'Update Menu?',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Yes, Update',
+                cancelButtonText: 'Cancel'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    Swal.fire({ title: 'Updating...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
+
+                    $.ajax({
+                        url: '/Menu/LoadEditModal',
+                        type: 'POST',
+                        data: form.serialize(),
+                        headers: { 'X-Requested-With': 'XMLHttpRequest' },
+                        success: function (response) {
+                            Swal.close();
+                            Swal.fire({
+                                icon: response.success ? 'success' : 'error',
+                                title: response.success ? 'Success' : 'Error',
+                                text: response.message
+                            }).then(() => {
+                                if (response.success) {
+                                    const modal = bootstrap.Modal.getInstance(document.getElementById("menuEditModal"));
+                                    modal.hide();
+                                    window.location.href = response.redirectUrl;
+                                }
+                            });
+                        },
+                        error: function (xhr) {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Error',
+                                text: xhr.responseJSON?.message || 'Something went wrong!'
+                            });
+                        }
+                    });
+                }
+            });
         });
 
     });
