@@ -35,6 +35,7 @@ namespace UserManagement.Data.Models
         public int RoleId { get; set; }
         public List<string> PageUrls { get; set; } = new List<string>();
         public List<int> ProductIds { get; set; } = new List<int>();
+        public List<MenuItem> MenuItems { get; set; } = new List<MenuItem>();
 
     }
 }

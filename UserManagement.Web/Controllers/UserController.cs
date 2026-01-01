@@ -157,6 +157,12 @@ namespace UserManagement.Web.Controllers
         public async Task<IActionResult> Login(string username, string password)
         {
             UserModel user = await _userService.ValidateUserAsync(username, password);
+
+            if (user == null)
+            {
+                return Json(new { success = false, message = "Invalid login" });
+            }
+
             int allowedProductId =
                 _configuration.GetValue<int>("AllowedProducts:ProductId");
 
@@ -168,28 +174,44 @@ namespace UserManagement.Web.Controllers
                     message = "Unauthorized product access"
                 });
             }
-            if (user != null)
-            {
 
-                HttpContext.Session.SetString("UserName", user.DisplayName);
-                HttpContext.Session.SetString("Designation", user.DisplayDesignation);
-                HttpContext.Session.SetString("Department", user.DisplayDepartment);
-                HttpContext.Session.SetString("UserId", Convert.ToString(user.Id));
-                var pages = await _userService.GetPagesByUserId(user.Id);
-                List<string> normalizedUrls = pages.PageUrls
-                    .Select(p => p.StartsWith("/") ? p : "/" + p)
+            HttpContext.Session.SetString("UserName", user.DisplayName);
+            HttpContext.Session.SetString("Designation", user.DisplayDesignation);
+            HttpContext.Session.SetString("Department", user.DisplayDepartment);
+            HttpContext.Session.SetString("UserId", user.Id.ToString());
+
+
+            var normalizedUrls = user.PageUrls
+                .Select(p => p.StartsWith("/") ? p : "/" + p)
+                .Distinct()
+                .ToList();
+
+            string pageUrlsJson = JsonSerializer.Serialize(normalizedUrls);
+            HttpContext.Session.SetString("PageUrls", pageUrlsJson);
+
+
+            if (user.MenuItems != null && user.MenuItems.Any())
+            {
+                var orderedMenus = user.MenuItems
+                    .OrderBy(m => m.DisplayOrder)
                     .ToList();
-                // Serialize and save to session
-                string pageUrlsJson = JsonSerializer.Serialize(normalizedUrls);
-                HttpContext.Session.SetString("PageUrls", pageUrlsJson);
-                return Json(new { success = true, redirectUrl = Url.Action("Index", "Home"), pageUrls = pages.PageUrls, loggedUser = user.DisplayName });
+
+                string menuItemsJson = JsonSerializer.Serialize(orderedMenus);
+                HttpContext.Session.SetString("MenuItems", menuItemsJson);
             }
             else
             {
-                return Json(new { success = false });
+                HttpContext.Session.SetString("MenuItems", "[]");
             }
 
+            return Json(new
+            {
+                success = true,
+                redirectUrl = Url.Action("Index", "Home"),
+                loggedUser = user.DisplayName
+            });
         }
+
 
 
 

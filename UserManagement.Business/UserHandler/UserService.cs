@@ -427,53 +427,129 @@ namespace UserManagement.Business.UserHandler
 
         public async Task<UserModel?> ValidateUserAsync(string username, string password)
         {
+            // 1. Authenticate with AD
             var response = await _aDAuthentication.AuthenticatewithAD(username, password);
-            if (response.Status)
+            if (!response.Status)
+                return null;
+
+            // 2. Get User
+            const string userQuery = @"
+                SELECT *
+                FROM Users
+                WHERE UserName = @UserName AND IsActive = 1";
+
+            var userParams = new DynamicParameters();
+            userParams.Add("@UserName", username);
+
+            var userData = _connectionService.ReturnWithPara(userQuery, userParams);
+            if (userData == null || userData.Rows.Count == 0)
+                return null;
+
+            var userRow = userData.Rows[0];
+
+            var user = new UserModel
             {
-                const string query = @"
-                    SELECT * 
-                    FROM Users 
-                    WHERE UserName = @UserName AND IsActive = 1";
+                Id = userRow.Field<int>("Id"),
+                UserName = userRow.Field<string>("UserName"),
+                DisplayName = response.Data.DisplayName,
+                DisplayDesignation = response.Data.Title,
+                DisplayDepartment = response.Data.Department,
+                IsActive = userRow.Field<bool>("IsActive")
+            };
 
-                var parameters = new DynamicParameters();
-                parameters.Add("@UserName", username);
+            // 3. Get ProductIds
+            const string productQuery = @"
+                SELECT ProductId
+                FROM UserProducts
+                WHERE UserId = @UserId";
 
-                var users = _connectionService.ReturnWithPara(query, parameters)
-                                  .AsEnumerable()
-                                  .Select(row => new UserModel
-                                  {
-                                      Id = row.Field<int>("Id"),
-                                      DisplayName = response.Data.DisplayName,
-                                      DisplayDesignation = response.Data.Title,
-                                      DisplayDepartment = response.Data.Department,
-                                      ProductIds = new List<int>() // initialize
-                                  })
-                                  .ToList();
+            var productParams = new DynamicParameters();
+            productParams.Add("@UserId", user.Id);
 
-                var user = users.FirstOrDefault();
-                if (user == null)
-                    return null;
+            var productData = _connectionService.ReturnWithPara(productQuery, productParams);
 
-                // Fetch ProductIds for this user
-                string productQuery = "SELECT ProductId FROM UserProducts WHERE UserId = @UserId";
-                var productParams = new DynamicParameters();
-                productParams.Add("@UserId", user.Id);
-
-                var productData = _connectionService.ReturnWithPara(productQuery, productParams);
-
-                if (productData != null && productData.Rows.Count > 0)
-                {
-                    foreach (var row in productData.AsEnumerable())
-                    {
-                        user.ProductIds.Add(row.Field<int>("ProductId"));
-                    }
-                }
-
-                return user;
+            if (productData != null && productData.Rows.Count > 0)
+            {
+                user.ProductIds = productData
+                    .AsEnumerable()
+                    .Select(r => r.Field<int>("ProductId"))
+                    .Distinct()
+                    .ToList();
             }
 
-            return null;
+            if (!user.ProductIds.Any())
+                return user;
+
+            // 4. Get MenuItems
+            const string menuQuery = @"
+                SELECT DISTINCT
+                    m.Id,
+                    m.MenuTitle,
+                    m.ParentMenuId,
+                    m.PageId,
+                    m.IconClass,
+                    m.DisplayOrder,
+                    m.IsActive,
+                    m.ProductId
+                FROM MenuItems m
+                INNER JOIN UserProducts up ON up.ProductId = m.ProductId
+                WHERE up.UserId = @UserId
+                  AND m.IsActive = 1
+                ORDER BY m.DisplayOrder";
+
+            var menuParams = new DynamicParameters();
+            menuParams.Add("@UserId", user.Id);
+
+            var menuData = _connectionService.ReturnWithPara(menuQuery, menuParams);
+
+            if (menuData != null && menuData.Rows.Count > 0)
+            {
+                user.MenuItems = menuData.AsEnumerable()
+                    .Select(r => new MenuItem
+                    {
+                        Id = r.Field<int>("Id"),
+                        MenuTitle = r.Field<string>("MenuTitle"),
+                        ParentMenuItemId = r.Field<int?>("ParentMenuId"),
+                        PageId = r.Field<int?>("PageId"),
+                        IconClass = r.Field<string?>("IconClass"),
+                        DisplayOrder = r.Field<int>("DisplayOrder"),
+                        IsActive = r.Field<bool>("IsActive"),
+                        ProductId = r.Field<int?>("ProductId")
+                    })
+                    .ToList();
+            }
+
+            // 5. Populate PageUrls
+            if (user.MenuItems.Any())
+            {
+                const string pageQuery = @"
+                    SELECT DISTINCT p.PageUrl
+                    FROM Pages p
+                    INNER JOIN MenuItems m ON m.PageId = p.Id
+                    INNER JOIN UserProducts up ON up.ProductId = m.ProductId
+                    WHERE up.UserId = @UserId
+                      AND m.IsActive = 1";
+
+                var pageParams = new DynamicParameters();
+                pageParams.Add("@UserId", user.Id);
+
+                var pageData = _connectionService.ReturnWithPara(pageQuery, pageParams);
+
+                if (pageData != null && pageData.Rows.Count > 0)
+                {
+                    user.PageUrls = pageData
+                        .AsEnumerable()
+                        .Select(r => r.Field<string>("PageUrl"))
+                        .Distinct()
+                        .ToList();
+                }
+            }
+
+            return user;
         }
+
+
+
 
 
         //get user pages
