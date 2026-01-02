@@ -193,12 +193,14 @@
 
                         @foreach (var mainMenu in mainMenus)
                         {
+                            // Only submenus with valid PageUrl
                             var subMenus = menus
-                            .Where(s => s.ParentMenuItemId == mainMenu.Id)
+                            .Where(s => s.ParentMenuItemId == mainMenu.Id && !string.IsNullOrWhiteSpace(s.PageUrl))
                             .OrderBy(s => s.DisplayOrder)
                             .ToList();
 
                             var collapseId = $"sidebar_{mainMenu.Id}";
+
                             <li class="side-nav-item">
                                 <a data-bs-toggle="collapse"
                                    href="#@collapseId"
@@ -220,8 +222,7 @@
                                             @foreach (var subMenu in subMenus)
                                             {
                                                 <li>
-                                                    <a class="menu-item"
-                                                       href="@Url.Action("Index", "Page", new { id = subMenu.PageId })">
+                                                    <a class="menu-item" href="@subMenu.PageUrl">
                                                         @subMenu.MenuTitle
                                                     </a>
                                                 </li>
@@ -233,6 +234,7 @@
                         }
 
                     </ul>
+
 
                 </div>
             </div>

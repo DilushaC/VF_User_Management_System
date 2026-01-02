@@ -31,6 +31,7 @@ namespace UserManagement.Data.Models
         public string ProductName { get; set; } = string.Empty;
 
         public List<int> PageIds { get; set; } = new List<int>();
+        public string? PageUrl { get; set; }
     }
 
 }

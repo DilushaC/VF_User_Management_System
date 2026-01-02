@@ -73,7 +73,7 @@ app.UseRouting();
 // Enable session before authorization
 app.UseSession();
 
-app.UseMiddleware<PageAuthorizationMiddleware>();
+//app.UseMiddleware<PageAuthorizationMiddleware>();
 
 app.UseAuthorization();
 

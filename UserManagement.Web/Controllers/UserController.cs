@@ -156,53 +156,27 @@ namespace UserManagement.Web.Controllers
         [HttpPost]
         public async Task<IActionResult> Login(string username, string password)
         {
-            UserModel user = await _userService.ValidateUserAsync(username, password);
-
+            var user = await _userService.ValidateUserAsync(username, password);
             if (user == null)
-            {
                 return Json(new { success = false, message = "Invalid login" });
-            }
 
-            int allowedProductId =
-                _configuration.GetValue<int>("AllowedProducts:ProductId");
-
+            int allowedProductId = _configuration.GetValue<int>("AllowedProducts:ProductId");
             if (user.ProductIds == null || !user.ProductIds.Contains(allowedProductId))
-            {
-                return Json(new
-                {
-                    success = false,
-                    message = "Unauthorized product access"
-                });
-            }
+                return Json(new { success = false, message = "Unauthorized product access" });
 
+            // Session storage
             HttpContext.Session.SetString("UserName", user.DisplayName);
             HttpContext.Session.SetString("Designation", user.DisplayDesignation);
             HttpContext.Session.SetString("Department", user.DisplayDepartment);
             HttpContext.Session.SetString("UserId", user.Id.ToString());
 
-
-            var normalizedUrls = user.PageUrls
-                .Select(p => p.StartsWith("/") ? p : "/" + p)
-                .Distinct()
-                .ToList();
-
-            string pageUrlsJson = JsonSerializer.Serialize(normalizedUrls);
+            // Store PageUrls
+            var pageUrlsJson = JsonSerializer.Serialize(user.PageUrls ?? new List<string>());
             HttpContext.Session.SetString("PageUrls", pageUrlsJson);
 
-
-            if (user.MenuItems != null && user.MenuItems.Any())
-            {
-                var orderedMenus = user.MenuItems
-                    .OrderBy(m => m.DisplayOrder)
-                    .ToList();
-
-                string menuItemsJson = JsonSerializer.Serialize(orderedMenus);
-                HttpContext.Session.SetString("MenuItems", menuItemsJson);
-            }
-            else
-            {
-                HttpContext.Session.SetString("MenuItems", "[]");
-            }
+            // Store MenuItems
+            var menuJson = JsonSerializer.Serialize(user.MenuItems ?? new List<MenuItem>());
+            HttpContext.Session.SetString("MenuItems", menuJson);
 
             return Json(new
             {
@@ -211,7 +185,6 @@ namespace UserManagement.Web.Controllers
                 loggedUser = user.DisplayName
             });
         }
-
 
 
 

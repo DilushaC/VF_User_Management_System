@@ -427,7 +427,7 @@ namespace UserManagement.Business.UserHandler
 
         public async Task<UserModel?> ValidateUserAsync(string username, string password)
         {
-            // 1. Authenticate with AD
+            // 1. Authenticate AD
             var response = await _aDAuthentication.AuthenticatewithAD(username, password);
             if (!response.Status)
                 return null;
@@ -467,7 +467,6 @@ namespace UserManagement.Business.UserHandler
             productParams.Add("@UserId", user.Id);
 
             var productData = _connectionService.ReturnWithPara(productQuery, productParams);
-
             if (productData != null && productData.Rows.Count > 0)
             {
                 user.ProductIds = productData
@@ -480,9 +479,9 @@ namespace UserManagement.Business.UserHandler
             if (!user.ProductIds.Any())
                 return user;
 
-            // 4. Get MenuItems
+            // 4. Get MenuItems with PageUrls properly
             const string menuQuery = @"
-                SELECT DISTINCT
+                SELECT 
                     m.Id,
                     m.MenuTitle,
                     m.ParentMenuId,
@@ -490,11 +489,14 @@ namespace UserManagement.Business.UserHandler
                     m.IconClass,
                     m.DisplayOrder,
                     m.IsActive,
-                    m.ProductId
+                    m.ProductId,
+                    p.PageUrl
                 FROM MenuItems m
-                INNER JOIN UserProducts up ON up.ProductId = m.ProductId
-                WHERE up.UserId = @UserId
-                  AND m.IsActive = 1
+                LEFT JOIN Pages p ON m.PageId = p.Id
+                WHERE m.IsActive = 1
+                  AND m.ProductId IN (
+                      SELECT ProductId FROM UserProducts WHERE UserId = @UserId
+                  )
                 ORDER BY m.DisplayOrder";
 
             var menuParams = new DynamicParameters();
@@ -504,6 +506,7 @@ namespace UserManagement.Business.UserHandler
 
             if (menuData != null && menuData.Rows.Count > 0)
             {
+                // Deduplicate by MenuItem Id to avoid duplicates caused by multiple products
                 user.MenuItems = menuData.AsEnumerable()
                     .Select(r => new MenuItem
                     {
@@ -514,41 +517,24 @@ namespace UserManagement.Business.UserHandler
                         IconClass = r.Field<string?>("IconClass"),
                         DisplayOrder = r.Field<int>("DisplayOrder"),
                         IsActive = r.Field<bool>("IsActive"),
-                        ProductId = r.Field<int?>("ProductId")
+                        ProductId = r.Field<int?>("ProductId"),
+                        PageUrl = r.Field<string?>("PageUrl")
                     })
+                    .GroupBy(m => m.Id) // Remove duplicates by MenuItem Id
+                    .Select(g => g.First())
+                    .OrderBy(m => m.DisplayOrder)
                     .ToList();
             }
 
-            // 5. Populate PageUrls
-            if (user.MenuItems.Any())
-            {
-                const string pageQuery = @"
-                    SELECT DISTINCT p.PageUrl
-                    FROM Pages p
-                    INNER JOIN MenuItems m ON m.PageId = p.Id
-                    INNER JOIN UserProducts up ON up.ProductId = m.ProductId
-                    WHERE up.UserId = @UserId
-                      AND m.IsActive = 1";
-
-                var pageParams = new DynamicParameters();
-                pageParams.Add("@UserId", user.Id);
-
-                var pageData = _connectionService.ReturnWithPara(pageQuery, pageParams);
-
-                if (pageData != null && pageData.Rows.Count > 0)
-                {
-                    user.PageUrls = pageData
-                        .AsEnumerable()
-                        .Select(r => r.Field<string>("PageUrl"))
-                        .Distinct()
-                        .ToList();
-                }
-            }
+            // 5. Populate PageUrls for session
+            user.PageUrls = user.MenuItems
+                .Where(m => !string.IsNullOrWhiteSpace(m.PageUrl))
+                .Select(m => m.PageUrl!.StartsWith("/") ? m.PageUrl : "/" + m.PageUrl)
+                .Distinct()
+                .ToList();
 
             return user;
         }
-
-
 
 
 

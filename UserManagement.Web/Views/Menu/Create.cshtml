@@ -14,7 +14,6 @@
                     <br />
 
                     <form asp-action="Create" asp-controller="Page" method="post" id="RegisterForm" novalidate>
-                        <input type="hidden" id="PageId" name="PageId" />
                         <fieldset>
                             <!-- Menu Title -->
                             <div class="row g-2">
@@ -56,20 +55,20 @@
                             <!-- Pages -->
                             <div id="pageContainer" class="row g-2">
                                 <div class="mb-3 col-md-6">
-                                    <label class="form-label">Page Name</label>
-                                    <select id="PageIds"
-                                            asp-for="PageId"
+                                    <label asp-for="PageId" class="form-label">Page Name</label>
+
+                                    <select asp-for="PageId"
+                                            id="PageIds"
                                             class="form-control select2 round"
-                                            data-bs-toggle="tooltip"
-                                            data-bs-placement="right"
-                                            title="Page is required"
-                                            required
-                                            data-placeholder="Select Page"
-                                            asp-items="ViewBag.Pages">
-                                        <option value="">Select Page</option>
+                                            asp-items="ViewBag.Pages"
+                                            required>
+                                        <option value=""></option>
                                     </select>
+
+                                    <span asp-validation-for="PageId" class="text-danger"></span>
                                 </div>
                             </div>
+
 
                             <!-- Parent Menu -->
                             <div id="parentMenuContainer" class="row g-2">
@@ -251,50 +250,47 @@
         const pageSelect = document.getElementById('PageIds');
         const iconInput = document.getElementById('IconClass');
         const displayOrderInput = document.getElementById('DisplayOrder');
-        const hiddenPageId = document.getElementById('PageId');
 
         function toggleMainMenu() {
 
-            if (isMainMenu.checked) {
+        if (isMainMenu.checked) {
 
-                parentMenuContainer.classList.add('d-none');
-                pageContainer.classList.add('d-none');
+            parentMenuContainer.classList.add('d-none');
+            pageContainer.classList.add('d-none');
 
-                iconContainer.classList.remove('d-none');
-                displayOrderContainer.classList.remove('d-none');
+            iconContainer.classList.remove('d-none');
+            displayOrderContainer.classList.remove('d-none');
 
-                parentSelect.value = '';
-                pageSelect.value = null;
+            parentSelect.value = null;
+            $("#ParentMenuItemId").val(null).trigger('change');
 
-                parentSelect.removeAttribute('required');
-                pageSelect.removeAttribute('required');
+            $("#PageIds").val(null).trigger('change');
 
-                iconInput.setAttribute('required', 'required');
-                displayOrderInput.setAttribute('required', 'required');
+            parentSelect.removeAttribute('required');
+            pageSelect.removeAttribute('required');
 
-                hiddenPageId.value = 1;
+            iconInput.setAttribute('required', 'required');
+            displayOrderInput.setAttribute('required', 'required');
 
-            } else {
+        } else {
 
+            parentMenuContainer.classList.remove('d-none');
+            pageContainer.classList.remove('d-none');
 
-                parentMenuContainer.classList.remove('d-none');
-                pageContainer.classList.remove('d-none');
+            iconContainer.classList.add('d-none');
+            displayOrderContainer.classList.add('d-none');
 
-                iconContainer.classList.add('d-none');
-                displayOrderContainer.classList.add('d-none');
+            iconInput.value = '';
+            displayOrderInput.value = '';
 
-                iconInput.value = '';
-                displayOrderInput.value = '';
+            iconInput.removeAttribute('required');
+            displayOrderInput.removeAttribute('required');
 
-                iconInput.removeAttribute('required');
-                displayOrderInput.removeAttribute('required');
-
-                parentSelect.setAttribute('required', 'required');
-                pageSelect.setAttribute('required', 'required');
-
-                hiddenPageId.value = '';
-            }
+            parentSelect.setAttribute('required', 'required');
+            pageSelect.setAttribute('required', 'required');
         }
+    }
+
 
         toggleMainMenu();
         isMainMenu.addEventListener('change', toggleMainMenu);
@@ -307,15 +303,6 @@
             if (!form.checkValidity()) {
                 $(form).addClass('was-validated');
                 return;
-            }
-
-            if (isMainMenu.checked) {
-                hiddenPageId.value = 1;
-            } else {
-                const selectedPages = $("#PageIds").val();
-                hiddenPageId.value = selectedPages && selectedPages.length > 0
-                    ? selectedPages[0]
-                    : '';
             }
 
             Swal.fire({
