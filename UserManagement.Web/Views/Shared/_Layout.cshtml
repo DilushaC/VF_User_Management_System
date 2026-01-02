@@ -6,12 +6,31 @@
     var department = Context.Session.GetString("Department");
     var userId = Context.Session.GetString("UserId");
     var pageURLs = Context.Session.GetString("PageUrls");
+    var menuItems = Context.Session.GetString("MenuItems");
 
     List<string> allowedPages = new List<string>();
     List<string> pagePermissions = new List<string>();
     List<string> iconClasses = new List<string>();
 
+    var menuJson = Context.Session.GetString("MenuItems");
+
+    // Deserialize
+    List<MenuItem> menus = string.IsNullOrWhiteSpace(menuJson)
+        ? new List<MenuItem>()
+        : JsonSerializer.Deserialize<List<MenuItem>>(menuJson,
+            new JsonSerializerOptions
+            {
+                PropertyNameCaseInsensitive = true
+            });
+
+    // Only main menus (ParentMenuItemId == null)
+    List<MenuItem> mainMenus = menus
+        .Where(m => m.ParentMenuItemId == null)
+        .OrderBy(m => m.DisplayOrder)
+        .ToList();
+
 }
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -159,7 +178,6 @@
                             <span class="leftbar-user-name mt-2">Tosha Minner</span>
                         </a>
                     </div>
-
                     <ul class="side-nav">
 
                         <li class="side-nav-title">Navigation</li>
@@ -170,179 +188,52 @@
                                 <span>Dashboard</span>
                             </a>
                         </li>
+
                         <li class="side-nav-title">Management - Master</li>
-                        <li class="side-nav-item">
-                            <a data-bs-toggle="collapse" href="#sidebarUsers" aria-expanded="false" aria-controls="sidebarUsers" class="side-nav-link">
-                                <i class=" ri-user-line"></i>
-                                <span>Users</span>
-                                <span class="menu-arrow"></span>
-                            </a>
-                            <div class="collapse" id="sidebarUsers">
-                                <ul class="side-nav-second-level">
-                                    <li>
-                                        <a class="menu-item" href="/User/Register">Register User</a>
-                                    </li>
-                                    <li>
-                                        <a href="/User/Management">Users Management</a>
-                                    </li>
-                                </ul>
-                            </div>
-                        </li>
-                        <li class="side-nav-item">
-                            <a data-bs-toggle="collapse" href="#sidebarDesignation" aria-expanded="false" aria-controls="sidebarDesignation" class="side-nav-link">
-                                <i class="ri-vip-crown-2-line"></i>
-                                <span>Designations</span>
-                                <span class="menu-arrow"></span>
-                            </a>
-                            <div class="collapse" id="sidebarDesignation">
-                                <ul class="side-nav-second-level">
-                                    <li>
-                                        <a class="menu-item" href="/Designation/Create">Create Designation</a>
-                                    </li>
-                                    <li>
-                                        <a class="menu-item" href="/Designation/Management">Designation Management</a>
-                                    </li>
-                                </ul>
-                            </div>
-                        </li>
-                        <li class="side-nav-item">
-                            <a data-bs-toggle="collapse" href="#sidebarBranch" aria-expanded="false" aria-controls="sidebarBranch" class="side-nav-link">
-                                <i class="ri-route-line"></i>
-                                <span>Branches</span>
-                                <span class="menu-arrow"></span>
-                            </a>
-                            <div class="collapse" id="sidebarBranch">
-                                <ul class="side-nav-second-level">
-                                    <li>
-                                        <a class="menu-item" href="/Branch/Create">Create Branch</a>
-                                    </li>
-                                    <li>
-                                        <a class="menu-item" href="/Branch/Management">Branches Management</a>
-                                    </li>
-                                </ul>
-                            </div>
-                        </li>
-                        <li class="side-nav-item">
-                            <a data-bs-toggle="collapse" href="#sidebarDepartment" aria-expanded="false" aria-controls="sidebarDepartment" class="side-nav-link">
-                                <i class="ri-suitcase-line"></i>
-                                <span>Departments</span>
-                                <span class="menu-arrow"></span>
-                            </a>
-                            <div class="collapse" id="sidebarDepartment">
-                                <ul class="side-nav-second-level">
-                                    <li>
-                                        <a class="menu-item" href="/Department/Create">Create Department</a>
-                                    </li>
-                                    <li>
-                                        <a class="menu-item" href="/Department/Management">Departments Management</a>
-                                    </li>
-                                </ul>
-                            </div>
-                        </li>
-                        <li class="side-nav-item">
-                            <a data-bs-toggle="collapse" href="#sidebarProduct" aria-expanded="false" aria-controls="sidebarProduct" class="side-nav-link">
-                                <i class="ri-shopping-cart-line"></i>
-                                <span>Products</span>
-                                <span class="menu-arrow"></span>
-                            </a>
-                            <div class="collapse" id="sidebarProduct">
-                                <ul class="side-nav-second-level">
-                                    <li>
-                                        <a class="menu-item" href="/Product/Create">Create Product</a>
-                                    </li>
-                                    <li>
-                                        <a class="menu-item" href="/Product/Management">Products Management</a>
-                                    </li>
-                                </ul>
-                            </div>
-                        </li>
-                        <li class="side-nav-item">
-                            <a data-bs-toggle="collapse" href="#sidebarPages" aria-expanded="false" aria-controls="sidebarPages" class="side-nav-link">
-                                <i class="ri-pages-line"></i>
-                                <span>Pages</span>
-                                <span class="menu-arrow"></span>
-                            </a>
-                            <div class="collapse" id="sidebarPages">
-                                <ul class="side-nav-second-level">
-                                    <li>
-                                        <a href="/Page/Create">Create Page</a>
-                                    </li>
-                                    <li>
-                                        <a class="menu-item" href="/Page/Management">Pages Management</a>
-                                    </li>
-                                </ul>
-                            </div>
-                        </li>
-                        <li class="side-nav-item">
-                            <a data-bs-toggle="collapse" href="#sidebarRoles" aria-expanded="false" aria-controls="sidebarRoles" class="side-nav-link">
-                                <i class="ri-shield-keyhole-line"></i>
-                                <span>Roles</span>
-                                <span class="menu-arrow"></span>
-                            </a>
-                            <div class="collapse" id="sidebarRoles">
-                                <ul class="side-nav-second-level">
-                                    <li>
-                                        <a href="/Role/Create">Create Role</a>
-                                    </li>
-                                    <li>
-                                        <a href="/Role/Management">Roles Management</a>
-                                    </li>
-                                </ul>
-                            </div>
-                        </li>
-                        <li class="side-nav-title">Access Management</li>
-                        <li class="side-nav-item">
-                            <a data-bs-toggle="collapse" href="#sidebarUserRoles" aria-expanded="false" aria-controls="sidebarUserRoles" class="side-nav-link">
-                                <i class="ri-key-line"></i>
-                                <span>User Roles</span>
-                                <span class="menu-arrow"></span>
-                            </a>
-                            <div class="collapse" id="sidebarUserRoles">
-                                <ul class="side-nav-second-level">
-                                    <li>
-                                        <a href="/UserRole/Create">Create User Role</a>
-                                    </li>
-                                    <li>
-                                        <a href="/UserRole/Management">User Roles Management</a>
-                                    </li>
-                                </ul>
-                            </div>
-                        </li>
-                        <li class="side-nav-item">
-                            <a data-bs-toggle="collapse" href="#sidebarRolePages" aria-expanded="false" aria-controls="sidebarRolePages" class="side-nav-link">
-                                <i class="ri-folder-keyhole-line"></i>
-                                <span>Page Permissions</span>
-                                <span class="menu-arrow"></span>
-                            </a>
-                            <div class="collapse" id="sidebarRolePages">
-                                <ul class="side-nav-second-level">
-                                    <li>
-                                        <a href="/Permission/Create">Create Permission</a>
-                                    </li>
-                                    <li>
-                                        <a href="/Permission/Management">Permission Management</a>
-                                    </li>
-                                </ul>
-                            </div>
-                        </li>
-                        <li class="side-nav-item">
-                            <a data-bs-toggle="collapse" href="#sidebarMenus" aria-expanded="false" aria-controls="sidebarRolePages" class="side-nav-link">
-                                <i class="ri-folder-keyhole-line"></i>
-                                <span>Menu Items</span>
-                                <span class="menu-arrow"></span>
-                            </a>
-                            <div class="collapse" id="sidebarMenus">
-                                <ul class="side-nav-second-level">
-                                    <li>
-                                        <a href="/Menu/Create">Create Menu</a>
-                                    </li>
-                                    <li>
-                                        <a href="/Menu/Management">Menu Management</a>
-                                    </li>
-                                </ul>
-                            </div>
-                        </li>
+
+                        @foreach (var mainMenu in mainMenus)
+                        {
+                            var subMenus = menus
+                            .Where(s => s.ParentMenuItemId == mainMenu.Id)
+                            .OrderBy(s => s.DisplayOrder)
+                            .ToList();
+
+                            var collapseId = $"sidebar_{mainMenu.Id}";
+                            <li class="side-nav-item">
+                                <a data-bs-toggle="collapse"
+                                   href="#@collapseId"
+                                   aria-expanded="false"
+                                   aria-controls="@collapseId"
+                                   class="side-nav-link">
+                                    <i class="@mainMenu.IconClass"></i>
+                                    <span>@mainMenu.MenuTitle</span>
+                                    @if (subMenus.Any())
+                                    {
+                                        <span class="menu-arrow"></span>
+                                    }
+                                </a>
+
+                                @if (subMenus.Any())
+                                {
+                                    <div class="collapse" id="@collapseId">
+                                        <ul class="side-nav-second-level">
+                                            @foreach (var subMenu in subMenus)
+                                            {
+                                                <li>
+                                                    <a class="menu-item"
+                                                       href="@Url.Action("Index", "Page", new { id = subMenu.PageId })">
+                                                        @subMenu.MenuTitle
+                                                    </a>
+                                                </li>
+                                            }
+                                        </ul>
+                                    </div>
+                                }
+                            </li>
+                        }
+
                     </ul>
+
                 </div>
             </div>
         </div>
