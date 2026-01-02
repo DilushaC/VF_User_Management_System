@@ -27,6 +27,11 @@
             <div class="card-body">
                 <h3 class="page-title">@ViewData["Title"]</h3>
                 <br />
+                <div class="mb-3">
+                    <a href="@Url.Action("Create", "Permission")" class="btn btn-primary">
+                        <i class="ri-shield-keyhole-line"></i> Add Department
+                    </a>
+                </div>
                 <div class="table-responsive">
                     <table id="basic-datatable" class="table table-striped dt-responsive nowrap w-100">
                         <thead>

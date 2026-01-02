@@ -64,6 +64,17 @@
 
     <link href="~/assets/css/icons.min.css" rel="stylesheet" type="text/css" />
 
+    <style>
+        .page-fade {
+            opacity: 0;
+            transition: opacity 0.2s ease-in-out;
+        }
+
+            .page-fade.show {
+                opacity: 1;
+            }
+    </style>
+
 </head>
 <body>
     <div class="wrapper">
@@ -193,34 +204,33 @@
 
                         @foreach (var mainMenu in mainMenus)
                         {
-                            // Only submenus with valid PageUrl
+                            // Only submenus that have a PageUrl
                             var subMenus = menus
-                            .Where(s => s.ParentMenuItemId == mainMenu.Id && !string.IsNullOrWhiteSpace(s.PageUrl))
-                            .OrderBy(s => s.DisplayOrder)
+                            .Where(m => m.ParentMenuItemId == mainMenu.Id && !string.IsNullOrWhiteSpace(m.PageUrl))
+                            .OrderBy(m => m.DisplayOrder)
                             .ToList();
 
                             var collapseId = $"sidebar_{mainMenu.Id}";
 
                             <li class="side-nav-item">
+
                                 <a data-bs-toggle="collapse"
                                    href="#@collapseId"
                                    aria-expanded="false"
                                    aria-controls="@collapseId"
                                    class="side-nav-link">
 
-                                    <i class="@(string.IsNullOrWhiteSpace(mainMenu.IconClass)
-                                               ? "ri-menu-line"
-                                               : mainMenu.IconClass)">
-                                </i>
+                                    @* Render icon, fallback to default *@
+                                    <i class="@(string.IsNullOrWhiteSpace(mainMenu.IconClass) ? "ri-menu-line" : mainMenu.IconClass)"></i>
 
                                     <span>@mainMenu.MenuTitle</span>
 
-                                @if (subMenus.Any())
+                                    @* Show arrow only if there are submenus *@
+                                    @if (subMenus.Any())
                                     {
                                         <span class="menu-arrow"></span>
                                     }
                                 </a>
-
 
                                 @if (subMenus.Any())
                                 {
@@ -232,15 +242,14 @@
                                                     <a class="menu-item" href="@Url.Content("~/" + subMenu.PageUrl)">
                                                         @subMenu.MenuTitle
                                                     </a>
-
                                                 </li>
                                             }
                                         </ul>
                                     </div>
                                 }
+
                             </li>
                         }
-
                     </ul>
 
 
@@ -249,9 +258,12 @@
         </div>
         <div class="content-page">
             <main role="main" class="pb-3">
-                @RenderBody()
+                <div id="pageContent" class="page-fade">
+                    @RenderBody()
+                </div>
             </main>
         </div>
+
         <footer class="footer">
             <div class="container-fluid">
                 <div class="row">
@@ -289,6 +301,40 @@
     <script src="~/assets/js/app.min.js"></script>
 
     @await RenderSectionAsync("Scripts", required: false)
+
+    <script>
+                document.addEventListener('DOMContentLoaded', function () {
+            const pageContent = document.getElementById('pageContent');
+
+            // Show page with fade-in
+            setTimeout(() => {
+                pageContent.classList.add('show');
+            }, 50);
+
+            // Intercept sidebar link clicks for fade-out
+            const links = document.querySelectorAll('.side-nav-link, .menu-item');
+
+            links.forEach(link => {
+                link.addEventListener('click', function (e) {
+                    const href = this.getAttribute('href');
+
+                    // Skip external links
+                    if (!href || href.startsWith('http') || href.startsWith('#')) return;
+
+                    e.preventDefault();
+
+                    // Fade-out effect
+                    pageContent.classList.remove('show');
+
+                    // After transition, navigate
+                    setTimeout(() => {
+                        window.location.href = href;
+                    }, 400); // match CSS transition duration
+                });
+            });
+        });
+
+    </script>
 
 </body>
 </html>
