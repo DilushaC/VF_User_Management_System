@@ -207,13 +207,20 @@
                                    aria-expanded="false"
                                    aria-controls="@collapseId"
                                    class="side-nav-link">
-                                    <i class="@mainMenu.IconClass"></i>
+
+                                    <i class="@(string.IsNullOrWhiteSpace(mainMenu.IconClass)
+                                               ? "ri-menu-line"
+                                               : mainMenu.IconClass)">
+                                </i>
+
                                     <span>@mainMenu.MenuTitle</span>
-                                    @if (subMenus.Any())
+
+                                @if (subMenus.Any())
                                     {
                                         <span class="menu-arrow"></span>
                                     }
                                 </a>
+
 
                                 @if (subMenus.Any())
                                 {
@@ -222,9 +229,10 @@
                                             @foreach (var subMenu in subMenus)
                                             {
                                                 <li>
-                                                    <a class="menu-item" href="@subMenu.PageUrl">
+                                                    <a class="menu-item" href="@Url.Content("~/" + subMenu.PageUrl)">
                                                         @subMenu.MenuTitle
                                                     </a>
+
                                                 </li>
                                             }
                                         </ul>
