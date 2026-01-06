@@ -49,23 +49,6 @@
                                 </div>
                             </div>
                             <div class="row g-2">
-                                <div class="mb-3 col-md-2 position-relative">
-                                    <label asp-for="IconClass" class="form-label">Icon Class</label>
-                                    <input asp-for="IconClass" class="form-control round" required
-                                           data-bs-toggle="tooltip" data-bs-placement="right" title="Page Code is required" />
-                                    <span asp-validation-for="IconClass" class="invalid-tooltip">Page Code is required</span>
-                                </div>
-                            </div>
-                            <div class="row g-2">
-                                <div class="mb-3 col-md-1 position-relative">
-                                    <label asp-for="PageLevel" class="form-label">Page Level</label>
-                                    <input asp-for="PageLevel" type="number" class="form-control round" required min="1"
-                                           data-bs-toggle="tooltip" data-bs-placement="right" title="Product Selection is required" disabled />
-                                    <span asp-validation-for="PageLevel" class="invalid-tooltip">Page Level is required</span>
-                                    <small id="pageLevel-status"></small>
-                                </div>
-                            </div>
-                            <div class="row g-2">
                                 <div class="mb-3 col-md-6 position-relative">
                                     <label asp-for="Description" class="form-label">Description</label>
                                     <textarea asp-for="Description" class="form-control round" required
@@ -102,21 +85,7 @@
         placeholder: "Select Product",
     });
 
-    $("#ProductId").on('change', function () {
-        var productId = $(this).val();
-        if (productId) {
-            $("#PageLevel").prop('disabled', false);
-            $("#PageLevel").val('');
-        } else {
-            $("#PageLevel").prop('disabled', true);   // Keep disabled if no product selected
-            $("#PageLevel").val('');                   // Optional: clear value
-            $("#pageLevel-status").html('');           // Optional: clear validation message
-        }
-    });
-
-
     let pageNameValid = false;
-    let pageLevelValid = false;
 
     $("#PageName").on('blur', function () {
     let pageName = $(this).val().trim();

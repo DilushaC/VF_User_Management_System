@@ -32,8 +32,6 @@ namespace UserManagement.Business.PageHandler
                         p.PageName,
                         p.ProductId,
                         pr.ProductName,
-                        p.IconClass,
-                        p.PageLevel,
                         p.IsActive
                     FROM Pages p
                     LEFT JOIN Products pr ON p.ProductId = pr.Id;
@@ -51,8 +49,6 @@ namespace UserManagement.Business.PageHandler
                         Id = Convert.ToInt32(BRow["Id"]),
                         PageName = BRow["PageName"].ToString(),
                         ProductName = BRow["ProductName"] == DBNull.Value ? string.Empty : BRow["ProductName"].ToString(),
-                        IconClass = BRow["IconClass"].ToString(),
-                        PageLevel = BRow["PageLevel"] == DBNull.Value ? null : Convert.ToInt32(BRow["PageLevel"]),
 
                         IsActive = Convert.ToBoolean(BRow["IsActive"]),
                     };
@@ -77,7 +73,6 @@ namespace UserManagement.Business.PageHandler
                         p.PageName,
                         p.ProductId,
                         pr.ProductName,
-                        p.IconClass,
                         p.IsActive
                     FROM Pages p
                     LEFT JOIN Products pr ON p.ProductId = pr.Id
@@ -100,7 +95,6 @@ namespace UserManagement.Business.PageHandler
                         PageName = row["PageName"].ToString(),
                         ProductId = Convert.ToInt32(row["ProductId"]),
                         ProductName = row["ProductName"] == DBNull.Value ? string.Empty : row["ProductName"].ToString(),
-                        IconClass = row["IconClass"].ToString(),
                         IsActive = Convert.ToBoolean(row["IsActive"])
                     });
                 }
@@ -123,13 +117,11 @@ namespace UserManagement.Business.PageHandler
                 var productId = collection["ProductId"].ToString();
                 var description = collection["Description"].ToString();
                 var pageUrl = collection["PageUrl"].ToString();
-                var iconClass = collection["IconClass"].ToString();
-                var pageLevel = collection["PageLevel"].ToString();
                 var isActive = collection["IsActive"].ToString();
 
                 string sql = @"
                 INSERT INTO Pages
-                (PageName, ProductId, Description, PageUrl, IconClass, PageLevel, IsActive, CreatedDate )
+                (PageName, ProductId, Description, PageUrl, IsActive, CreatedDate )
                 VALUES
                 (@PageName,@ProductId, @Description, @PageUrl, @IconClass, @IsActive, @PageLevel, @CreatedDate);
             ";
@@ -140,8 +132,6 @@ namespace UserManagement.Business.PageHandler
                 parameters.Add("ProductId", Convert.ToInt32(productId), DbType.Int32);
                 parameters.Add("Description", description, DbType.String);
                 parameters.Add("PageUrl", pageUrl, DbType.String);
-                parameters.Add("IconClass", iconClass, DbType.String);
-                parameters.Add("PageLevel",Convert.ToInt32(pageLevel), DbType.Int32);
                 parameters.Add("IsActive", isActive, DbType.Boolean);
                 parameters.Add("CreatedDate", DateTime.Now, DbType.DateTime);
 
@@ -178,9 +168,7 @@ namespace UserManagement.Business.PageHandler
                     Id = Convert.ToInt32(row["Id"]),
                     PageName = row["PageName"] == DBNull.Value ? string.Empty : row["PageName"].ToString(),
                     PageUrl = row["PageUrl"] == DBNull.Value ? string.Empty : row["PageUrl"].ToString(),
-                    IconClass = row["IconClass"] == DBNull.Value ? string.Empty : row["IconClass"].ToString(),
                     ProductId = row["ProductId"] == DBNull.Value ? 0 : Convert.ToInt32(row["ProductId"]),
-                    PageLevel = row["PageLevel"] == DBNull.Value ? 0 : Convert.ToInt32(row["PageLevel"]),
                     Description = row["Description"] == DBNull.Value ? string.Empty : row["Description"].ToString(),
                     IsActive = row["IsActive"] != DBNull.Value && Convert.ToBoolean(row["IsActive"]),
                     CreatedDate = row["CreatedDate"] == DBNull.Value
@@ -205,8 +193,6 @@ namespace UserManagement.Business.PageHandler
                 var pageName = collection["PageName"].ToString();
                 var productId = collection["ProductId"].ToString();
                 var pageUrl = collection["PageUrl"].ToString();
-                var iconClass = collection["IconClass"].ToString();
-                var pageLevel = collection["PageLevel"].ToString();
                 var description = collection["Description"].ToString();
                 var isActive = Convert.ToBoolean(collection["IsActive"]);
 
@@ -216,8 +202,6 @@ namespace UserManagement.Business.PageHandler
                         PageName = @PageName,
                         ProductId = @ProductId,
                         PageUrl = @PageUrl,
-                        IconClass = @IconClass,
-                        PageLevel = @PageLevel,
                         Description = @Description,
                         IsActive = @IsActive,
                         CreatedDate = @CreatedDate
@@ -228,9 +212,7 @@ namespace UserManagement.Business.PageHandler
                 parameters.Add("Id", Id, DbType.Int32);
                 parameters.Add("PageName", pageName, DbType.String);
                 parameters.Add("PageUrl", pageUrl, DbType.String);
-                parameters.Add("IconClass", iconClass, DbType.String);
                 parameters.Add("ProductId", Convert.ToInt32(productId), DbType.Int32);
-                parameters.Add("PageLevel", Convert.ToInt32(pageLevel), DbType.Int32);
                 parameters.Add("Description", description, DbType.String);
                 parameters.Add("IsActive", isActive, DbType.Boolean);
                 parameters.Add("CreatedDate", DateTime.Now, DbType.DateTime);

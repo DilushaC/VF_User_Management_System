@@ -13,10 +13,8 @@ namespace UserManagement.Data.Models
         public int ProductId { get; set; }
         public string ProductName { get; set; } 
         public string PageUrl { get; set; }
-        public string IconClass { get; set; }
         public string Description { get; set; }
         public bool IsActive { get; set; }
-        public int? PageLevel { get; set; }
         public DateTime CreatedDate { get; set; }
     }
 }
