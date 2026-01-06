@@ -24,6 +24,19 @@ namespace UserManagement.Business.MenuItemHandler
         {
             try
             {
+                //string query = @"
+                //    SELECT 
+                //        Id,
+                //        MenuTitle,
+                //        ParentMenuId,
+                //        PageId,
+                //        IconClass,
+                //        DisplayOrder,
+                //        IsActive,
+                //        ProductId
+                //    FROM MenuItems
+                //    WHERE ParentMenuId IS NULL;
+                //";
                 string query = @"
                     SELECT 
                         Id,
@@ -34,8 +47,7 @@ namespace UserManagement.Business.MenuItemHandler
                         DisplayOrder,
                         IsActive,
                         ProductId
-                    FROM MenuItems
-                    WHERE ParentMenuId IS NULL;
+                    FROM MenuItems;
                 ";
 
                 var data = _connectionService.Return(query);
