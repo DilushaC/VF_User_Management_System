@@ -428,9 +428,9 @@ namespace UserManagement.Business.UserHandler
         public async Task<UserModel?> ValidateUserAsync(string username, string password)
         {
             // 1. Authenticate AD
-            //var response = await _aDAuthentication.AuthenticatewithAD(username, password);
-            //if (!response.Status)
-            //    return null;
+            var response = await _aDAuthentication.AuthenticatewithAD(username, password);
+            if (!response.Status)
+                return null;
 
             // 2. Get User
             const string userQuery = @"
@@ -451,9 +451,9 @@ namespace UserManagement.Business.UserHandler
             {
                 Id = userRow.Field<int>("Id"),
                 UserName = userRow.Field<string>("UserName"),
-                //DisplayName = response.Data.DisplayName,
-                //DisplayDesignation = response.Data.Title,
-                //DisplayDepartment = response.Data.Department,
+                DisplayName = response.Data.DisplayName,
+                DisplayDesignation = response.Data.Title,
+                DisplayDepartment = response.Data.Department,
                 IsActive = userRow.Field<bool>("IsActive")
             };
 
