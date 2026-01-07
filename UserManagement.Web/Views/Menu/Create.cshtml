@@ -34,6 +34,20 @@
                                 </div>
                             </div>
 
+                            <!-- No Submenus -->
+                            <div class="row g-2">
+                                <div class="mb-3 col-md-6 form-check">
+                                    <input type="checkbox"
+                                           class="form-check-input"
+                                           id="NoSubMenus"
+                                           name="NoSubMenus">
+                                    <label class="form-check-label" for="NoSubMenus">
+                                        No Submenus
+                                    </label>
+                                </div>
+                            </div>
+
+
                             <!-- Product -->
                             <div id="productContainer" class="row g-2">
                                 <div class="mb-3 col-md-6">
@@ -240,9 +254,11 @@
     document.addEventListener('DOMContentLoaded', function () {
 
         const isMainMenu = document.getElementById('IsMainMenu');
+        const noSubMenus = document.getElementById('NoSubMenus');
 
         const parentMenuContainer = document.getElementById('parentMenuContainer');
         const pageContainer = document.getElementById('pageContainer');
+        const productContainer = document.getElementById('productContainer');
         const iconContainer = document.getElementById('iconClassContainer');
         const displayOrderContainer = document.getElementById('displayOrderContainer');
 
@@ -251,50 +267,96 @@
         const iconInput = document.getElementById('IconClass');
         const displayOrderInput = document.getElementById('DisplayOrder');
 
-        function toggleMainMenu() {
+        function resetSelect(el, selector) {
+            el.value = null;
+            $(selector).val(null).trigger('change');
+            el.removeAttribute('required');
+        }
 
-        if (isMainMenu.checked) {
-
-            parentMenuContainer.classList.add('d-none');
-            pageContainer.classList.add('d-none');
-
-            iconContainer.classList.remove('d-none');
-            displayOrderContainer.classList.remove('d-none');
-
-            parentSelect.value = null;
-            $("#ParentMenuItemId").val(null).trigger('change');
-
-            $("#PageIds").val(null).trigger('change');
-
-            parentSelect.removeAttribute('required');
-            pageSelect.removeAttribute('required');
-
-            iconInput.setAttribute('required', 'required');
-            displayOrderInput.setAttribute('required', 'required');
-
-        } else {
-
-            parentMenuContainer.classList.remove('d-none');
-            pageContainer.classList.remove('d-none');
-
-            iconContainer.classList.add('d-none');
-            displayOrderContainer.classList.add('d-none');
-
+        function resetInputs() {
             iconInput.value = '';
             displayOrderInput.value = '';
 
             iconInput.removeAttribute('required');
             displayOrderInput.removeAttribute('required');
+            pageSelect.removeAttribute('required');
+            parentSelect.removeAttribute('required');
+        }
+
+        function toggleMenus() {
+
+            resetInputs();
+
+            /* ===============================
+               NO SUBMENUS
+            =============================== */
+            if (noSubMenus.checked) {
+
+                isMainMenu.checked = true;
+
+                parentMenuContainer.classList.add('d-none');
+
+                productContainer.classList.remove('d-none');
+                pageContainer.classList.remove('d-none');
+                iconContainer.classList.remove('d-none');
+                displayOrderContainer.classList.remove('d-none');
+
+                resetSelect(parentSelect, "#ParentMenuItemId");
+
+                pageSelect.setAttribute('required', 'required');
+                iconInput.setAttribute('required', 'required');
+                displayOrderInput.setAttribute('required', 'required');
+
+                return;
+            }
+
+            /* ===============================
+               MAIN MENU
+            =============================== */
+            if (isMainMenu.checked) {
+
+                noSubMenus.checked = false;
+
+                parentMenuContainer.classList.add('d-none');
+                pageContainer.classList.add('d-none');
+
+                productContainer.classList.remove('d-none');
+                iconContainer.classList.remove('d-none');
+                displayOrderContainer.classList.remove('d-none');
+
+                resetSelect(parentSelect, "#ParentMenuItemId");
+                resetSelect(pageSelect, "#PageIds");
+
+                iconInput.setAttribute('required', 'required');
+                displayOrderInput.setAttribute('required', 'required');
+
+                return;
+            }
+
+            /* ===============================
+               SUB MENU
+            =============================== */
+            noSubMenus.checked = false;
+
+            parentMenuContainer.classList.remove('d-none');
+            pageContainer.classList.remove('d-none');
+
+            productContainer.classList.remove('d-none');
+            iconContainer.classList.add('d-none');
+            displayOrderContainer.classList.add('d-none');
 
             parentSelect.setAttribute('required', 'required');
             pageSelect.setAttribute('required', 'required');
         }
-    }
 
+        toggleMenus();
 
-        toggleMainMenu();
-        isMainMenu.addEventListener('change', toggleMainMenu);
+        isMainMenu.addEventListener('change', toggleMenus);
+        noSubMenus.addEventListener('change', toggleMenus);
 
+        /* ===============================
+           FORM SUBMIT
+        =============================== */
         $("#RegisterForm").on("submit", function (e) {
             e.preventDefault();
 
@@ -314,53 +376,54 @@
                 cancelButtonText: 'Cancel'
             }).then((result) => {
 
-                if (result.isConfirmed) {
+                if (!result.isConfirmed) return;
 
-                    Swal.fire({
-                        title: 'Saving...',
-                        allowOutsideClick: false,
-                        didOpen: () => Swal.showLoading()
-                    });
+                Swal.fire({
+                    title: 'Saving...',
+                    allowOutsideClick: false,
+                    didOpen: () => Swal.showLoading()
+                });
 
-                    $.ajax({
-                        url: '/Menu/Create',
-                        type: 'POST',
-                        data: $("#RegisterForm").serialize(),
-                        headers: { "X-Requested-With": "XMLHttpRequest" },
+                $.ajax({
+                    url: '/Menu/Create',
+                    type: 'POST',
+                    data: $("#RegisterForm").serialize(),
+                    headers: { "X-Requested-With": "XMLHttpRequest" },
 
-                        success: function (response) {
-                            Swal.close();
+                    success: function (response) {
+                        Swal.close();
 
-                            if (response.success) {
-                                Swal.fire({
-                                    icon: 'success',
-                                    title: response.message,
-                                    showConfirmButton: false,
-                                    timer: 1500
-                                }).then(() => {
-                                    window.location.href = response.redirectUrl;
-                                });
-                            } else {
-                                Swal.fire({
-                                    icon: 'error',
-                                    title: 'Error',
-                                    text: response.message || 'Failed to create menu.'
-                                });
-                            }
-                        },
-
-                        error: function () {
+                        if (response.success) {
+                            Swal.fire({
+                                icon: 'success',
+                                title: response.message,
+                                showConfirmButton: false,
+                                timer: 1500
+                            }).then(() => {
+                                window.location.href = response.redirectUrl;
+                            });
+                        } else {
                             Swal.fire({
                                 icon: 'error',
                                 title: 'Error',
-                                text: 'Something went wrong! Please try again.'
+                                text: response.message || 'Failed to create menu.'
                             });
                         }
-                    });
-                }
+                    },
+
+                    error: function () {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error',
+                            text: 'Something went wrong! Please try again.'
+                        });
+                    }
+                });
             });
         });
     });
+
+
 </script>
 
 

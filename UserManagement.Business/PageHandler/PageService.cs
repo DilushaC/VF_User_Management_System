@@ -123,7 +123,7 @@ namespace UserManagement.Business.PageHandler
                 INSERT INTO Pages
                 (PageName, ProductId, Description, PageUrl, IsActive, CreatedDate )
                 VALUES
-                (@PageName,@ProductId, @Description, @PageUrl, @IconClass, @IsActive, @PageLevel, @CreatedDate);
+                (@PageName,@ProductId, @Description, @PageUrl, @IsActive, @CreatedDate);
             ";
 
                 var parameters = new DynamicParameters();

@@ -112,24 +112,24 @@
         });
     });
 
-    $("#PageLevel").on('blur', function () {
-    let pageLevel = $(this).val().trim();
-    var productId = $("#ProductId").val();
-        $.ajax({
-            url: '/Page/CheckPageLevel',
-            type: 'POST',
-            data: { pageLevel: pageLevel,productId: productId },
-            success: function (res) {
-                if (res.exists) {
-                    pageLevelValid = false;
-                    $("#pageLevel-status").html(`<span style="color:red;">❌ Page Level exists</span>`);
-                } else {
-                    pageLevelValid = true;
-                    $("#pageLevel-status").html(`<span style="color:green;">✔ Page Level available</span>`);
-                }
-            }
-        });
-    });
+    // $("#PageLevel").on('blur', function () {
+    // let pageLevel = $(this).val().trim();
+    // var productId = $("#ProductId").val();
+    //     $.ajax({
+    //         url: '/Page/CheckPageLevel',
+    //         type: 'POST',
+    //         data: { pageLevel: pageLevel,productId: productId },
+    //         success: function (res) {
+    //             if (res.exists) {
+    //                 pageLevelValid = false;
+    //                 $("#pageLevel-status").html(`<span style="color:red;">❌ Page Level exists</span>`);
+    //             } else {
+    //                 pageLevelValid = true;
+    //                 $("#pageLevel-status").html(`<span style="color:green;">✔ Page Level available</span>`);
+    //             }
+    //         }
+    //     });
+    // });
 
     $("#RegisterForm").on("submit", function (e) {
         e.preventDefault();
@@ -140,15 +140,6 @@
                 icon: 'error',
                 title: 'Page Already Exists',
                 text: 'Please Create another Page.'
-            });
-            return;
-        }
-
-        if (!pageLevelValid) {
-            Swal.fire({
-                icon: 'error',
-                title: 'Page Level Already Exists',
-                text: 'Please choose another Page Level.'
             });
             return;
         }

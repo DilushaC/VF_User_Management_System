@@ -103,6 +103,10 @@ namespace UserManagement.Business.MenuItemHandler
                 string isActiveStr = collection["IsActive"];
                 string isMainMenuStr = collection["IsMainMenu"];
 
+                string noSubMenusStr = collection["NoSubMenus"];
+                bool noSubMenus = noSubMenusStr == "on" || noSubMenusStr == "true";
+
+
                 // Determine main menu checkbox
                 bool isMainMenu = isMainMenuStr == "on" || isMainMenuStr == "true";
 
@@ -115,19 +119,19 @@ namespace UserManagement.Business.MenuItemHandler
                 int? parentMenuId = null;
                 int? pageId = null;
 
-                if (isMainMenu)
+                if (isMainMenu && !noSubMenus)
                 {
-                    // Main menu: no parent, no page
+                    // Main menu WITH submenus
                     parentMenuId = null;
                     pageId = null;
                     iconClass = string.IsNullOrWhiteSpace(iconClass) ? null : iconClass;
                 }
-                else
+                else if (isMainMenu && noSubMenus)
                 {
-                    // Submenu: parse parent menu if provided
-                    parentMenuId = int.TryParse(parentIdStr, out var pid) && pid > 0 ? pid : null;
+                    // Main menu WITHOUT submenus (acts like a leaf)
+                    parentMenuId = null;
 
-                    // Parse page ID: take first value if multiple are sent
+                    // Parse page ID
                     if (!string.IsNullOrEmpty(pageIdStr))
                     {
                         var firstValue = pageIdStr.Split(',').FirstOrDefault();
@@ -135,8 +139,23 @@ namespace UserManagement.Business.MenuItemHandler
                             pageId = pgid;
                     }
 
-                    iconClass = null; // icon not used for submenus
+                    iconClass = string.IsNullOrWhiteSpace(iconClass) ? null : iconClass;
                 }
+                else
+                {
+                    // Submenu
+                    parentMenuId = int.TryParse(parentIdStr, out var pid) && pid > 0 ? pid : null;
+
+                    if (!string.IsNullOrEmpty(pageIdStr))
+                    {
+                        var firstValue = pageIdStr.Split(',').FirstOrDefault();
+                        if (int.TryParse(firstValue, out var pgid) && pgid > 0)
+                            pageId = pgid;
+                    }
+
+                    iconClass = null;
+                }
+
 
                 // Prepare SQL and parameters
                 string sql = @"
