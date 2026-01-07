@@ -26,27 +26,22 @@
 
                             <!-- Is Main Menu -->
                             <div class="row g-2">
-                                <div class="mb-3 col-md-6 form-check">
+                                <div class="mb-3 col-md-3 form-check">
                                     <input type="checkbox" class="form-check-input" id="IsMainMenu" name="IsMainMenu">
                                     <label class="form-check-label" for="IsMainMenu">
                                         This is a Main Menu
                                     </label>
                                 </div>
-                            </div>
-
-                            <!-- No Submenus -->
-                            <div class="row g-2">
-                                <div class="mb-3 col-md-6 form-check">
+                                <div class="mb-3 col-md-3 form-check">
                                     <input type="checkbox"
                                            class="form-check-input"
                                            id="NoSubMenus"
                                            name="NoSubMenus">
                                     <label class="form-check-label" for="NoSubMenus">
-                                        No Submenus
+                                        No Sub Menus
                                     </label>
                                 </div>
                             </div>
-
 
                             <!-- Product -->
                             <div id="productContainer" class="row g-2">
@@ -111,10 +106,23 @@
                                 </div>
                             </div>
 
+                            <div id="categoryContainer" class="row g-2 d-none">
+                                <div class="mb-3 col-md-6">
+                                    <label class="form-label">Select Category</label>
+                                    <select id="CategoryId"
+                                            asp-for="CategoryId"
+                                            class="form-control select2 round"
+                                            asp-items="ViewBag.Categories">
+                                        <option value="">Select Category</option>
+                                    </select>
+                                </div>
+                            </div>
+
+
                             <!-- Menu Level -->
                             <div id="displayOrderContainer" class="row g-2 d-none">
                                 <div class="mb-3 col-md-2">
-                                    <label class="form-label">Menu Level</label>
+                                    <label class="form-label">Display Order</label>
                                     <input id="DisplayOrder" name="DisplayOrder"
                                            type="number"
                                            class="form-control round"
@@ -163,6 +171,11 @@
     });
 
     $("#PageIds").select2({
+        placeholder: "Select Page",
+        allowClear: true,
+    });
+    
+    $("#CategoryId").select2({
         placeholder: "Select Page",
         allowClear: true,
     });
@@ -266,6 +279,9 @@
         const pageSelect = document.getElementById('PageIds');
         const iconInput = document.getElementById('IconClass');
         const displayOrderInput = document.getElementById('DisplayOrder');
+        const categoryContainer = document.getElementById('categoryContainer');
+        const categorySelect = document.getElementById('CategoryId');
+
 
         function resetSelect(el, selector) {
             el.value = null;
@@ -283,71 +299,84 @@
             parentSelect.removeAttribute('required');
         }
 
-        function toggleMenus() {
+    function toggleMenus() {
 
-            resetInputs();
+        resetInputs();
 
-            /* ===============================
-               NO SUBMENUS
-            =============================== */
-            if (noSubMenus.checked) {
+        // ALWAYS hide category by default
+        categoryContainer.classList.add('d-none');
+        categorySelect.removeAttribute('required');
 
-                isMainMenu.checked = true;
+        /* ===============================
+           NO SUB MENUS
+        =============================== */
+        if (noSubMenus.checked) {
 
-                parentMenuContainer.classList.add('d-none');
+            isMainMenu.checked = true;
 
-                productContainer.classList.remove('d-none');
-                pageContainer.classList.remove('d-none');
-                iconContainer.classList.remove('d-none');
-                displayOrderContainer.classList.remove('d-none');
-
-                resetSelect(parentSelect, "#ParentMenuItemId");
-
-                pageSelect.setAttribute('required', 'required');
-                iconInput.setAttribute('required', 'required');
-                displayOrderInput.setAttribute('required', 'required');
-
-                return;
-            }
-
-            /* ===============================
-               MAIN MENU
-            =============================== */
-            if (isMainMenu.checked) {
-
-                noSubMenus.checked = false;
-
-                parentMenuContainer.classList.add('d-none');
-                pageContainer.classList.add('d-none');
-
-                productContainer.classList.remove('d-none');
-                iconContainer.classList.remove('d-none');
-                displayOrderContainer.classList.remove('d-none');
-
-                resetSelect(parentSelect, "#ParentMenuItemId");
-                resetSelect(pageSelect, "#PageIds");
-
-                iconInput.setAttribute('required', 'required');
-                displayOrderInput.setAttribute('required', 'required');
-
-                return;
-            }
-
-            /* ===============================
-               SUB MENU
-            =============================== */
-            noSubMenus.checked = false;
-
-            parentMenuContainer.classList.remove('d-none');
-            pageContainer.classList.remove('d-none');
+            parentMenuContainer.classList.add('d-none');
 
             productContainer.classList.remove('d-none');
-            iconContainer.classList.add('d-none');
-            displayOrderContainer.classList.add('d-none');
+            pageContainer.classList.remove('d-none');
+            iconContainer.classList.remove('d-none');
+            displayOrderContainer.classList.remove('d-none');
 
-            parentSelect.setAttribute('required', 'required');
+            // SHOW CATEGORY
+            categoryContainer.classList.remove('d-none');
+            categorySelect.setAttribute('required', 'required');
+
+            resetSelect(parentSelect, "#ParentMenuItemId");
+
             pageSelect.setAttribute('required', 'required');
+            iconInput.setAttribute('required', 'required');
+            displayOrderInput.setAttribute('required', 'required');
+
+            return;
         }
+
+        /* ===============================
+           MAIN MENU
+        =============================== */
+        if (isMainMenu.checked) {
+
+            noSubMenus.checked = false;
+
+            parentMenuContainer.classList.add('d-none');
+            pageContainer.classList.add('d-none');
+
+            productContainer.classList.remove('d-none');
+            iconContainer.classList.remove('d-none');
+            displayOrderContainer.classList.remove('d-none');
+
+            // SHOW CATEGORY
+            categoryContainer.classList.remove('d-none');
+            categorySelect.setAttribute('required', 'required');
+
+            resetSelect(parentSelect, "#ParentMenuItemId");
+            resetSelect(pageSelect, "#PageIds");
+
+            iconInput.setAttribute('required', 'required');
+            displayOrderInput.setAttribute('required', 'required');
+
+            return;
+        }
+
+        /* ===============================
+           SUB MENU
+        =============================== */
+        noSubMenus.checked = false;
+
+        parentMenuContainer.classList.remove('d-none');
+        pageContainer.classList.remove('d-none');
+
+        productContainer.classList.remove('d-none');
+        iconContainer.classList.add('d-none');
+        displayOrderContainer.classList.add('d-none');
+
+        parentSelect.setAttribute('required', 'required');
+        pageSelect.setAttribute('required', 'required');
+    }
+
 
         toggleMenus();
 

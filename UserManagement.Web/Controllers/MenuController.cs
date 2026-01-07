@@ -35,6 +35,7 @@ namespace UserManagement.Web.Controllers
             var products = _productService.GetAllActiveProductList();
             var pages = _pageService.GetAllPagesList();
             var parentMenus = _menuItemService.GetAllMenuItemsList();
+            var categories = _menuItemService.GetAllMenuCategoryList();
 
             //viewbag for branches
             ViewBag.Products = products
@@ -58,6 +59,14 @@ namespace UserManagement.Web.Controllers
             {
                 Value = x.Id.ToString(),
                 Text = x.MenuTitle
+            })
+            .ToList();
+
+            ViewBag.Categories = categories
+            .Select(x => new SelectListItem
+            {
+                Value = x.Id.ToString(),
+                Text = x.CategoryName
             })
             .ToList();
 

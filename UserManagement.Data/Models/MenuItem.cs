@@ -32,6 +32,8 @@ namespace UserManagement.Data.Models
 
         public List<int> PageIds { get; set; } = new List<int>();
         public string? PageUrl { get; set; }
+        public int CategoryId { get; set; }
+        public string? CategoryName { get; set; }
     }
 
 }

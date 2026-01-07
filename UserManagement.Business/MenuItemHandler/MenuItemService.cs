@@ -24,19 +24,6 @@ namespace UserManagement.Business.MenuItemHandler
         {
             try
             {
-                //string query = @"
-                //    SELECT 
-                //        Id,
-                //        MenuTitle,
-                //        ParentMenuId,
-                //        PageId,
-                //        IconClass,
-                //        DisplayOrder,
-                //        IsActive,
-                //        ProductId
-                //    FROM MenuItems
-                //    WHERE ParentMenuId IS NULL;
-                //";
                 string query = @"
                     SELECT 
                         Id,
@@ -47,7 +34,8 @@ namespace UserManagement.Business.MenuItemHandler
                         DisplayOrder,
                         IsActive,
                         ProductId
-                    FROM MenuItems;
+                    FROM MenuItems
+                    WHERE IsActive = 1;
                 ";
 
                 var data = _connectionService.Return(query);
@@ -351,6 +339,47 @@ namespace UserManagement.Business.MenuItemHandler
                 return false;
             }
         }
+
+
+        public List<MenuCategory> GetAllMenuCategoryList()
+        {
+            try
+            {
+                string query = @"
+                    SELECT 
+                        Id,
+                        CategoryName,
+                        IsActive
+                    FROM MenuCategories
+                    WHERE IsActive = 1;
+                ";
+
+                var data = _connectionService.Return(query);
+
+                List<MenuCategory> menuCategories = new List<MenuCategory>();
+
+                for (int i = 0; i < data.Rows.Count; i++)
+                {
+                    var row = data.Rows[i];
+
+                    MenuCategory model = new MenuCategory()
+                    {
+                        Id = Convert.ToInt32(row["Id"]),
+                        CategoryName = row["CategoryName"].ToString(),
+                        IsActive = Convert.ToBoolean(row["IsActive"]),
+                    };
+
+                    menuCategories.Add(model);
+                }
+
+                return menuCategories;
+            }
+            catch
+            {
+                throw;
+            }
+        }
+
 
     }
 }
