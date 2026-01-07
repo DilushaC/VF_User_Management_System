@@ -185,27 +185,23 @@
 
                             var mainCollapseId = $"sidebar_{mainMenu.Id}";
 
-                            <li class="side-nav-item">
-                                <a class="side-nav-link"
-                                   data-bs-toggle="collapse"
-                                   href="#@mainCollapseId"
-                                   aria-expanded="false"
-                                   aria-controls="@mainCollapseId">
+                            @* If main menu has children, show collapse *@
+                            @if (level1Menus.Any())
+                            {
+                                <li class="side-nav-item">
+                                    <a class="side-nav-link"
+                                       data-bs-toggle="collapse"
+                                       href="#@mainCollapseId"
+                                       aria-expanded="false"
+                                       aria-controls="@mainCollapseId">
 
-                                    <i class="@(string.IsNullOrWhiteSpace(mainMenu.IconClass) ? "ri-asterisk" : mainMenu.IconClass)"></i>
-                                    <span>@mainMenu.MenuTitle</span>
-
-                                    @if (level1Menus.Any())
-                                    {
+                                        <i class="@(string.IsNullOrWhiteSpace(mainMenu.IconClass) ? "ri-asterisk" : mainMenu.IconClass)"></i>
+                                        <span>@mainMenu.MenuTitle</span>
                                         <span class="menu-arrow"></span>
-                                    }
-                                </a>
+                                    </a>
 
-                                @if (level1Menus.Any())
-                                {
                                     <div class="collapse" id="@mainCollapseId">
                                         <ul class="side-nav-second-level">
-
                                             @foreach (var level1 in level1Menus)
                                             {
                                                 var level2Menus = menus
@@ -216,7 +212,6 @@
                                                 var level1CollapseId = $"sidebar_{level1.Id}";
 
                                                 <li class="side-nav-item">
-
                                                     @if (level2Menus.Any())
                                                     {
                                                         <a class="side-nav-link"
@@ -224,7 +219,6 @@
                                                            href="#@level1CollapseId"
                                                            aria-expanded="false"
                                                            aria-controls="@level1CollapseId">
-
                                                             <span>@level1.MenuTitle</span>
                                                             <span class="menu-arrow"></span>
                                                         </a>
@@ -243,21 +237,30 @@
                                                             </ul>
                                                         </div>
                                                     }
-                                                    else
+                                                    else if (!string.IsNullOrWhiteSpace(level1.PageUrl))
                                                     {
                                                         <a class="menu-item"
                                                            href="@Url.Content("~/" + level1.PageUrl)">
                                                             @level1.MenuTitle
                                                         </a>
                                                     }
-
                                                 </li>
                                             }
-
                                         </ul>
                                     </div>
-                                }
-                            </li>
+                                </li>
+                            }
+                            @* If main menu has no children but has a URL, make it a direct link *@
+                            else if (!string.IsNullOrWhiteSpace(mainMenu.PageUrl))
+                            {
+                                <li class="side-nav-item">
+                                    <a class="side-nav-link"
+                                       href="@Url.Content("~/" + mainMenu.PageUrl)">
+                                        <i class="@(string.IsNullOrWhiteSpace(mainMenu.IconClass) ? "ri-asterisk" : mainMenu.IconClass)"></i>
+                                        <span>@mainMenu.MenuTitle</span>
+                                    </a>
+                                </li>
+                            }
                         }
 
 
