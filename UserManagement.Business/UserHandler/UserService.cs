@@ -490,12 +490,19 @@ namespace UserManagement.Business.UserHandler
                     m.DisplayOrder,
                     m.IsActive,
                     m.ProductId,
+                    m.MenuCategoryId,
+                    c.CategoryName,
                     p.PageUrl
                 FROM MenuItems m
-                LEFT JOIN Pages p ON m.PageId = p.Id
+                LEFT JOIN Pages p 
+                    ON m.PageId = p.Id
+                LEFT JOIN MenuCategories c 
+                    ON m.MenuCategoryId = c.Id
                 WHERE m.IsActive = 1
                   AND m.ProductId IN (
-                      SELECT ProductId FROM UserProducts WHERE UserId = @UserId
+                      SELECT ProductId 
+                      FROM UserProducts 
+                      WHERE UserId = @UserId
                   )
                 ORDER BY m.DisplayOrder";
 
@@ -518,12 +525,15 @@ namespace UserManagement.Business.UserHandler
                         DisplayOrder = r.Field<int>("DisplayOrder"),
                         IsActive = r.Field<bool>("IsActive"),
                         ProductId = r.Field<int?>("ProductId"),
+                        CategoryId = r.Field<int?>("MenuCategoryId"),
+                        CategoryName = r.Field<string?>("CategoryName"),
                         PageUrl = r.Field<string?>("PageUrl")
                     })
-                    .GroupBy(m => m.Id) // Remove duplicates by MenuItem Id
+                    .GroupBy(m => m.Id)
                     .Select(g => g.First())
                     .OrderBy(m => m.DisplayOrder)
                     .ToList();
+
             }
 
             // 5. Populate PageUrls for session

@@ -90,6 +90,8 @@ namespace UserManagement.Business.MenuItemHandler
                 string productIdStr = collection["ProductId"];
                 string isActiveStr = collection["IsActive"];
                 string isMainMenuStr = collection["IsMainMenu"];
+                string categoryIdStr = collection["CategoryId"];
+
 
                 string noSubMenusStr = collection["NoSubMenus"];
                 bool noSubMenus = noSubMenusStr == "on" || noSubMenusStr == "true";
@@ -106,6 +108,14 @@ namespace UserManagement.Business.MenuItemHandler
                 // Initialize nullable fields
                 int? parentMenuId = null;
                 int? pageId = null;
+
+                int? categoryId = null;
+
+                if (int.TryParse(categoryIdStr, out var cid) && cid > 0)
+                {
+                    categoryId = cid;
+                }
+
 
                 if (isMainMenu && !noSubMenus)
                 {
@@ -144,13 +154,25 @@ namespace UserManagement.Business.MenuItemHandler
                     iconClass = null;
                 }
 
+                if (isMainMenu || noSubMenus)
+                {
+                    // Category allowed ONLY for main menu or no-submenu menu
+                    categoryId = categoryId;
+                }
+                else
+                {
+                    // Submenu → category must be null
+                    categoryId = null;
+                }
+
+
 
                 // Prepare SQL and parameters
                 string sql = @"
                     INSERT INTO MenuItems
-                    (MenuTitle, ParentMenuId, PageId, IconClass, DisplayOrder, ProductId, IsActive)
+                    (MenuTitle, ParentMenuId, PageId, IconClass, DisplayOrder, ProductId, IsActive,MenuCategoryId )
                     VALUES
-                    (@MenuTitle, @ParentMenuId, @PageId, @IconClass, @DisplayOrder, @ProductId, @IsActive);
+                    (@MenuTitle, @ParentMenuId, @PageId, @IconClass, @DisplayOrder, @ProductId, @IsActive, @MenuCategoryId);
                 ";
 
                 var parameters = new DynamicParameters();
@@ -161,6 +183,7 @@ namespace UserManagement.Business.MenuItemHandler
                 parameters.Add("@DisplayOrder", displayOrder, DbType.Int32);
                 parameters.Add("@ProductId", productId, DbType.Int32);
                 parameters.Add("@IsActive", isActive, DbType.Boolean);
+                parameters.Add("@MenuCategoryId", categoryId, DbType.Int32);
 
                 int rows = _connectionService.ExecuteWithPara(sql, parameters);
                 return rows > 0;
