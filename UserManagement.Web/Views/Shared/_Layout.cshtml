@@ -179,7 +179,7 @@
                                                 .OrderBy(g => g.Key))
                         {
                             <li class="side-nav-title">
-                                @(string.IsNullOrWhiteSpace(categoryGroup.Key) ? "" : categoryGroup.Key)
+                                @(string.IsNullOrWhiteSpace(categoryGroup.Key) ? "General" : categoryGroup.Key)
                             </li>
 
                             @foreach (var mainMenu in categoryGroup.OrderBy(m => m.DisplayOrder))
