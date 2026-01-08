@@ -292,6 +292,7 @@ namespace UserManagement.Business.MenuItemHandler
                     IconClass = row["IconClass"] == DBNull.Value ? string.Empty : row["IconClass"].ToString(),
                     DisplayOrder = row["DisplayOrder"] == DBNull.Value ? 0 : Convert.ToInt32(row["DisplayOrder"]),
                     ProductId = row["ProductId"] == DBNull.Value ? 0 : Convert.ToInt32(row["ProductId"]),
+                    CategoryId = row["MenuCategoryId"] == DBNull.Value ? 0 : Convert.ToInt32(row["MenuCategoryId"]),
                     IsActive = row["IsActive"] != DBNull.Value && Convert.ToBoolean(row["IsActive"]),
                 };
 
@@ -314,6 +315,7 @@ namespace UserManagement.Business.MenuItemHandler
                 string iconClass = collection["IconClass"];
                 string displayOrderStr = collection["DisplayOrder"];
                 string productIdStr = collection["ProductId"];
+                string category = collection["CategoryId"];
                 bool isActive = collection["IsActive"] == "true" || collection["IsActive"] == "on";
 
                 int displayOrder = int.TryParse(displayOrderStr, out var d) ? d : 1;
@@ -340,6 +342,7 @@ namespace UserManagement.Business.MenuItemHandler
                         IconClass = @IconClass,
                         DisplayOrder = @DisplayOrder,
                         ProductId = @ProductId,
+                        MenuCategoryId = @MenuCategoryId,
                         IsActive = @IsActive
                     WHERE Id = @Id;
                 ";
@@ -352,6 +355,7 @@ namespace UserManagement.Business.MenuItemHandler
                 parameters.Add("@IconClass", string.IsNullOrWhiteSpace(iconClass) ? null : iconClass, DbType.String);
                 parameters.Add("@DisplayOrder", displayOrder, DbType.Int32);
                 parameters.Add("@ProductId", productId, DbType.Int32);
+                parameters.Add("@MenuCategoryId", category, DbType.Int32);
                 parameters.Add("@IsActive", isActive, DbType.Boolean);
 
                 int rows = _connectionService.ExecuteWithPara(sql, parameters);

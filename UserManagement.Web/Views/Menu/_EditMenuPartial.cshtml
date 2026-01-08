@@ -60,6 +60,13 @@
             </select>
         </div>
 
+        <div class="mb-3 col-md-6">
+            <label class="form-label">Category</label>
+            <select id="CategoryId" asp-for="CategoryId" class="form-control select2" asp-items="ViewBag.Categories">
+                <option value="">Select Category</option>
+            </select>
+        </div>
+
         <!-- Status -->
         <div class="mb-3 col-md-3">
             <label class="form-label">Status</label>
@@ -85,7 +92,7 @@
     $(document).ready(function () {
 
         // Initialize Select2
-        $('#ParentMenuItemId, #PageId, #ProductId, #Status').select2({ width: '100%' });
+        $('#ParentMenuItemId, #PageId, #ProductId, #Status, #CategoryId').select2({ width: '100%' });
 
         const parentMenuContainer = $('#parentMenuContainer');
         const pageContainer = $('#pageContainer');
