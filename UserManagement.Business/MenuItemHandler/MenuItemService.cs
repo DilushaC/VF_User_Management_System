@@ -407,6 +407,34 @@ namespace UserManagement.Business.MenuItemHandler
             }
         }
 
+        public async Task<bool> CheckMenuTitle(IFormCollection collection)
+        {
+            try
+            {
+                var menuTitle = collection["MenuTitle"].ToString();
+
+                string sql = @"
+                    SELECT COUNT(*)
+                    FROM MenuItems
+                    WHERE MenuTitle = @MenuTitle
+                ";
+
+                var parameters = new DynamicParameters();
+                parameters.Add("MenuTitle", menuTitle, DbType.String);
+
+                // Synchronous call wrapped in Task.FromResult
+                var result = _connectionService.ExecuteScalar(sql, parameters);
+
+                int count = Convert.ToInt32(result);
+
+                return await Task.FromResult(count > 0);
+            }
+            catch (Exception)
+            {
+                return await Task.FromResult(false);
+            }
+        }
+
 
     }
 }

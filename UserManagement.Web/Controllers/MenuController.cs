@@ -202,10 +202,10 @@ namespace UserManagement.Web.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> CheckPageName(IFormCollection collection)
+        public async Task<IActionResult> CheckMenuTitle(IFormCollection collection)
         {
             // Pass the form collection directly to the service
-            bool exists = await _pageService.CheckPageNameExists(collection);
+            bool exists = await _menuItemService.CheckMenuTitle(collection);
 
             return Json(new { exists = exists });
         }
