@@ -196,30 +196,30 @@
     let menuTitleValid = false;
     let pageLevelValid = false;
 
-    $("#MenuTitle").on('blur', function () {
-    let menuTitle = $(this).val().trim();
+    // $("#MenuTitle").on('blur', function () {
+    // let menuTitle = $(this).val().trim();
 
-        if (menuTitle.length < 3) {
-            $("#menuTitle-status").html(`<span style="color:gray;">Minimum 3 characters required</span>`);
-            menuTitleValid = false;
-            return;
-        }
+    //     if (menuTitle.length < 3) {
+    //         $("#menuTitle-status").html(`<span style="color:gray;">Minimum 3 characters required</span>`);
+    //         menuTitleValid = false;
+    //         return;
+    //     }
 
-        $.ajax({
-            url: '/Menu/CheckMenuTitle',
-            type: 'POST',
-            data: { menuTitle: menuTitle },
-            success: function (res) {
-                if (res.exists) {
-                    menuTitleValid = false;
-                    $("#menuTitle-status").html(`<span style="color:red;">❌ Menu Title already exists</span>`);
-                } else {
-                    menuTitleValid = true;
-                    $("#menuTitle-status").html(`<span style="color:green;">✔ Menu Title available</span>`);
-                }
-            }
-        });
-    });
+    //     $.ajax({
+    //         url: '/Menu/CheckMenuTitle',
+    //         type: 'POST',
+    //         data: { menuTitle: menuTitle },
+    //         success: function (res) {
+    //             if (res.exists) {
+    //                 menuTitleValid = false;
+    //                 $("#menuTitle-status").html(`<span style="color:red;">❌ Menu Title already exists</span>`);
+    //             } else {
+    //                 menuTitleValid = true;
+    //                 $("#menuTitle-status").html(`<span style="color:green;">✔ Menu Title available</span>`);
+    //             }
+    //         }
+    //     });
+    // });
 
     $("#PageLevel").on('blur', function () {
     let pageLevel = $(this).val().trim();
@@ -391,14 +391,14 @@
             e.preventDefault();
             let form = this;
 
-            if (!menuTitleValid) {
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Menu Title Already Exists',
-                    text: 'Please Create another Menu.'
-                });
-                return;
-            }
+            // if (!menuTitleValid) {
+            //     Swal.fire({
+            //         icon: 'error',
+            //         title: 'Menu Title Already Exists',
+            //         text: 'Please Create another Menu.'
+            //     });
+            //     return;
+            // }
 
             if (!form.checkValidity()) {
                 $(form).addClass('was-validated');

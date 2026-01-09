@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.Extensions.Configuration;
 using UserManagement.Business.BranchHandler;
 using UserManagement.Business.DatatableHandler;
 using UserManagement.Business.DepartmentHandler;
@@ -16,13 +17,15 @@ namespace UserManagement.Web.Controllers
         private readonly IPageService _pageService;
         private readonly IDataTableService _dataTableService;
         private readonly IMenuItemService _menuItemService;
+        private readonly IConfiguration _configuration;
 
-        public MenuController(IProductService productService, IDataTableService dataTableService, IPageService pageService, IMenuItemService menuItemService)
+        public MenuController(IProductService productService, IDataTableService dataTableService, IPageService pageService, IMenuItemService menuItemService, IConfiguration configuration)
         {
             _productService = productService;
             _pageService = pageService;
             _dataTableService = dataTableService;
             _menuItemService = menuItemService;
+            _configuration = configuration;
         }
 
         [HttpGet]
@@ -201,14 +204,15 @@ namespace UserManagement.Web.Controllers
             }
         }
 
-        [HttpPost]
-        public async Task<IActionResult> CheckMenuTitle(IFormCollection collection)
-        {
-            // Pass the form collection directly to the service
-            bool exists = await _menuItemService.CheckMenuTitle(collection);
+        //[HttpPost]
+        //public async Task<IActionResult> CheckMenuTitle(IFormCollection collection)
+        //{
+        //    int productId = _configuration.GetValue<int>("AllowedProducts:ProductId");
+        //    // Pass the form collection directly to the service
+        //    bool exists = await _menuItemService.CheckMenuTitle(collection, productId);
 
-            return Json(new { exists = exists });
-        }
+        //    return Json(new { exists = exists });
+        //}
 
         [HttpPost]
         public async Task<IActionResult> CheckPageLevel(IFormCollection collection)

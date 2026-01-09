@@ -170,11 +170,6 @@ namespace UserManagement.Web.Controllers
             HttpContext.Session.SetString("Department", user.DisplayDepartment);
             HttpContext.Session.SetString("UserId", user.Id.ToString());
 
-            //HttpContext.Session.SetString("UserName","Dilusha");
-            //HttpContext.Session.SetString("Designation", "SSE");
-            //HttpContext.Session.SetString("Department", "IT");
-            //HttpContext.Session.SetString("UserId", user.Id.ToString());
-
             // Store PageUrls
             var pageUrlsJson = JsonSerializer.Serialize(user.PageUrls ?? new List<string>());
             HttpContext.Session.SetString("PageUrls", pageUrlsJson);
