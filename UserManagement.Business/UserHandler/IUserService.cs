@@ -10,7 +10,7 @@ namespace UserManagement.Business.UserHandler
 {
     public interface IUserService
     {
-        Task<UserModel> ValidateUserAsync(string username, string password);
+        Task<UserModel> ValidateUserAsync(string username, string password, int productId);
         Task<(bool IsSuccess, int? UserId)> CreateUserAsync(IFormCollection collection);
         Task<bool> UpdateUserAsync(IFormCollection collection);
         public List<UserModel> GetAllUsersList();

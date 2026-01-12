@@ -425,7 +425,7 @@ namespace UserManagement.Business.UserHandler
 
 
 
-        public async Task<UserModel?> ValidateUserAsync(string username, string password)
+        public async Task<UserModel?> ValidateUserAsync(string username, string password, int productId)
         {
             // 1. Authenticate AD
             var response = await _aDAuthentication.AuthenticatewithAD(username, password);
@@ -481,7 +481,7 @@ namespace UserManagement.Business.UserHandler
 
             // 4. Get MenuItems with PageUrls properly
             const string menuQuery = @"
-                SELECT 
+                SELECT DISTINCT
                     m.Id,
                     m.MenuTitle,
                     m.ParentMenuId,
@@ -498,16 +498,24 @@ namespace UserManagement.Business.UserHandler
                     ON m.PageId = p.Id
                 LEFT JOIN MenuCategories c 
                     ON m.MenuCategoryId = c.Id
+                LEFT JOIN RolePagePermissions rpp
+                    ON m.PageId = rpp.PageId
+                LEFT JOIN UserRoles ur
+                    ON rpp.RoleId = ur.RoleId
                 WHERE m.IsActive = 1
-                  AND m.ProductId IN (
-                      SELECT ProductId 
-                      FROM UserProducts 
-                      WHERE UserId = @UserId
-                  )
+                  AND m.ProductId = @ProductId
+                  AND (
+                        ur.UserId = @UserId
+                        OR m.PageId IS NULL
+                      )
                 ORDER BY m.DisplayOrder";
+
+
 
             var menuParams = new DynamicParameters();
             menuParams.Add("@UserId", user.Id);
+            menuParams.Add("@ProductId", productId);
+
 
             var menuData = _connectionService.ReturnWithPara(menuQuery, menuParams);
 
