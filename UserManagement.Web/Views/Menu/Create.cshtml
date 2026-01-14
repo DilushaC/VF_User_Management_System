@@ -119,17 +119,22 @@
                                 </div>
                             </div>
 
+                            <div id="displayOrderContainer" class="row g-2">
+                                <div class="mb-3 col-md-4">
+                                    <label class="form-label" asp-for="DisplayOrder">
+                                        Display Order: <span id="displayOrderValue">1</span>
+                                    </label>
 
-                            <!-- Menu Level -->
-                            <div id="displayOrderContainer" class="row g-2 d-none">
-                                <div class="mb-3 col-md-2">
-                                    <label class="form-label">Display Order</label>
-                                    <input id="DisplayOrder" name="DisplayOrder"
-                                           type="number"
-                                           class="form-control round"
-                                           min="1" />
+                                    <input type="range"
+                                           asp-for="DisplayOrder"
+                                           class="form-range"
+                                           min="1"
+                                           max="20"
+                                           oninput="document.getElementById('displayOrderValue').innerText = this.value" />
                                 </div>
                             </div>
+
+
 
                             <!-- Status -->
                             <div class="row g-2">
@@ -161,6 +166,7 @@
 <script src="~/assets/vendor/select2/js/select2.min.js"></script>
 
 <script>
+
     $("#ParentMenuItemId").select2({
         placeholder: "Select Parent Menu",
         allowClear: true

@@ -47,9 +47,18 @@
                 <input type="text" asp-for="IconClass" class="form-control" />
             </div>
             <div class="mb-3 col-md-3" id="displayOrderContainer">
-                <label class="form-label">Display Order</label>
-                <input type="number" asp-for="DisplayOrder" class="form-control" />
+                <label class="form-label" asp-for="DisplayOrder">
+                    Display Order: <span id="displayOrderValue">@Model.DisplayOrder</span>
+                </label>
+
+                <input type="range"
+                       asp-for="DisplayOrder"
+                       class="form-range"
+                       min="1"
+                       max="20"
+                       oninput="document.getElementById('displayOrderValue').innerText = this.value" />
             </div>
+
         </div>
 
         <!-- Product -->
