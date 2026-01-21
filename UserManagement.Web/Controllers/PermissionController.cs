@@ -31,7 +31,7 @@ namespace UserManagement.Web.Controllers
 
             ViewBag.CanEdit = canEdit;
 
-            var roles = _roleService.GetAllRolesList();
+            var roles = _roleService.GetRolesWithoutPages();
             var products = _productService.GetAllActiveProductList();
 
             //viewbag for departments

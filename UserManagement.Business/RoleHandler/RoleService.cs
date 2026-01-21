@@ -51,6 +51,37 @@ namespace UserManagement.Business.RoleHandler
             }
         }
 
+        public List<RoleModel> GetRolesWithoutPages()
+        {
+            try
+            {
+                string Query = $"SELECT R.Id AS RoleId, R.RoleName FROM Roles R LEFT JOIN RolePagePermissions UR ON UR.RoleId = R.Id WHERE UR.RoleId IS NULL;";
+
+
+                var Data = _connectionService.Return(Query);
+                var Row = Data.Rows[0];
+
+                List<RoleModel> rolesList = new List<RoleModel>();
+
+                for (int i = 0; i < Data.Rows.Count; i++)
+                {
+                    var BRow = Data.Rows[i];
+                    RoleModel bModel = new RoleModel()
+                    {
+                        Id = Convert.ToInt32(BRow["RoleId"]),
+                        RoleName = BRow["RoleName"].ToString(),
+                    };
+                    rolesList.Add(bModel);
+                }
+                return rolesList;
+
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
         public List<RoleModel> GetAllRolesList()
         {
             try
