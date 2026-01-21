@@ -55,32 +55,40 @@ namespace UserManagement.Business.RoleHandler
         {
             try
             {
-                string Query = $"SELECT R.Id AS RoleId, R.RoleName FROM Roles R LEFT JOIN RolePagePermissions UR ON UR.RoleId = R.Id WHERE UR.RoleId IS NULL;";
-
+                string Query = @"
+            SELECT R.Id AS RoleId, R.RoleName
+            FROM Roles R
+            LEFT JOIN RolePagePermissions UR ON UR.RoleId = R.Id
+            WHERE UR.RoleId IS NULL;
+        ";
 
                 var Data = _connectionService.Return(Query);
-                var Row = Data.Rows[0];
 
                 List<RoleModel> rolesList = new List<RoleModel>();
 
-                for (int i = 0; i < Data.Rows.Count; i++)
+                // Check if any rows exist
+                if (Data != null && Data.Rows.Count > 0)
                 {
-                    var BRow = Data.Rows[i];
-                    RoleModel bModel = new RoleModel()
+                    foreach (DataRow BRow in Data.Rows)
                     {
-                        Id = Convert.ToInt32(BRow["RoleId"]),
-                        RoleName = BRow["RoleName"].ToString(),
-                    };
-                    rolesList.Add(bModel);
+                        RoleModel bModel = new RoleModel()
+                        {
+                            Id = Convert.ToInt32(BRow["RoleId"]),
+                            RoleName = BRow["RoleName"].ToString(),
+                        };
+                        rolesList.Add(bModel);
+                    }
                 }
-                return rolesList;
 
+                // If no rows, rolesList will just be empty — safe
+                return rolesList;
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw ex; // optional: log ex before rethrow
             }
         }
+
 
         public List<RoleModel> GetAllRolesList()
         {
