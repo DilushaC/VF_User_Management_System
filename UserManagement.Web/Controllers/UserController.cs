@@ -187,9 +187,6 @@ namespace UserManagement.Web.Controllers
             });
         }
 
-
-
-        //load user register page view
         [HttpGet]
         public ActionResult Register(string permission)
         {
