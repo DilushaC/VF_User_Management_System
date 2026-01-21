@@ -5,198 +5,252 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<div class="row">
-    <div class="row p-2">
-        <div class="col-12">
-            <div class="card">
-                <div class="card-body">
-                    <h3 class="header">@ViewData["Title"]</h3>
-                    <br />
-                    <form asp-action="Create" asp-controller="UserRole" method="post" id="RegisterForm" novalidate>
-                        <fieldset>
-                            <div class="row g-2">
-                                <div class="mb-3 col-md-6 position-relative">
-                                    <label asp-for="RoleId" class="form-label">Role Name</label>
-                                    <select asp-for="RoleId"
-                                            class="form-control select2 round"
-                                            required
-                                            data-placeholder="Select Role"
-                                            data-bs-toggle="tooltip"
-                                            data-bs-placement="right"
-                                            title="Please select a role"
-                                            asp-items="ViewBag.Roles">
-                                        <option value="">Select Role</option>
-                                    </select>
-                                    <span asp-validation-for="RoleId" class="invalid-tooltip">
-                                        Please select a Role
-                                    </span>
+<div class="row p-2">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-body">
+                <h3 class="header">@ViewData["Title"]</h3>
+                <br />
+
+                <form asp-action="Create" asp-controller="UserRole" method="post" id="RegisterForm" novalidate>
+
+                    <!-- Role -->
+                    <div class="row g-2">
+                        <div class="mb-3 col-md-6">
+                            <label asp-for="RoleId" class="form-label">Role Name</label>
+                            <select asp-for="RoleId"
+                                    class="form-control select2"
+                                    asp-items="ViewBag.Roles"
+                                    required>
+                                <option value="">Select Role</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Products (Checkboxes) -->
+                    <div class="row g-2">
+                        <div class="mb-3 col-md-6">
+                            <label class="form-label">Products</label>
+
+                            <div class="border rounded p-3" style="max-height:220px; overflow-y:auto;">
+                                <div class="row">
+                                    @{
+                                        var products = ViewBag.Products as IEnumerable<SelectListItem>
+                                        ?? Enumerable.Empty<SelectListItem>();
+                                    }
+
+                                    @foreach (var product in products)
+                                    {
+                                        <div class="col-md-6 col-lg-4 mb-2">
+                                            <div class="form-check d-flex align-items-center gap-2">
+                                                <input class="form-check-input product-checkbox"
+                                                       type="checkbox"
+                                                       value="@product.Value"
+                                                       id="product_@product.Value">
+
+                                                <label class="form-check-label fw-semibold"
+                                                       for="product_@product.Value">
+                                                    @product.Text
+                                                </label>
+                                            </div>
+                                        </div>
+                                    }
                                 </div>
                             </div>
-                            <div class="row g-2">
-                                <div class="mb-3 col-md-6 position-relative">
-                                    <label asp-for="ProductId" class="form-label">Product Name</label>
-                                    <select asp-for="ProductId"
-                                            class="form-control select2 round"
-                                            required
-                                            data-placeholder="Select Product"
-                                            data-bs-toggle="tooltip"
-                                            data-bs-placement="right"
-                                            title="Please select a product"
-                                            asp-items="ViewBag.Products">
-                                        <option value="">Select Product</option>
-                                    </select>
-                                    <span asp-validation-for="ProductId" class="invalid-tooltip">
-                                        Please select a Product
-                                    </span>
-                                </div>
-                            </div>
-                            <div class="row g-2">
-                                <div class="mb-3 col-md-6 position-relative">
-                                    <label asp-for="PageIds" class="form-label">Page Names</label>
-                                    <select asp-for="PageIds"
-                                            id="PageIds"
-                                            name="PageIds"
-                                            class="form-control select2 round"
-                                            multiple="multiple"
-                                            required
-                                            data-placeholder=""
-                                            data-bs-toggle="tooltip"
-                                            data-bs-placement="right"
-                                            title="Please select at least one page">
-                                    </select>
-                                    <span asp-validation-for="PageIds" class="invalid-tooltip">
-                                        Please select at least one page
-                                    </span>
-                                </div>
-                            </div>
-                            <div class="row g-2">
-                                <div class="mb-3 col-md-2">
-                                    <label asp-for="CanEdit" class="form-label">Can Edit</label>
-                                    <select asp-for="CanEdit" class="form-select">
-                                        <option value="true">Yes</option>
-                                        <option value="false">No</option>
-                                    </select>
-                                    <span asp-validation-for="CanEdit" class="text-danger"></span>
-                                </div>
-                            </div>
-                            <button type="submit" class="btn btn-primary">Create Permission</button>
-                        </fieldset>
-                    </form>
-                </div> <!-- end card-body -->
-            </div> <!-- end card-->
-        </div> <!-- end col -->
+
+
+
+                            <!-- Hidden input to keep backend SAME -->
+                            <input type="hidden" id="ProductId" name="ProductId" />
+                        </div>
+                    </div>
+
+                    <!-- Pages -->
+                    <div class="row g-2">
+                        <div class="mb-3 col-md-6">
+                            <label asp-for="PageIds" class="form-label">Pages</label>
+                            <select asp-for="PageIds"
+                                    id="PageIds"
+                                    class="form-control select2"
+                                    multiple
+                                    required>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Can Edit -->
+                    <div class="row g-2">
+                        <div class="mb-3 col-md-2">
+                            <label asp-for="CanEdit" class="form-label">Can Edit</label>
+                            <select asp-for="CanEdit" class="form-select">
+                                <option value="true">Yes</option>
+                                <option value="false">No</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary">
+                        Create Permission
+                    </button>
+                </form>
+            </div>
+        </div>
     </div>
 </div>
-<!-- Load jQuery only ONCE -->
+
+<!-- Scripts -->
 <script src="~/assets/lib/jquery/jquery.min.js"></script>
 <script src="~/assets/js/sweetalert2.all.min.js"></script>
-<!-- Load Select2 JS -->
 <script src="~/assets/vendor/select2/js/select2.min.js"></script>
+
 
 
 <script>
 
+    /* -------------------- Select2 Init -------------------- */
     $("#RoleId").select2({
-        placeholder: "Select RoleId",
+        placeholder: "Select Role"
     });
-    $("#ProductId").select2({
-        width: "100%",
-    });
+
     $("#PageIds").select2({
         width: "100%",
         allowClear: true
     });
 
-    $("#ProductId").on("change", function () {
-    let productId = $(this).val();
-        if (productId) {
-            $.ajax({
-                url: '/Permission/GetPagesByProduct',
-                type: 'GET',
-                data: { productId: productId },
-                success: function (response) {
-                    if (response.success) {
-                        $("#PageIds").empty();
-                        response.data.forEach(page => {
+    /* -------------------- State -------------------- */
+    let selectedProducts = [];        // Selected product IDs
+    let productPagesMap = {};         // productId -> pages[]
+
+    /* -------------------- Product Checkbox Change -------------------- */
+    $(document).on("change", ".product-checkbox", function () {
+
+        let productId = $(this).val();
+
+        if ($(this).is(":checked")) {
+            if (!selectedProducts.includes(productId)) {
+                selectedProducts.push(productId);
+                loadPagesByProduct(productId);
+            }
+        } else {
+            selectedProducts = selectedProducts.filter(id => id !== productId);
+            removeProductPages(productId);
+        }
+
+        // Maintain backend compatibility
+        $("#ProductId").val(selectedProducts.join(","));
+    });
+
+    /* -------------------- Load Pages -------------------- */
+    function loadPagesByProduct(productId) {
+
+        // Avoid duplicate AJAX calls
+        if (productPagesMap[productId]) return;
+
+        $.ajax({
+            url: '/Permission/GetPagesByProduct',
+            type: 'GET',
+            data: { productId: productId },
+            success: function (response) {
+                if (response.success) {
+
+                    productPagesMap[productId] = response.data;
+
+                    response.data.forEach(page => {
+
+                        // Avoid duplicate pages
+                        if ($("#PageIds option[value='" + page.id + "']").length === 0) {
                             $("#PageIds").append(
                                 new Option(page.pageName, page.id)
                             );
-                        });
-                        $("#PageIds").trigger('change');
-                    }
+                        }
+                    });
+
+                    $("#PageIds").trigger("change");
                 }
-            });
-        } else {
-            $("#PageIds").empty().trigger('change');
-        }
-    });
+            }
+        });
+    }
 
+    /* -------------------- Remove Pages When Product Unchecked -------------------- */
+    function removeProductPages(productId) {
 
+        if (!productPagesMap[productId]) return;
+
+        productPagesMap[productId].forEach(page => {
+            $("#PageIds option[value='" + page.id + "']").remove();
+        });
+
+        delete productPagesMap[productId];
+        $("#PageIds").trigger("change");
+    }
+
+    /* -------------------- Form Submit -------------------- */
     $("#RegisterForm").on("submit", function (e) {
         e.preventDefault();
-        let form = $(this)[0];
+
+        let form = this;
 
         if (!form.checkValidity()) {
-            $(this).addClass('was-validated');
+            $(form).addClass("was-validated");
             return;
         }
+
         Swal.fire({
             title: 'Create Page Permission?',
-            text: "Are you sure you want to create?",
+            text: 'Are you sure you want to create?',
             icon: 'warning',
             showCancelButton: true,
             confirmButtonText: 'Yes, Save',
             cancelButtonText: 'Cancel'
         }).then((result) => {
-            if (result.isConfirmed) {
-                Swal.fire({
-                    title: 'Saving...',
-                    allowOutsideClick: false,
-                    didOpen: () => {
-                        Swal.showLoading();
-                    }
-                });
-                $.ajax({
-                    url: '/Permission/Create',
-                    type: 'POST',
-                    data: $("#RegisterForm").serialize(),
-                    headers: { "X-Requested-With": "XMLHttpRequest" },
-                    success: function (response) {
-                        Swal.close();
-                        if (response.success) {
-                            Swal.fire({
-                                icon: 'success',
-                                title: response.message,
-                                showConfirmButton: false,
-                                timer: 1500
-                            }).then(() => {
-                                window.location.href = response.redirectUrl;
-                                // Reset form and Select2 elements
-                            });
-                        } else if (response.redirectUrl) {
-                            // Redirect if controller provides URL
-                            window.location.href = response.redirectUrl;
-                        } else {
-                            Swal.fire({
-                                icon: 'error',
-                                title: 'Error',
-                                text: response.message || 'Failed to create role.'
-                            });
-                        }
-                    },
-                    error: function (xhr, status, error) {
+
+            if (!result.isConfirmed) return;
+
+            Swal.fire({
+                title: 'Saving...',
+                allowOutsideClick: false,
+                didOpen: () => Swal.showLoading()
+            });
+
+            $.ajax({
+                url: '/Permission/Create',
+                type: 'POST',
+                data: $("#RegisterForm").serialize(),
+                headers: { "X-Requested-With": "XMLHttpRequest" },
+                success: function (response) {
+
+                    Swal.close();
+
+                    if (response.success) {
                         Swal.fire({
-                            icon: 'error',
-                            title: 'Error',
-                            text: 'Something went wrong! Please try again.'
+                            icon: 'success',
+                            title: response.message,
+                            timer: 1500,
+                            showConfirmButton: false
+                        }).then(() => {
+                            window.location.href = response.redirectUrl;
                         });
+                    } else if (response.redirectUrl) {
+                        window.location.href = response.redirectUrl;
+                    } else {
+                        Swal.fire(
+                            'Error',
+                            response.message || 'Failed to create permission.',
+                            'error'
+                        );
                     }
-                });
-            }
+                },
+                error: function () {
+                    Swal.fire(
+                        'Error',
+                        'Something went wrong! Please try again.',
+                        'error'
+                    );
+                }
+            });
         });
     });
 
-
-
 </script>
+
 
