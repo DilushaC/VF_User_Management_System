@@ -137,7 +137,6 @@ namespace UserManagement.Web.Controllers
         {
             var pages = _pageService.GetAllPagesList();
 
-            //viewbag for branches
             ViewBag.Pages = pages
             .Select(x => new SelectListItem
             {
