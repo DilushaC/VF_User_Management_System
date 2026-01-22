@@ -24,7 +24,8 @@ namespace UserManagement.Business.RolePagePermission
             try
             {
                 int roleId = int.Parse(collection["RoleId"]);
-                bool canEdit = bool.Parse(collection["CanEdit"]);
+                //bool canEdit = bool.Parse(collection["CanEdit"]);
+                bool canEdit = true;
 
                 // Multi-selected Page IDs
                 var pageIds = collection["PageIds"].ToList(); // This gives List<string>
