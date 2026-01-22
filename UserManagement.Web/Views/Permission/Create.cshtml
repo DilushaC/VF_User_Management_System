@@ -27,7 +27,7 @@
                                     class="form-control select2"
                                     asp-items="ViewBag.Roles"
                                     required>
-                                <option value="">Select Role</option>
+                                <option value=""></option>
                             </select>
                         </div>
                     </div>
@@ -70,17 +70,6 @@
                             <input type="hidden" id="ProductId" name="ProductId" />
                             <!-- Container for dynamically generated hidden inputs for PageIds -->
                             <div id="PageIdsContainer"></div>
-                        </div>
-                    </div>
-
-                    <!-- Can Edit -->
-                    <div class="row mt-3">
-                        <div class="col-md-2">
-                            <label asp-for="CanEdit" class="form-label">Can Edit</label>
-                            <select asp-for="CanEdit" class="form-select">
-                                <option value="true">Yes</option>
-                                <option value="false">No</option>
-                            </select>
                         </div>
                     </div>
 
