@@ -36,56 +36,42 @@
                     <div class="row mb-3">
                         <div class="col-md-12">
                             <label class="form-label">Products</label>
-
-                            <div class="row g-3">
+                            <div class="list-group" id="productList">
                                 @{
                                     var products = ViewBag.Products as IEnumerable<SelectListItem>
-                                        ?? Enumerable.Empty<SelectListItem>();
+                                    ?? Enumerable.Empty<SelectListItem>();
                                 }
 
                                 @foreach (var product in products)
                                 {
-                                    <div class="col-md-4">
-                                        <div class="form-check">
-                                            <input class="form-check-input product-checkbox"
-                                                   type="checkbox"
-                                                   value="@product.Value"
-                                                   id="product_@product.Value" />
+                                    <div class="list-group-item d-flex flex-column align-items-start">
+                                        <div class="form-check w-100">
+                                            <input type="checkbox" class="form-check-input product-checkbox"
+                                                   value="@product.Value" id="product_@product.Value" />
                                             <label class="form-check-label fw-semibold"
                                                    for="product_@product.Value">
                                                 @product.Text
                                             </label>
                                         </div>
+                                        <!-- Pages dropdown container -->
+                                        <div class="m-2 page-select-container"
+                                             id="pagesContainer_@product.Value"
+                                             style="display:none; width:100%;">
+                                            <select class="form-control product-pages select2"
+                                                    data-product="@product.Value"
+                                                    multiple
+                                                    style="width:100%;">
+                                            </select>
+                                        </div>
                                     </div>
                                 }
                             </div>
 
-                            <!-- Backend compatibility -->
                             <input type="hidden" id="ProductId" name="ProductId" />
+                            <!-- Container for dynamically generated hidden inputs for PageIds -->
+                            <div id="PageIdsContainer"></div>
                         </div>
                     </div>
-
-                    <!-- Product | Pages List -->
-                    <div class="mt-4">
-                        <h6 class="fw-bold mb-2">Product Page Permissions</h6>
-
-                        <div class="table-responsive">
-                            <table class="table table-bordered align-middle">
-                                <thead class="table-light">
-                                    <tr>
-                                        <th style="width:30%">Product</th>
-                                        <th style="width:70%">Pages</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="productPageTable">
-                                    <!-- Dynamic rows -->
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-
-                    <!-- Hidden PageIds -->
-                    <input type="hidden" id="PageIds" name="PageIds" />
 
                     <!-- Can Edit -->
                     <div class="row mt-3">
@@ -108,104 +94,95 @@
     </div>
 </div>
 
-<!-- Scripts -->
+<!-- CSS Fix for Select2 width -->
+<style>
+    .page-select-container {
+        width: 100%;
+    }
+
+        .page-select-container .select2-container {
+            width: 100% !important;
+        }
+
+    .product-pages {
+        width: 100% !important;
+    }
+</style>
+
 <script src="~/assets/lib/jquery/jquery.min.js"></script>
 <script src="~/assets/js/sweetalert2.all.min.js"></script>
 <script src="~/assets/vendor/select2/js/select2.min.js"></script>
 
 <script>
-
-    /* ---------------- Init ---------------- */
     $(".select2").select2({ width: "100%" });
 
     let selectedProducts = [];
     let selectedPages = {}; // productId -> [pageIds]
 
-    /* ---------------- Product Toggle ---------------- */
+    // When a product checkbox is toggled
     $(document).on("change", ".product-checkbox", function () {
-
         const productId = $(this).val();
-        const productName = $(this).next("label").text();
+        const container = $(`#pagesContainer_${productId}`);
 
         if (this.checked) {
             selectedProducts.push(productId);
-            addProductRow(productId, productName);
+            container.show();
+            loadPages(productId);
         } else {
             selectedProducts = selectedProducts.filter(p => p !== productId);
             delete selectedPages[productId];
-            $("#row_" + productId).remove();
+            container.hide();
+            container.find("select").val(null).trigger("change");
         }
 
         $("#ProductId").val(selectedProducts.join(","));
         updateHiddenPageIds();
     });
 
-    /* ---------------- Add Row ---------------- */
-    function addProductRow(productId, productName) {
-
-        if ($("#row_" + productId).length) return;
-
-        let rowHtml = `
-            <tr id="row_${productId}">
-                <td class="fw-semibold">${productName}</td>
-                <td>
-                    <select class="form-control product-pages select2"
-                            data-product="${productId}"
-                            multiple>
-                    </select>
-                </td>
-            </tr>`;
-
-        $("#productPageTable").append(rowHtml);
-
-        loadPages(productId);
-    }
-
-    /* ---------------- Load Pages ---------------- */
+    // Load pages via AJAX
     function loadPages(productId) {
+        const $select = $(`#pagesContainer_${productId} select`);
+        $select.empty();
 
         $.ajax({
             url: "/Permission/GetPagesByProduct",
             type: "GET",
             data: { productId: productId },
             success: function (res) {
-
                 if (!res.success) return;
-
-                const $select = $(`#row_${productId} select`);
 
                 res.data.forEach(p => {
                     $select.append(new Option(p.pageName, p.id));
                 });
 
+                // Re-initialize Select2 with full width
                 $select.select2({ width: "100%" });
-
                 selectedPages[productId] = [];
             }
         });
     }
 
-    /* ---------------- Page Change ---------------- */
+    // When pages are selected
     $(document).on("change", ".product-pages", function () {
-
         const productId = $(this).data("product");
         selectedPages[productId] = $(this).val() || [];
         updateHiddenPageIds();
     });
 
-    /* ---------------- Merge Pages ---------------- */
+    // Update hidden inputs for PageIds (one input per page)
     function updateHiddenPageIds() {
+        $("#PageIdsContainer").empty();
 
-        let allPages = [];
-
-        Object.values(selectedPages).forEach(p => {
-            allPages.push(...p);
+        Object.values(selectedPages).forEach(pageArray => {
+            pageArray.forEach(pageId => {
+                $("#PageIdsContainer").append(
+                    `<input type="hidden" name="PageIds" value="${pageId}" />`
+                );
+            });
         });
-
-        $("#PageIds").val(allPages.join(","));
     }
 
-    /* ---------------- Submit ---------------- */
+    // Form submit
     $("#RegisterForm").on("submit", function (e) {
         e.preventDefault();
 
@@ -220,7 +197,6 @@
             showCancelButton: true,
             confirmButtonText: "Yes"
         }).then(result => {
-
             if (!result.isConfirmed) return;
 
             $.ajax({
@@ -228,7 +204,6 @@
                 type: "POST",
                 data: $(this).serialize(),
                 success: function (res) {
-
                     if (res.success) {
                         Swal.fire("Success", res.message, "success")
                             .then(() => window.location.href = res.redirectUrl);
@@ -239,5 +214,4 @@
             });
         });
     });
-
 </script>
