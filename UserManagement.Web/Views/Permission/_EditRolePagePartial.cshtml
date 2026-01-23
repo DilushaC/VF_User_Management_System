@@ -3,7 +3,7 @@
 
 @{
     Layout = null;
-    var products = ViewBag.Products as IEnumerable<dynamic>;
+    var products = ViewBag.Products as IEnumerable<dynamic> ?? Enumerable.Empty<dynamic>();
 }
 
 <div class="modal-header">
@@ -29,20 +29,12 @@
         <!-- PRODUCTS + PAGES -->
         <div class="accordion" id="productAccordion">
 
-            @if (products != null)
+            @if (products.Any())
             {
                 foreach (var product in products)
                 {
-                    bool productChecked = false;
-                    foreach (var pg in product.Pages)
-                    {
-                        if (pg.IsAssigned)
-                        {
-                            productChecked = true;
-                            break;
-                        }
-                    }
-
+                    var productPages = ((IEnumerable<dynamic>)(product.Pages ?? Enumerable.Empty<dynamic>()));
+                    bool productChecked = productPages.Any(pg => pg.IsAssigned != null && (bool)pg.IsAssigned);
                     var collapseClass = productChecked ? "show" : "";
                     var buttonClass = productChecked ? "" : "collapsed";
                     var ariaExpanded = productChecked ? "true" : "false";
@@ -73,17 +65,22 @@
                             <div class="accordion-body">
 
                                 <select class="form-control select2 page-select"
-                                        name="PageIds"
-                                        multiple>
-
-                                    @foreach (var pg in product.Pages)
+                                        name="PageIds[@product.ProductId][]"
+                                        multiple="multiple"
+                                        style="width:100%;">
+                                    @foreach (var pg in productPages)
                                     {
-                                        <option value="@pg.PageId"
-                                                selected="@(pg.IsAssigned)">
-                                            @pg.PageName
-                                        </option>
+                                        if (pg.IsAssigned != null && (bool)pg.IsAssigned)
+                                        {
+                                            @:
+                                            <option value="@pg.PageId" selected="selected">@pg.PageName</option>
+                                        }
+                                        else
+                                        {
+                                            @:
+                                            <option value="@pg.PageId">@pg.PageName</option>
+                                        }
                                     }
-
 
                                 </select>
 
@@ -101,14 +98,6 @@
 
         </div>
 
-        <!-- CAN EDIT -->
-        <div class="mt-3 col-md-3">
-            <label class="form-label">Can Edit</label>
-            <select asp-for="CanEdit" class="form-select select2">
-                <option value="true">Yes</option>
-                <option value="false">No</option>
-            </select>
-        </div>
 
     </div>
 
@@ -119,17 +108,17 @@
 
 </form>
 
+<script src="~/assets/lib/jquery/jquery.min.js"></script>
+<script src="~/assets/vendor/select2/js/select2.min.js"></script>
+<script src="~/assets/js/sweetalert2.all.min.js"></script>
+
 <script>
     $(document).ready(function () {
 
-        $('.select2').select2({
-            width: '100%'
-        });
+        $('.select2').select2({ width: '100%' });
 
-        // Prevent checkbox click from collapsing header
         $('.product-checkbox').on('click', function (e) {
             e.stopPropagation();
-
             const target = $(this).data('target');
             const collapseEl = $(target);
 
@@ -137,7 +126,44 @@
                 collapseEl.collapse('show');
             } else {
                 collapseEl.collapse('hide');
+                collapseEl.find('select').val(null).trigger('change');
             }
+        });
+
+        $('#updatePagePermissionForm').on('submit', function (e) {
+            e.preventDefault();
+
+            if (!this.checkValidity()) {
+                $(this).addClass('was-validated');
+                return;
+            }
+
+            Swal.fire({
+                title: "Update Role Permissions?",
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonText: "Yes, Update"
+            }).then(result => {
+                if (!result.isConfirmed) return;
+
+                $.ajax({
+                    url: '/Permission/LoadEditModal',
+                    type: 'POST',
+                    data: $(this).serialize(),
+                    headers: { "X-Requested-With": "XMLHttpRequest" },
+                    success: function (res) {
+                        if (res.success) {
+                            Swal.fire('Success', res.message, 'success')
+                                .then(() => window.location.href = res.redirectUrl);
+                        } else {
+                            Swal.fire('Error', res.message, 'error');
+                        }
+                    },
+                    error: function () {
+                        Swal.fire('Error', 'Something went wrong. Please try again.', 'error');
+                    }
+                });
+            });
         });
 
     });
