@@ -18,6 +18,9 @@
 
     <input type="hidden" asp-for="RoleId" />
 
+    <!-- Container for dynamically generated hidden inputs for PageIds -->
+    <div id="PageIdsContainer"></div>
+
     <div class="modal-body">
 
         <!-- ROLE NAME -->
@@ -63,27 +66,22 @@
                              data-bs-parent="#productAccordion">
 
                             <div class="accordion-body">
-
                                 <select class="form-control select2 page-select"
-                                        name="PageIds[@product.ProductId][]"
+                                        data-product="@product.ProductId"
                                         multiple="multiple"
                                         style="width:100%;">
                                     @foreach (var pg in productPages)
                                     {
                                         if (pg.IsAssigned != null && (bool)pg.IsAssigned)
                                         {
-                                            @:
-                                            <option value="@pg.PageId" selected="selected">@pg.PageName</option>
+                                            <option value="@pg.PageId" selected>@pg.PageName</option>
                                         }
                                         else
                                         {
-                                            @:
                                             <option value="@pg.PageId">@pg.PageName</option>
                                         }
                                     }
-
                                 </select>
-
                             </div>
                         </div>
                     </div>
@@ -91,13 +89,10 @@
             }
             else
             {
-                <div class="alert alert-warning">
-                    No products/pages found.
-                </div>
+                <div class="alert alert-warning">No products/pages found.</div>
             }
 
         </div>
-
 
     </div>
 
@@ -115,8 +110,10 @@
 <script>
     $(document).ready(function () {
 
+        // Initialize Select2
         $('.select2').select2({ width: '100%' });
 
+        // Accordion checkbox toggle
         $('.product-checkbox').on('click', function (e) {
             e.stopPropagation();
             const target = $(this).data('target');
@@ -127,16 +124,43 @@
             } else {
                 collapseEl.collapse('hide');
                 collapseEl.find('select').val(null).trigger('change');
+                updatePageIds();
             }
         });
 
-        $('#updatePagePermissionForm').on('submit', function (e) {
+        // Generate one hidden input per selected page
+        function updatePageIds() {
+            $('#PageIdsContainer').empty();
+            $('.page-select').each(function() {
+                const selected = $(this).val(); // array of strings
+                if (selected && selected.length > 0) {
+                    selected.forEach(function(pageId) {
+                        $('#PageIdsContainer').append(
+                            `<input type="hidden" name="PageIds" value="${pageId}" />`
+                        );
+                    });
+                }
+            });
+        }
+
+        // Trigger update on select2 change
+        $(document).on('change', '.page-select', function() {
+            updatePageIds();
+        });
+
+        // Initial update on page load (for preselected options)
+        updatePageIds();
+
+        // Form submit via AJAX
+        $('#updatePagePermissionForm').on('submit', function(e) {
             e.preventDefault();
 
             if (!this.checkValidity()) {
                 $(this).addClass('was-validated');
                 return;
             }
+
+            updatePageIds(); // ensure hidden inputs are up-to-date
 
             Swal.fire({
                 title: "Update Role Permissions?",
@@ -149,9 +173,9 @@
                 $.ajax({
                     url: '/Permission/LoadEditModal',
                     type: 'POST',
-                    data: $(this).serialize(),
+                    data: $(this).serialize(), // PageIds[] will be sent as string array
                     headers: { "X-Requested-With": "XMLHttpRequest" },
-                    success: function (res) {
+                    success: function(res) {
                         if (res.success) {
                             Swal.fire('Success', res.message, 'success')
                                 .then(() => window.location.href = res.redirectUrl);
@@ -159,11 +183,12 @@
                             Swal.fire('Error', res.message, 'error');
                         }
                     },
-                    error: function () {
+                    error: function() {
                         Swal.fire('Error', 'Something went wrong. Please try again.', 'error');
                     }
                 });
             });
+
         });
 
     });
