@@ -1,36 +1,110 @@
 ﻿@using UserManagement.Data.Models
 @model RolePagePermissionModel
+
 @{
     Layout = null;
+    var products = ViewBag.Products as IEnumerable<dynamic>;
 }
 
 <div class="modal-header">
-    <h5 class="modal-title" id="pagePermissionEditModal">Edit User Role: @Model.RoleName</h5>
-    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+    <h5 class="modal-title">Edit User Role: @Model.RoleName</h5>
+    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
 </div>
 
-<form id="updatePagePermissionForm" asp-action="LoadEditModal" asp-controller="Permission" method="post">
+<form id="updatePagePermissionForm"
+      asp-action="LoadEditModal"
+      asp-controller="Permission"
+      method="post">
+
     <input type="hidden" asp-for="RoleId" />
 
     <div class="modal-body">
 
+        <!-- ROLE NAME -->
         <div class="mb-3 col-md-6">
             <label class="form-label">Role Name</label>
-            <input type="text" asp-for="RoleName" class="form-control" readonly />
+            <input asp-for="RoleName" class="form-control" readonly />
         </div>
-        <div class="mb-3  col-md-12">
-            <label class="form-label">Page Name</label>
-            <select id="PageIds"
-                    name="PageIds"
-                    asp-for="PageIds"
-                    class="form-control select2"
-                    asp-items="ViewBag.Pages"
-                    multiple="multiple">
-            </select>
+
+        <!-- PRODUCTS + PAGES -->
+        <div class="accordion" id="productAccordion">
+
+            @if (products != null)
+            {
+                foreach (var product in products)
+                {
+                    bool productChecked = false;
+                    foreach (var pg in product.Pages)
+                    {
+                        if (pg.IsAssigned)
+                        {
+                            productChecked = true;
+                            break;
+                        }
+                    }
+
+                    var collapseClass = productChecked ? "show" : "";
+                    var buttonClass = productChecked ? "" : "collapsed";
+                    var ariaExpanded = productChecked ? "true" : "false";
+
+                    <div class="accordion-item mb-2">
+                        <h2 class="accordion-header" id="heading_@product.ProductId">
+                            <button class="accordion-button @buttonClass"
+                                    type="button"
+                                    data-bs-toggle="collapse"
+                                    data-bs-target="#product_@product.ProductId"
+                                    aria-expanded="@ariaExpanded"
+                                    aria-controls="product_@product.ProductId">
+
+                                <input type="checkbox"
+                                       class="form-check-input me-2 product-checkbox"
+                                       data-target="#product_@product.ProductId"
+                                       @(productChecked ? "checked" : "") />
+
+                                <strong>@product.ProductName</strong>
+                            </button>
+                        </h2>
+
+                        <div id="product_@product.ProductId"
+                             class="accordion-collapse collapse @collapseClass"
+                             aria-labelledby="heading_@product.ProductId"
+                             data-bs-parent="#productAccordion">
+
+                            <div class="accordion-body">
+
+                                <select class="form-control select2 page-select"
+                                        name="PageIds"
+                                        multiple>
+
+                                    @foreach (var pg in product.Pages)
+                                    {
+                                        <option value="@pg.PageId"
+                                                selected="@(pg.IsAssigned)">
+                                            @pg.PageName
+                                        </option>
+                                    }
+
+
+                                </select>
+
+                            </div>
+                        </div>
+                    </div>
+                }
+            }
+            else
+            {
+                <div class="alert alert-warning">
+                    No products/pages found.
+                </div>
+            }
+
         </div>
-        <div class="mb-3  col-md-3">
+
+        <!-- CAN EDIT -->
+        <div class="mt-3 col-md-3">
             <label class="form-label">Can Edit</label>
-            <select id="CanEdit" asp-for="CanEdit" class="form-select">
+            <select asp-for="CanEdit" class="form-select select2">
                 <option value="true">Yes</option>
                 <option value="false">No</option>
             </select>
@@ -42,84 +116,29 @@
         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
         <button type="submit" class="btn btn-primary">Save Changes</button>
     </div>
+
 </form>
 
-<!-- Load jQuery only ONCE -->
-<script src="~/assets/lib/jquery/jquery.min.js"></script>
-<script src="~/assets/js/sweetalert2.all.min.js"></script>
-<!-- Load Select2 JS -->
-<script src="~/assets/vendor/select2/js/select2.min.js"></script>
-
 <script>
-    $("#PageIds").select2({
-        placeholder: "Select Pages",
-        width: '100%',
-    });
-    $("#PageIds").val(@Html.Raw(Json.Serialize(Model.PageIds))).trigger("change");
+    $(document).ready(function () {
 
-    $("#CanEdit").select2({
-        placeholder: "Select Option",
-    });
+        $('.select2').select2({
+            width: '100%'
+        });
 
-    $("#updatePagePermissionForm").on("submit", function (e) {
-        debugger;
-        e.preventDefault();
-        let form = $(this);
+        // Prevent checkbox click from collapsing header
+        $('.product-checkbox').on('click', function (e) {
+            e.stopPropagation();
 
-        if (!form[0].checkValidity()) {
-            Swal.fire({
-                icon: "warning",
-                title: "Missing Information",
-                text: "Please fill in all required fields."
-            });
-            return;
-        }
-        Swal.fire({
-            title: 'Update Role?',
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonText: 'Yes, Update',
-            cancelButtonText: 'Cancel'
-        }).then((result) => {
-            if (result.isConfirmed) {
-                Swal.fire({
-                    title: 'Updating...',
-                    allowOutsideClick: false,
-                    didOpen: () => {
-                        Swal.showLoading();
-                    }
-                });
-                $.ajax({
-                    url: '/Permission/LoadEditModal',
-                    type: 'POST',
-                    data: form.serialize(),
-                    headers: { "X-Requested-With": "XMLHttpRequest" },
-                    success: function (response) {
-                        Swal.close();
+            const target = $(this).data('target');
+            const collapseEl = $(target);
 
-                        Swal.fire({
-                            icon: response.success ? 'success' : 'error',
-                            title: response.success ? 'Success' : 'Error',
-                            text: response.message
-                        }).then(() => {
-                            if (response.success) {
-                                const modal = bootstrap.Modal.getInstance(document.getElementById("pagePermissionEditModal"));
-                                modal.hide();
-                                window.location.href = response.redirectUrl;
-                            }
-                        });
-                    },
-                    error: function (xhr) {
-                        Swal.fire({
-                            icon: 'error',
-                            title: 'Error',
-                            text: xhr.responseJSON?.message || 'Something went wrong! Please try again.'
-                        });
-                    }
-                });
+            if ($(this).is(':checked')) {
+                collapseEl.collapse('show');
+            } else {
+                collapseEl.collapse('hide');
             }
         });
+
     });
 </script>
-
-

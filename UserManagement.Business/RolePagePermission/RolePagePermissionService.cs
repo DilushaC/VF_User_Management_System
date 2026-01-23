@@ -109,19 +109,15 @@ namespace UserManagement.Business.RolePagePermission
             {
                 string query = @"
                     SELECT 
-                        UR.Id,
                         UR.RoleId,
                         UR.PageId,
                         UR.CanEdit,
-                        R.RoleName,
-                        P.PageName
+                        R.RoleName
                     FROM RolePagePermissions UR
-                    LEFT JOIN Roles R ON UR.RoleId = R.Id
-                    LEFT JOIN Pages P ON UR.PageId = P.Id
-                    WHERE UR.RoleId = (SELECT Id FROM Roles WHERE Id = @Id);
+                    INNER JOIN Roles R ON UR.RoleId = R.Id
+                    WHERE UR.RoleId = @Id;
                 ";
 
-                // Pass roleId directly as the single scalar parameter
                 DataTable data = await _connectionService.SingleQueryReturn(query, roleId);
 
                 if (data == null || data.Rows.Count == 0)
@@ -129,9 +125,9 @@ namespace UserManagement.Business.RolePagePermission
 
                 RolePagePermissionModel model = new RolePagePermissionModel
                 {
-                    PageIds = new List<int>(),
-                    RoleId = Convert.ToInt32(data.Rows[0]["RoleId"]),
+                    RoleId = roleId,
                     RoleName = data.Rows[0]["RoleName"].ToString(),
+                    PageIds = new List<int>(),
                     CanEdit = false
                 };
 
@@ -151,6 +147,7 @@ namespace UserManagement.Business.RolePagePermission
                 throw new Exception("Error loading role page permissions", ex);
             }
         }
+
 
 
         public async Task<bool> UpdateRolePagePermissionAsync(IFormCollection collection)

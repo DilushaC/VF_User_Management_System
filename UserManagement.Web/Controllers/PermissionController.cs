@@ -135,23 +135,34 @@ namespace UserManagement.Web.Controllers
         [HttpGet]
         public async Task<IActionResult> LoadEditModal(int id)
         {
-            var pages = _pageService.GetAllPagesList();
-
-            ViewBag.Pages = pages
-            .Select(x => new SelectListItem
-            {
-                Value = x.Id.ToString(),
-                Text = x.PageName
-            })
-            .ToList();
-
+            // Fetch role + assigned page ids
             var rolePage = await _rolePagePermissionService.GetRolePagePermissionByIdAsync(id);
             if (rolePage == null)
-            {
                 return NotFound();
-            }
+
+            // Fetch ALL pages (with ProductId)
+            var pages = _pageService.GetAllPagesList();
+            // Assumes: Id, PageName/PageUrl, ProductId, ProductName
+
+            // Group pages by product
+            ViewBag.Products = pages
+                .GroupBy(p => new { p.ProductId, p.ProductName })
+                .Select(g => new
+                {
+                    ProductId = g.Key.ProductId,
+                    ProductName = g.Key.ProductName,
+                    Pages = g.Select(p => new
+                    {
+                        PageId = p.Id,
+                        PageName = p.PageName, // or PageUrl
+                        IsAssigned = rolePage.PageIds.Contains(p.Id)
+                    }).ToList()
+                })
+                .ToList();
+
             return PartialView("_EditRolePagePartial", rolePage);
         }
+
 
         [HttpPost]
         public async Task<IActionResult> LoadEditModal(IFormCollection form)
