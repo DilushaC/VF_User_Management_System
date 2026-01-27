@@ -34,7 +34,7 @@ namespace UserManagement.Web.Controllers
 
             ViewBag.CanEdit = canEdit;
 
-            var users = _userService.GetAllActiveUsersList();
+            var users = _userService.GetAllActiveUsersWithoutRoles();
             var roles = _roleService.GetAllActiveRolesList();
 
             //viewbag for branches

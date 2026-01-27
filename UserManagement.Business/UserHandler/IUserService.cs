@@ -15,6 +15,7 @@ namespace UserManagement.Business.UserHandler
         Task<bool> UpdateUserAsync(IFormCollection collection);
         public List<UserModel> GetAllUsersList();
         public List<UserModel> GetAllActiveUsersList();
+        public List<UserModel> GetAllActiveUsersWithoutRoles();
         Task<UserModel> GetUserByIdAsync(int id);
         Task<UserModel> GetPagesByUserId(int id);
         Task<bool> CheckUserNameExists(IFormCollection collection);

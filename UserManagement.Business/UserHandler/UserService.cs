@@ -265,6 +265,49 @@ namespace UserManagement.Business.UserHandler
             }
         }
 
+
+        public List<UserModel> GetAllActiveUsersWithoutRoles()
+        {
+            try
+            {
+                string query = @"
+                    SELECT U.Id, U.UserName
+                    FROM Users U
+                    WHERE U.IsActive = 1
+                      AND U.UserName IS NOT NULL
+                      AND NOT EXISTS (
+                          SELECT 1
+                          FROM UserRoles UR
+                          WHERE UR.UserId = U.Id
+                      )";
+
+                var data = _connectionService.Return(query);
+
+                List<UserModel> userNames = new List<UserModel>();
+
+                for (int i = 0; i < data.Rows.Count; i++)
+                {
+                    var BRow = data.Rows[i];
+
+                    UserModel usersModel = new UserModel()
+                    {
+                        Id = Convert.ToInt32(BRow["Id"]),
+                        UserName = BRow["UserName"].ToString()
+                    };
+
+                    userNames.Add(usersModel);
+                }
+
+                return userNames;
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+
+
+
         public async Task<UserModel> GetUserByIdAsync(int id)
         {
             try
