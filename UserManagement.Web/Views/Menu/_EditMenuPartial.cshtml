@@ -47,8 +47,11 @@
                 <input type="text" asp-for="IconClass" class="form-control" />
             </div>
             <div class="mb-3 col-md-3" id="displayOrderContainer">
-                <label class="form-label" asp-for="DisplayOrder">
-                    Display Order: <span id="displayOrderValue">@Model.DisplayOrder</span>
+                <label asp-for="DisplayOrder" class="form-label d-flex justify-content-between">
+                    <span>Display Order</span>
+                    <span class="badge bg-secondary" id="displayOrderValue">
+                        @Model.DisplayOrder
+                    </span>
                 </label>
 
                 <input type="range"
@@ -56,8 +59,11 @@
                        class="form-range"
                        min="1"
                        max="20"
-                       oninput="document.getElementById('displayOrderValue').innerText = this.value" />
+                       step="1"
+                       value="@Model.DisplayOrder"
+                       oninput="displayOrderValue.textContent = this.value" />
             </div>
+
 
         </div>
 

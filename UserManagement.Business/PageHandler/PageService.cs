@@ -259,32 +259,40 @@ namespace UserManagement.Business.PageHandler
         {
             try
             {
-                var productId = collection["ProductId"].ToString();
-                var pageLevel = collection["PageLevel"].ToString();
+                // Get values from the form and convert to int
+                if (!int.TryParse(collection["ProductId"], out int productId))
+                    return false;
 
+                if (!int.TryParse(collection["DisplayOrder"], out int displayOrder))
+                    return false;
+
+                // SQL: Check in MenuItems table
                 string sql = @"
-                    SELECT COUNT(*)
-                    FROM Pages
-                    WHERE ProductId = @ProductId
-                    AND PageLevel = @PageLevel
-                ";
+                        SELECT COUNT(*)
+                        FROM MenuItems
+                        WHERE ProductId = @ProductId
+                        AND DisplayOrder = @DisplayOrder
+                    ";
 
                 var parameters = new DynamicParameters();
                 parameters.Add("@ProductId", productId, DbType.Int32);
-                parameters.Add("@PageLevel", pageLevel, DbType.Int32);
+                parameters.Add("@DisplayOrder", displayOrder, DbType.Int32);
 
-                // Synchronous call wrapped in Task.FromResult
-                var result = _connectionService.ExecuteScalar(sql, parameters);
+                // Execute scalar synchronously wrapped in Task.Run for async
+                var count = await Task.Run(() =>
+                {
+                    var result = _connectionService.ExecuteScalar(sql, parameters);
+                    return Convert.ToInt32(result);
+                });
 
-                int count = Convert.ToInt32(result);
-
-                return await Task.FromResult(count > 0);
+                return count > 0;
             }
             catch (Exception)
             {
-                return await Task.FromResult(false);
+                return false;
             }
         }
+
 
     }
 }

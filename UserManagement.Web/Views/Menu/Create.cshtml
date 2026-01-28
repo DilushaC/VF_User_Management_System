@@ -3,6 +3,7 @@
 @{
     ViewData["Title"] = "Create Menu Item";
     Layout = "~/Views/Shared/_Layout.cshtml";
+    var displayOrder = Model?.DisplayOrder > 0 ? Model.DisplayOrder : 1;
 }
 
 <div class="row">
@@ -121,16 +122,25 @@
 
                             <div id="displayOrderContainer" class="row g-2">
                                 <div class="mb-3 col-md-4">
-                                    <label class="form-label" asp-for="DisplayOrder">
-                                        Display Order: <span id="displayOrderValue">1</span>
+                                    <label asp-for="DisplayOrder"
+                                           class="form-label d-flex justify-content-between align-items-center">
+                                        <span>Display Order</span>
+                                        <span class="badge bg-secondary" id="displayOrderValue">
+                                            @displayOrder
+                                        </span>
                                     </label>
 
                                     <input type="range"
                                            asp-for="DisplayOrder"
-                                           class="form-range"
+                                           id="DisplayOrder"
+                                           class="form-range w-75"
                                            min="1"
                                            max="20"
-                                           oninput="document.getElementById('displayOrderValue').innerText = this.value" />
+                                           step="1"
+                                           value="@displayOrder"
+                                           oninput="displayOrderValue.textContent = this.value" />
+
+                                    <small id="displayOrder-status" class="d-block mt-1"></small>
                                 </div>
                             </div>
 
@@ -166,6 +176,50 @@
 <script src="~/assets/vendor/select2/js/select2.min.js"></script>
 
 <script>
+    let displayOrderValid = true;
+
+    $("#DisplayOrder").on("change", function () {
+
+        let displayOrder = $(this).val();
+        let productId = $("#ProductId").val();
+
+        // Guard
+        if (!displayOrder || !productId) {
+            $("#displayOrder-status").html("");
+            displayOrderValid = false;
+            return;
+        }
+
+        $.ajax({
+            url: '/Page/CheckPageLevel', // reuse API if intended
+            type: 'POST',
+            data: {
+                displayOrder: displayOrder,
+                productId: productId,
+                __RequestVerificationToken: $('input[name="__RequestVerificationToken"]').val()
+            },
+            success: function (res) {
+                if (res.exists) {
+                    displayOrderValid = false;
+                    $("#displayOrder-status")
+                        .html(`<span class="text-danger">❌ Display order already used</span>`);
+                } else {
+                    displayOrderValid = true;
+                    $("#displayOrder-status")
+                        .html(`<span class="text-success">✔ Display order available</span>`);
+                }
+            },
+            error: function () {
+                displayOrderValid = false;
+                $("#displayOrder-status")
+                    .html(`<span class="text-danger">⚠ Unable to validate display order</span>`);
+            }
+        });
+    });
+</script>
+
+
+<script>
 
     $("#ParentMenuItemId").select2({
         placeholder: "Select Parent Menu",
@@ -181,7 +235,7 @@
         placeholder: "Select Page",
         allowClear: true,
     });
-    
+
     $("#CategoryId").select2({
         placeholder: "Select Page",
         allowClear: true,
@@ -202,33 +256,8 @@
     let menuTitleValid = false;
     let pageLevelValid = false;
 
-    // $("#MenuTitle").on('blur', function () {
-    // let menuTitle = $(this).val().trim();
-
-    //     if (menuTitle.length < 3) {
-    //         $("#menuTitle-status").html(`<span style="color:gray;">Minimum 3 characters required</span>`);
-    //         menuTitleValid = false;
-    //         return;
-    //     }
-
-    //     $.ajax({
-    //         url: '/Menu/CheckMenuTitle',
-    //         type: 'POST',
-    //         data: { menuTitle: menuTitle },
-    //         success: function (res) {
-    //             if (res.exists) {
-    //                 menuTitleValid = false;
-    //                 $("#menuTitle-status").html(`<span style="color:red;">❌ Menu Title already exists</span>`);
-    //             } else {
-    //                 menuTitleValid = true;
-    //                 $("#menuTitle-status").html(`<span style="color:green;">✔ Menu Title available</span>`);
-    //             }
-    //         }
-    //     });
-    // });
-
     $("#PageLevel").on('blur', function () {
-    let pageLevel = $(this).val().trim();
+    let pageLevel = $("#DisplayOrder").val();
     var productId = $("#ProductId").val();
         $.ajax({
             url: '/Page/CheckPageLevel',
@@ -397,14 +426,14 @@
             e.preventDefault();
             let form = this;
 
-            // if (!menuTitleValid) {
-            //     Swal.fire({
-            //         icon: 'error',
-            //         title: 'Menu Title Already Exists',
-            //         text: 'Please Create another Menu.'
-            //     });
-            //     return;
-            // }
+    if (!displayOrderValid) {
+        Swal.fire({
+            icon: 'error',
+            title: 'Display Order Already Exists',
+            text: 'Please choose a different display order for this product.'
+        });
+        return; // stop form submission
+    }
 
             if (!form.checkValidity()) {
                 $(form).addClass('was-validated');

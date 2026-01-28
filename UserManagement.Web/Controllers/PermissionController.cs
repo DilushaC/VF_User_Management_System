@@ -135,16 +135,12 @@ namespace UserManagement.Web.Controllers
         [HttpGet]
         public async Task<IActionResult> LoadEditModal(int id)
         {
-            // Fetch role + assigned page ids
             var rolePage = await _rolePagePermissionService.GetRolePagePermissionByIdAsync(id);
             if (rolePage == null)
                 return NotFound();
 
-            // Fetch ALL pages (with ProductId)
             var pages = _pageService.GetAllPagesList();
-            // Assumes: Id, PageName/PageUrl, ProductId, ProductName
 
-            // Group pages by product
             ViewBag.Products = pages
                 .GroupBy(p => new { p.ProductId, p.ProductName })
                 .Select(g => new
