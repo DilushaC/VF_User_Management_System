@@ -42,10 +42,13 @@
 
         <!-- Icon & Display Order -->
         <div class="row">
+            <!-- Icon Class -->
             <div class="mb-3 col-md-6" id="iconClassContainer">
                 <label class="form-label">Icon Class</label>
                 <input type="text" asp-for="IconClass" class="form-control" />
             </div>
+
+            <!-- Display Order -->
             <div class="mb-3 col-md-3" id="displayOrderContainer">
                 <label asp-for="DisplayOrder" class="form-label d-flex justify-content-between">
                     <span>Display Order</span>
@@ -62,10 +65,12 @@
                        step="1"
                        value="@Model.DisplayOrder"
                        oninput="displayOrderValue.textContent = this.value" />
+
+                <!-- Validation Message -->
+                <small id="displayOrder-status" class="d-block mt-1 text-danger"></small>
             </div>
-
-
         </div>
+
 
         <!-- Product -->
         <div class="mb-3 col-md-6">
@@ -118,58 +123,101 @@
         const pageSelect = $('#PageId');
         const iconInput = $('#IconClass');
         const displayOrderInput = $('#DisplayOrder');
+        const displayOrderStatus = $('#displayOrder-status'); // <-- validation message
+
+        let displayOrderValid = true; // Track validity
 
         // Set initial values from model
         parentSelect.val('@Model.ParentMenuItemId').trigger('change');
         pageSelect.val('@Model.PageId').trigger('change');
 
-    function toggleFields() {
-        const parentVal = parentSelect.val();
-        const pageVal = pageSelect.val();
+        // Toggle fields depending on parent menu
+        function toggleFields() {
+            const parentVal = parentSelect.val();
+            const pageVal = pageSelect.val();
 
-        const isMainMenu = !parentVal || parentVal === "0";
-        const showPageWhenParentNull = (!parentVal || parentVal === "0") && pageVal;
+            const isMainMenu = !parentVal || parentVal === "0";
+            const showPageWhenParentNull = (!parentVal || parentVal === "0") && pageVal;
 
-        if (isMainMenu) {
-            // Main Menu defaults
-            parentMenuContainer.hide();
-            iconContainer.show();
-            displayOrderContainer.show();
+            if (isMainMenu) {
+                parentMenuContainer.hide();
+                iconContainer.show();
+                displayOrderContainer.show();
 
-            iconInput.attr('required', 'required');
-            displayOrderInput.attr('required', 'required');
-            parentSelect.removeAttr('required');
+                iconInput.attr('required', 'required');
+                displayOrderInput.attr('required', 'required');
+                parentSelect.removeAttr('required');
 
-            // 👇 pageContainer logic
-            if (showPageWhenParentNull) {
-                pageContainer.show();
-                pageSelect.attr('required', 'required');
+                if (showPageWhenParentNull) {
+                    pageContainer.show();
+                    pageSelect.attr('required', 'required');
+                } else {
+                    pageContainer.hide();
+                    pageSelect.removeAttr('required');
+                    pageSelect.val(null).trigger('change');
+                }
             } else {
-                pageContainer.hide();
-                pageSelect.removeAttr('required');
-                pageSelect.val(null).trigger('change');
+                parentMenuContainer.show();
+                pageContainer.show();
+                iconContainer.hide();
+                displayOrderContainer.hide();
+
+                iconInput.removeAttr('required');
+                displayOrderInput.removeAttr('required');
+
+                parentSelect.attr('required', 'required');
+                pageSelect.attr('required', 'required');
             }
-        } else {
-            // Sub Menu
-            parentMenuContainer.show();
-            pageContainer.show();
-            iconContainer.hide();
-            displayOrderContainer.hide();
-
-            iconInput.removeAttr('required');
-            displayOrderInput.removeAttr('required');
-
-            parentSelect.attr('required', 'required');
-            pageSelect.attr('required', 'required');
         }
-    }
-
 
         // Initial toggle
         toggleFields();
 
         // On Parent Menu change
         parentSelect.on('change', toggleFields);
+
+        // Check display order availability on change
+        displayOrderInput.on('change', function () {
+            const displayOrder = $(this).val();
+            const productId = $('#ProductId').val();
+            const Id = $('#Id').val();
+
+            if (!displayOrder || !productId) {
+                displayOrderStatus.text('');
+                displayOrderValid = false;
+                return;
+            }
+
+            $.ajax({
+                url: '/Page/CheckPageLevelForExistingMenu', // your backend endpoint
+                type: 'POST',
+                data: {
+                    ProductId: productId,
+                    DisplayOrder: displayOrder,
+                    Id : Id,
+                    __RequestVerificationToken: $('input[name="__RequestVerificationToken"]').val()
+                },
+                success: function (res) {
+                    if (res.exists === true) {
+                        displayOrderValid = false;
+                        displayOrderStatus
+                            .text('❌ Display order already exists')
+                            .removeClass('text-success')
+                            .addClass('text-danger');
+                    } else {
+                        displayOrderValid = true;
+                        displayOrderStatus
+                            .text('✔ Display order available')
+                            .removeClass('text-danger')
+                            .addClass('text-success');
+                    }
+                },
+                error: function () {
+                    displayOrderValid = false;
+                    displayOrderStatus.text('⚠ Unable to validate display order').removeClass('text-success').addClass('text-danger');
+                }
+            });
+        });
 
         // Form submission
         $('#updateMenuForm').on('submit', function (e) {
@@ -181,6 +229,16 @@
                     icon: 'warning',
                     title: 'Missing Information',
                     text: 'Please fill in all required fields.'
+                });
+                return;
+            }
+
+            // Check display order before submit
+            if (!displayOrderValid) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Invalid Display Order',
+                    text: 'The selected display order already exists for this product.'
                 });
                 return;
             }
@@ -228,3 +286,4 @@
 
     });
 </script>
+

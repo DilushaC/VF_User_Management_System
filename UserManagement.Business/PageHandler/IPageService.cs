@@ -17,5 +17,6 @@ namespace UserManagement.Business.PageHandler
         Task<bool> UpdatePageAsync(IFormCollection collection);
         Task<bool> CheckPageNameExists(IFormCollection collection);
         Task<bool> CheckPageLevelExists(IFormCollection collection);
+        Task<bool> CheckPageLevelForExistingMenu(IFormCollection collection);
     }
 }

@@ -159,15 +159,17 @@
     $("#ProductIds").select2({ placeholder: "" });
 
     let usernameValid = false; // Track if username is available
+    let emailValid = false;
 
     $("#UserName").on('blur', function () {
         let username = $(this).val().trim();
 
         if (username.length < 3) {
-            $("#username-status").html(`<span style="color:gray;">Minimum 3 characters required</span>`);
+            $("#username-status").html(`<span style="color:gray;">Minimum 4 characters required</span>`);
             usernameValid = false;
             return;
         }
+
 
         $.ajax({
             url: '/User/CheckUsername',
@@ -195,7 +197,7 @@
             Swal.fire({
                 icon: 'error',
                 title: 'Username Already Exists',
-                text: 'Please choose another username.'
+                text: 'Please Type Another Username.'
             });
             return;
         }

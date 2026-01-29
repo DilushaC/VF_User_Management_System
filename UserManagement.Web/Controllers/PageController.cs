@@ -167,5 +167,21 @@ namespace UserManagement.Web.Controllers
 
             return Json(new { exists = exists });
         }
+
+        [HttpPost]
+        public async Task<IActionResult> CheckPageLevelForExistingMenu(IFormCollection collection)
+        {
+            try
+            {
+                bool exists = await _pageService.CheckPageLevelForExistingMenu(collection);
+                return Json(new { exists = exists });
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex);
+                return Json(new { exists = false });
+            }
+        }
+
     }
 }

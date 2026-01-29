@@ -138,7 +138,8 @@
             `);
 
             menuEditModal.show();
-            const url = '@Url.Action("LoadEditModal", "Menu")/' + Id;
+             
+            const url = '@Url.Action("LoadEditModal", "Menu")' + '?id=' + Id;
 
             $.ajax({
                 url: url,

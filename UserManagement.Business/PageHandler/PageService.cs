@@ -266,6 +266,12 @@ namespace UserManagement.Business.PageHandler
                 if (!int.TryParse(collection["DisplayOrder"], out int displayOrder))
                     return false;
 
+                int id = 0;
+                if (int.TryParse(collection["Id"], out int parsedId))
+                {
+                    id = parsedId;
+                }
+
                 // SQL: Check in MenuItems table
                 string sql = @"
                         SELECT COUNT(*)
@@ -292,6 +298,71 @@ namespace UserManagement.Business.PageHandler
                 return false;
             }
         }
+
+
+        public async Task<bool> CheckPageLevelForExistingMenu(IFormCollection collection)
+        {
+            try
+            {
+                if (!int.TryParse(collection["ProductId"], out int productId))
+                    return false;
+
+                if (!int.TryParse(collection["DisplayOrder"], out int displayOrder))
+                    return false;
+
+                int id = 0;
+                int.TryParse(collection["Id"], out id);
+
+                // 🔹 STEP 1: Check SAME RECORD (Id + ProductId + DisplayOrder)
+                string sameRecordSql = @"
+                    SELECT COUNT(*)
+                    FROM MenuItems
+                    WHERE Id = @Id
+                      AND ProductId = @ProductId
+                      AND DisplayOrder = @DisplayOrder
+                ";
+
+                var sameParams = new DynamicParameters();
+                sameParams.Add("@Id", id);
+                sameParams.Add("@ProductId", productId);
+                sameParams.Add("@DisplayOrder", displayOrder);
+
+                int sameCount = Convert.ToInt32(
+                    await Task.Run(() => _connectionService.ExecuteScalar(sameRecordSql, sameParams))
+                );
+
+                // ✅ Same record → allow update
+                if (sameCount > 0)
+                    return false;
+
+                // 🔹 STEP 2: Check DUPLICATE (same product + display order, different Id)
+                string duplicateSql = @"
+                    SELECT COUNT(*)
+                    FROM MenuItems
+                    WHERE ProductId = @ProductId
+                      AND DisplayOrder = @DisplayOrder
+                      AND Id <> @Id
+                ";
+
+                var dupParams = new DynamicParameters();
+                dupParams.Add("@ProductId", productId);
+                dupParams.Add("@DisplayOrder", displayOrder);
+                dupParams.Add("@Id", id);
+
+                int dupCount = Convert.ToInt32(
+                    await Task.Run(() => _connectionService.ExecuteScalar(duplicateSql, dupParams))
+                );
+
+                // ❌ Duplicate exists → block
+                return dupCount > 0;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
+
 
 
     }
