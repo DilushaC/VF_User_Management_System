@@ -162,6 +162,7 @@
 
             updatePageIds(); // ensure hidden inputs are up-to-date
 
+
             Swal.fire({
                 title: "Update Role Permissions?",
                 icon: "warning",
@@ -175,16 +176,33 @@
                     type: 'POST',
                     data: $(this).serialize(), // PageIds[] will be sent as string array
                     headers: { "X-Requested-With": "XMLHttpRequest" },
-                    success: function(res) {
-                        if (res.success) {
-                            Swal.fire('Success', res.message, 'success')
-                                .then(() => window.location.href = res.redirectUrl);
+                    success: function (response) {
+                        Swal.close();
+
+                        if (response.success) {
+                            Swal.fire({
+                                icon: 'success',
+                                title: response.message,
+                                showConfirmButton: false,
+                                timer: 1500
+                            }).then(() => {
+                                window.location.href = response.redirectUrl;
+                            });
                         } else {
-                            Swal.fire('Error', res.message, 'error');
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Error',
+                                text: response.message || 'Failed to create menu.'
+                            });
                         }
                     },
-                    error: function() {
-                        Swal.fire('Error', 'Something went wrong. Please try again.', 'error');
+
+                    error: function () {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error',
+                            text: 'Something went wrong! Please try again.'
+                        });
                     }
                 });
             });

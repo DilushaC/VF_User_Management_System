@@ -123,8 +123,10 @@
                     type: 'POST',
                     data: $("#RegisterForm").serialize(),
                     headers: { "X-Requested-With": "XMLHttpRequest" },
+
                     success: function (response) {
                         Swal.close();
+
                         if (response.success) {
                             Swal.fire({
                                 icon: 'success',
@@ -134,16 +136,15 @@
                             }).then(() => {
                                 window.location.href = response.redirectUrl;
                             });
-                        } else if (response.redirectUrl) {
-                            window.location.href = response.redirectUrl;
                         } else {
                             Swal.fire({
                                 icon: 'error',
                                 title: 'Error',
-                                text: response.message || 'Failed to create designation.'
+                                text: response.message || 'Failed to create menu.'
                             });
                         }
                     },
+
                     error: function () {
                         Swal.fire({
                             icon: 'error',

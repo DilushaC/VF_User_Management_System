@@ -83,26 +83,33 @@
                     type: 'POST',
                     data: form.serialize(),
                     headers: { "X-Requested-With": "XMLHttpRequest" },
+
                     success: function (response) {
                         Swal.close();
 
-                        Swal.fire({
-                            icon: response.success ? 'success' : 'error',
-                            title: response.success ? 'Success' : 'Error',
-                            text: response.message
-                        }).then(() => {
-                            if (response.success) {
-                                const modal = bootstrap.Modal.getInstance(document.getElementById("roleEditModal"));
-                                modal.hide();
+                        if (response.success) {
+                            Swal.fire({
+                                icon: 'success',
+                                title: response.message,
+                                showConfirmButton: false,
+                                timer: 1500
+                            }).then(() => {
                                 window.location.href = response.redirectUrl;
-                            }
-                        });
+                            });
+                        } else {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Error',
+                                text: response.message || 'Failed to create menu.'
+                            });
+                        }
                     },
-                    error: function (xhr) {
+
+                    error: function () {
                         Swal.fire({
                             icon: 'error',
                             title: 'Error',
-                            text: xhr.responseJSON?.message || 'Something went wrong! Please try again.'
+                            text: 'Something went wrong! Please try again.'
                         });
                     }
                 });

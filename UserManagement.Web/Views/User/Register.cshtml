@@ -227,35 +227,36 @@
                 url: '/User/Register',
                 type: 'POST',
                 data: $("#RegisterForm").serialize(),
-                headers: { "X-Requested-With": "XMLHttpRequest" },
+                    headers: { "X-Requested-With": "XMLHttpRequest" },
 
-                success: function (response) {
-                    Swal.close();
+                    success: function (response) {
+                        Swal.close();
 
-                    if (response.success) {
-                        Swal.fire({
-                            icon: 'success',
-                            title: 'User Created',
-                            timer: 1500,
-                            showConfirmButton: false
-                        }).then(() => {
-                            window.location.href = response.redirectUrl;
-                        });
-                    } else {
+                        if (response.success) {
+                            Swal.fire({
+                                icon: 'success',
+                                title: response.message,
+                                showConfirmButton: false,
+                                timer: 1500
+                            }).then(() => {
+                                window.location.href = response.redirectUrl;
+                            });
+                        } else {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Error',
+                                text: response.message || 'Failed to create menu.'
+                            });
+                        }
+                    },
+
+                    error: function () {
                         Swal.fire({
                             icon: 'error',
                             title: 'Error',
-                            text: response.message || 'Failed to create user'
+                            text: 'Something went wrong! Please try again.'
                         });
                     }
-                },
-                error: function () {
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Error',
-                        text: 'Something went wrong!'
-                    });
-                }
             });
 
         });

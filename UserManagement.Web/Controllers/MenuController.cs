@@ -111,7 +111,7 @@ namespace UserManagement.Web.Controllers
                     return Json(new
                     {
                         success = true,
-                        message = "Page created successfully",
+                        message = "Menu created successfully",
                         redirectUrl = Url.Action("Management", "Menu")
                     });
                 }

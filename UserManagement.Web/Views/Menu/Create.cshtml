@@ -422,14 +422,14 @@
             e.preventDefault();
             let form = this;
 
-    if (!displayOrderValid) {
-        Swal.fire({
-            icon: 'error',
-            title: 'Display Order Already Exists',
-            text: 'Please choose a different display order for this product.'
-        });
-        return; // stop form submission
-    }
+            if (!displayOrderValid) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Display Order Already Exists',
+                    text: 'Please choose a different display order for this product.'
+                });
+                return; // stop form submission
+            }
 
             if (!form.checkValidity()) {
                 $(form).addClass('was-validated');
