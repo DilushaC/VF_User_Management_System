@@ -50,7 +50,6 @@ namespace UserManagement.Business.PageHandler
                         Id = Convert.ToInt32(BRow["Id"]),
                         PageName = BRow["PageName"].ToString(),
 
-                        // ✅ ADD THIS
                         ProductId = BRow["ProductId"] == DBNull.Value
                                         ? 0
                                         : Convert.ToInt32(BRow["ProductId"]),
