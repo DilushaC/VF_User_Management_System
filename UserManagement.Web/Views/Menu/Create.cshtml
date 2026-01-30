@@ -121,24 +121,20 @@
                             </div>
 
                             <div id="displayOrderContainer" class="row g-2">
-                                <div class="mb-3 col-md-4">
+                                <div class="mb-3 col-md-2">
                                     <label asp-for="DisplayOrder"
                                            class="form-label d-flex justify-content-between align-items-center">
                                         <span>Display Order</span>
-                                        <span class="badge bg-secondary" id="displayOrderValue">
-                                            @displayOrder
-                                        </span>
                                     </label>
 
-                                    <input type="range"
+                                    <input type="number"
                                            asp-for="DisplayOrder"
                                            id="DisplayOrder"
-                                           class="number w-75"
+                                           class="form-control w-75"
                                            min="1"
                                            max="20"
                                            step="1"
-                                           value="@displayOrder"
-                                           oninput="displayOrderValue.textContent = this.value" />
+                                           value="@displayOrder" />
 
                                     <small id="displayOrder-status" class="d-block mt-1"></small>
                                 </div>

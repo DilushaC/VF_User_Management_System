@@ -44,16 +44,27 @@ namespace UserManagement.Business.PageHandler
                 for (int i = 0; i < Data.Rows.Count; i++)
                 {
                     var BRow = Data.Rows[i];
+
                     PageModel bModel = new PageModel()
                     {
                         Id = Convert.ToInt32(BRow["Id"]),
                         PageName = BRow["PageName"].ToString(),
-                        ProductName = BRow["ProductName"] == DBNull.Value ? string.Empty : BRow["ProductName"].ToString(),
+
+                        // ✅ ADD THIS
+                        ProductId = BRow["ProductId"] == DBNull.Value
+                                        ? 0
+                                        : Convert.ToInt32(BRow["ProductId"]),
+
+                        ProductName = BRow["ProductName"] == DBNull.Value
+                                        ? string.Empty
+                                        : BRow["ProductName"].ToString(),
 
                         IsActive = Convert.ToBoolean(BRow["IsActive"]),
                     };
+
                     pagesList.Add(bModel);
                 }
+
                 return pagesList;
 
             }

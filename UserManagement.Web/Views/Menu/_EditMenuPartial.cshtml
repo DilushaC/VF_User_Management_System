@@ -52,23 +52,21 @@
             <div class="mb-3 col-md-3" id="displayOrderContainer">
                 <label asp-for="DisplayOrder" class="form-label d-flex justify-content-between">
                     <span>Display Order</span>
-                    <span class="badge bg-secondary" id="displayOrderValue">
-                        @Model.DisplayOrder
-                    </span>
                 </label>
 
-                <input type="range"
+                <input type="number"
                        asp-for="DisplayOrder"
-                       class="form-range"
+                       id="DisplayOrder"
+                       class="form-control"
                        min="1"
                        max="20"
                        step="1"
-                       value="@Model.DisplayOrder"
-                       oninput="displayOrderValue.textContent = this.value" />
+                       value="@Model.DisplayOrder" />
 
                 <!-- Validation Message -->
                 <small id="displayOrder-status" class="d-block mt-1 text-danger"></small>
             </div>
+
         </div>
 
 

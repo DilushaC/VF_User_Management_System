@@ -140,24 +140,27 @@ namespace UserManagement.Web.Controllers
                 return NotFound();
 
             var pages = _pageService.GetAllPagesList();
+            var products = _productService.GetAllActiveProductList();
 
-            ViewBag.Products = pages
-                .GroupBy(p => new { p.ProductId, p.ProductName })
-                .Select(g => new
-                {
-                    ProductId = g.Key.ProductId,
-                    ProductName = g.Key.ProductName,
-                    Pages = g.Select(p => new
+            ViewBag.Products = products.Select(product => new
+            {
+                ProductId = product.Id,
+                ProductName = product.ProductName,
+
+                Pages = pages
+                    .Where(p => p.ProductId == product.Id && p.IsActive)
+                    .Select(p => new
                     {
                         PageId = p.Id,
-                        PageName = p.PageName, // or PageUrl
+                        PageName = p.PageName,
                         IsAssigned = rolePage.PageIds.Contains(p.Id)
-                    }).ToList()
-                })
-                .ToList();
+                    })
+                    .ToList()
+            }).ToList();
 
             return PartialView("_EditRolePagePartial", rolePage);
         }
+
 
 
         [HttpPost]
