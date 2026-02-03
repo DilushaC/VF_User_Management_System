@@ -55,6 +55,8 @@
                                     <label asp-for="Email" class="form-label">Email</label>
                                     <input asp-for="Email" type="email" class="form-control round" required />
                                     <span asp-validation-for="Email" class="invalid-tooltip">Email is required</span>
+                                    <small id="email-status"></small>
+
                                 </div>
                             </div>
 
@@ -62,8 +64,14 @@
                             <div class="row g-2">
                                 <div class="mb-3 col-md-6 position-relative">
                                     <label asp-for="Phone" class="form-label">Phone</label>
-                                    <input asp-for="Phone" type="number" class="form-control round" required />
+                                    <input asp-for="Phone"
+                                           id="Phone"
+                                           type="text"
+                                           class="form-control round"
+                                           required
+                                           autocomplete="off" />
                                     <span asp-validation-for="Phone" class="invalid-tooltip">Phone is required</span>
+                                    <small id="phone-status"></small>
                                 </div>
                             </div>
 
@@ -187,6 +195,61 @@
         });
     });
 
+    $("#Email").on("keyup", function () {
+        let email = $(this).val().trim();
+
+        if (email.length === 0) {
+            $("#email-status").html("");
+            emailValid = false;
+            return;
+        }
+
+        if (!email.includes("@@") || !email.includes(".")) {
+            emailValid = false;
+            $("#email-status").html(
+                '<span style="color:red;">❌ Email must contain @@ and .</span>'
+            );
+        } else {
+            emailValid = true;
+            $("#email-status").html(
+                '<span style="color:green;">✔ Email looks valid</span>'
+            );
+        }
+    });
+
+    let phoneValid = false;
+
+    $("#Phone").on("keyup", function () {
+        let phone = $(this).val().trim();
+
+        if (phone.length === 0) {
+            $("#phone-status").html("");
+            phoneValid = false;
+            return;
+        }
+
+        // Remove spaces
+        phone = phone.replace(/\s+/g, '');
+
+        // Sri Lankan mobile number regex
+        let slRegex = /^(?:\+94|94|0)7\d{8}$/;
+
+        if (!slRegex.test(phone)) {
+            phoneValid = false;
+            $("#phone-status").html(
+                '<span style="color:red;">❌ Invalid Sri Lankan phone number</span>'
+            );
+        } else {
+            phoneValid = true;
+            $("#phone-status").html(
+                '<span style="color:green;">✔ Valid Sri Lankan phone number</span>'
+            );
+        }
+    });
+
+
+
+
     // Form Submit
     $("#RegisterForm").on("submit", function (e) {
         e.preventDefault();
@@ -201,6 +264,26 @@
             });
             return;
         }
+
+        if (!emailValid) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Invalid Email',
+                text: 'Please enter a valid email address.'
+            });
+            return;
+        }
+
+        if (!phoneValid) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Invalid Phone Number',
+                text: 'Please enter a valid Sri Lankan mobile number.'
+            });
+            return;
+        }
+
+
 
         if (!form.checkValidity()) {
             $(this).addClass("was-validated");
