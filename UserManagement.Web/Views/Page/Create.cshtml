@@ -14,15 +14,7 @@
                     <br />
                     <form asp-action="Create" asp-controller="Page" method="post" id="RegisterForm" novalidate>
                         <fieldset>
-                            <div class="row g-2">
-                                <div class="mb-3 col-md-6 position-relative">
-                                    <label asp-for="PageName" class="form-label">Page Name</label>
-                                    <input asp-for="PageName" class="form-control round" required
-                                           data-bs-toggle="tooltip" data-bs-placement="right" title="Page Name is required" />
-                                    <span asp-validation-for="PageName" class="invalid-tooltip">Page Name is required</span>
-                                    <small id="pageName-status"></small>
-                                </div>
-                            </div>
+                            <!-- Product Dropdown -->
                             <div class="row g-2">
                                 <div class="mb-3 col-md-6 position-relative">
                                     <label asp-for="ProductId" class="form-label">Select Product</label>
@@ -40,6 +32,18 @@
                                     <span asp-validation-for="ProductId" class="invalid-tooltip">Product is required</span>
                                 </div>
                             </div>
+
+                            <!-- Page Name (hidden initially) -->
+                            <div class="row g-2" id="pageNameContainer" style="display:none;">
+                                <div class="mb-3 col-md-6 position-relative">
+                                    <label asp-for="PageName" class="form-label">Page Name</label>
+                                    <input asp-for="PageName" class="form-control round" required
+                                           data-bs-toggle="tooltip" data-bs-placement="right" title="Page Name is required" />
+                                    <span asp-validation-for="PageName" class="invalid-tooltip">Page Name is required</span>
+                                    <small id="pageName-status"></small>
+                                </div>
+                            </div>
+
                             <div class="row g-2">
                                 <div class="mb-3 col-md-6 position-relative">
                                     <label asp-for="PageUrl" class="form-label">Page URL</label>
@@ -81,14 +85,27 @@
 <script src="~/assets/vendor/select2/js/select2.min.js"></script>
 
 <script>
-    $("#ProductId").select2({
-        placeholder: "Select Product",
+    $("#ProductId").select2({ placeholder: "Select Product" });
+
+    // Show Page Name field only after selecting a product
+    $("#ProductId").on("change", function() {
+        let productId = $(this).val();
+
+        if (productId) {
+            $("#pageNameContainer").slideDown(); // smooth animation
+        } else {
+            $("#pageNameContainer").slideUp();
+            $("#PageName").val("");              // reset input
+            $("#pageName-status").html("");      // clear status
+            pageNameValid = false;
+        }
     });
 
     let pageNameValid = false;
 
     $("#PageName").on('blur', function () {
     let pageName = $(this).val().trim();
+    let productId = $("#ProductId").val();
 
         if (pageName.length < 3) {
             $("#pageName-status").html(`<span style="color:gray;">Minimum 3 characters required</span>`);
@@ -99,7 +116,7 @@
         $.ajax({
             url: '/Page/CheckPageName',
             type: 'POST',
-            data: { pageName: pageName },
+            data: { pageName: pageName, productId: productId },
             success: function (res) {
                 if (res.exists) {
                     pageNameValid = false;

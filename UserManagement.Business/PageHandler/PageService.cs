@@ -241,16 +241,19 @@ namespace UserManagement.Business.PageHandler
         {
             try
             {
+                var productId = collection["ProductId"].ToString();
                 var pageName = collection["PageName"].ToString();
 
                 string sql = @"
                     SELECT COUNT(*)
                     FROM Pages
                     WHERE PageName = @PageName
+                      AND ProductId = @ProductId
                 ";
 
                 var parameters = new DynamicParameters();
                 parameters.Add("PageName", pageName, DbType.String);
+                parameters.Add("ProductId", Convert.ToInt32(productId), DbType.Int32);
 
                 // Synchronous call wrapped in Task.FromResult
                 var result = _connectionService.ExecuteScalar(sql, parameters);
@@ -264,6 +267,7 @@ namespace UserManagement.Business.PageHandler
                 return await Task.FromResult(false);
             }
         }
+
 
         public async Task<bool> CheckPageLevelExists(IFormCollection collection)
         {
