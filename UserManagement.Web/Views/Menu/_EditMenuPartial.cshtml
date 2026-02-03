@@ -5,9 +5,16 @@
 }
 
 <div class="modal-header">
-    <h5 class="modal-title">Edit Menu: @Model.MenuTitle</h5>
+    <h5 class="modal-title">
+        Edit Menu: @Model.MenuTitle
+        @if (Model.PageId == null || Model.PageId == 0)
+        {
+            <span class="badge bg-danger ms-2">No Submenus</span>
+        }
+    </h5>
     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
 </div>
+
 
 <form id="updateMenuForm" asp-action="UpdateMenuByIdAsync" asp-controller="Menu" method="post">
     <input type="hidden" asp-for="Id" />

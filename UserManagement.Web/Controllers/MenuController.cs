@@ -90,10 +90,14 @@ namespace UserManagement.Web.Controllers
 
             if (!string.IsNullOrWhiteSpace(dtRequest.SearchValue))
             {
-                string s = dtRequest.SearchValue;
+                string s = dtRequest.SearchValue.ToLower();
+
                 query = query.Where(u =>
-                    u.PageName.ToLower().Contains(s));
+                    (u.MenuTitle != null && u.MenuTitle.ToLower().Contains(s)) ||
+                    (u.ProductName != null && u.ProductName.ToLower().Contains(s))
+                );
             }
+
             var response = _dataTableService.ApplyDataTable(query, dtRequest);
 
             return Json(response);
