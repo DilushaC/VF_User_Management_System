@@ -185,6 +185,7 @@
         displayOrderInput.on('change', function () {
             const displayOrder = $(this).val();
             const productId = $('#ProductId').val();
+            const categoryId = $('#CategoryId').val();
             const Id = $('#Id').val();
 
             if (!displayOrder || !productId) {
@@ -194,11 +195,12 @@
             }
 
             $.ajax({
-                url: '/Page/CheckPageLevelForExistingMenu', // your backend endpoint
+                url: '/Page/CheckPageLevel', // your backend endpoint
                 type: 'POST',
                 data: {
                     ProductId: productId,
                     DisplayOrder: displayOrder,
+                    categoryId: categoryId,
                     Id : Id,
                     __RequestVerificationToken: $('input[name="__RequestVerificationToken"]').val()
                 },

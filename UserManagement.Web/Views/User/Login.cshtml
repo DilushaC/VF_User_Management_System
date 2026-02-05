@@ -147,6 +147,14 @@
     <script src="~/assets/js/sweetalert2.all.min.js"></script>
     <script type="text/javascript">
 
+        $(document).on('keypress', '#loginForm input', function (e) {
+            if (e.which === 13) { 
+                e.preventDefault(); 
+                submitLogin();      
+            }
+        });
+
+
         $("#Error").hide();
         function submitLogin() {
             var form = $("#loginForm");
