@@ -208,15 +208,13 @@ namespace UserManagement.Web.Controllers
             }
         }
 
-        //[HttpPost]
-        //public async Task<IActionResult> CheckMenuTitle(IFormCollection collection)
-        //{
-        //    int productId = _configuration.GetValue<int>("AllowedProducts:ProductId");
-        //    // Pass the form collection directly to the service
-        //    bool exists = await _menuItemService.CheckMenuTitle(collection, productId);
+        [HttpPost]
+        public async Task<IActionResult> CheckMenuTitle(IFormCollection collection)
+        {
+            bool exists = await _menuItemService.CheckMenuTitle(collection);
 
-        //    return Json(new { exists = exists });
-        //}
+            return Json(new { exists = exists });
+        }
 
         [HttpPost]
         public async Task<IActionResult> CheckPageLevel(IFormCollection collection)

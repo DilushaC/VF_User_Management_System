@@ -280,6 +280,10 @@ namespace UserManagement.Business.PageHandler
                 if (!int.TryParse(collection["DisplayOrder"], out int displayOrder))
                     return false;
 
+                // Parse CategoryId
+                if (!int.TryParse(collection["CategoryId"], out int categoryId))
+                    return false;
+
                 int id = 0;
                 if (int.TryParse(collection["Id"], out int parsedId))
                 {
@@ -288,13 +292,15 @@ namespace UserManagement.Business.PageHandler
 
                 // SQL: Check in MenuItems table
                 string sql = @"
-                        SELECT COUNT(*)
-                        FROM MenuItems
-                        WHERE ProductId = @ProductId
-                        AND DisplayOrder = @DisplayOrder
-                    ";
+                    SELECT COUNT(*)
+                    FROM MenuItems
+                    WHERE ProductId = @ProductId
+                      AND CategoryId = @CategoryId
+                      AND DisplayOrder = @DisplayOrder
+                ";
 
                 var parameters = new DynamicParameters();
+                parameters.Add("@CategoryId", categoryId, DbType.Int32);
                 parameters.Add("@ProductId", productId, DbType.Int32);
                 parameters.Add("@DisplayOrder", displayOrder, DbType.Int32);
 

@@ -16,34 +16,6 @@
 
                     <form asp-action="Create" asp-controller="Menu" method="post" id="RegisterForm" novalidate>
                         <fieldset>
-                            <!-- Menu Title -->
-                            <div class="row g-2">
-                                <div class="mb-3 col-md-6">
-                                    <label asp-for="MenuTitle" class="form-label">Menu Title</label>
-                                    <input asp-for="MenuTitle" class="form-control round" required />
-                                    <span asp-validation-for="MenuTitle" class="invalid-tooltip"></span>
-                                    <small id="menuTitle-status"></small>
-                                </div>
-                            </div>
-
-                            <!-- Is Main Menu -->
-                            <div class="row g-2">
-                                <div class="mb-3 col-md-3 form-check">
-                                    <input type="checkbox" class="form-check-input" id="IsMainMenu" name="IsMainMenu">
-                                    <label class="form-check-label" for="IsMainMenu">
-                                        This is a Main Menu
-                                    </label>
-                                </div>
-                                <div class="mb-3 col-md-3 form-check">
-                                    <input type="checkbox"
-                                           class="form-check-input"
-                                           id="NoSubMenus"
-                                           name="NoSubMenus">
-                                    <label class="form-check-label" for="NoSubMenus">
-                                        No Sub Menus
-                                    </label>
-                                </div>
-                            </div>
 
                             <!-- Product -->
                             <div id="productContainer" class="row g-2">
@@ -62,6 +34,44 @@
                                     </select>
                                 </div>
                             </div>
+
+                            <!-- Menu Details (Hidden initially) -->
+                            <div id="menuDetailsContainer" class="d-none">
+
+                                <!-- Menu Title -->
+                                <!-- Menu Title -->
+                                <div class="row g-2">
+                                    <div class="mb-3 col-md-6">
+                                        <label asp-for="MenuTitle" class="form-label">Menu Title</label>
+                                        <input asp-for="MenuTitle" id="MenuTitle" class="form-control round" required />
+                                        <span asp-validation-for="MenuTitle" class="invalid-tooltip"></span>
+                                        <small id="menuTitle-status"></small>
+                                    </div>
+                                </div>
+
+
+                                <!-- Is Main Menu -->
+                                <div class="row g-2">
+                                    <div class="mb-3 col-md-3 form-check">
+                                        <input type="checkbox" class="form-check-input" id="IsMainMenu" name="IsMainMenu">
+                                        <label class="form-check-label" for="IsMainMenu">
+                                            This is a Main Menu
+                                        </label>
+                                    </div>
+
+                                    <div class="mb-3 col-md-3 form-check">
+                                        <input type="checkbox"
+                                               class="form-check-input"
+                                               id="NoSubMenus"
+                                               name="NoSubMenus">
+                                        <label class="form-check-label" for="NoSubMenus">
+                                            No Sub Menus
+                                        </label>
+                                    </div>
+                                </div>
+
+                            </div>
+
 
                             <!-- Pages -->
                             <div id="pageContainer" class="row g-2">
@@ -214,6 +224,24 @@
     });
 </script>
 
+<script>
+    $("#ProductId").on("change", function () {
+        const productId = $(this).val();
+
+        if (productId) {
+            $("#menuDetailsContainer").removeClass("d-none");
+        } else {
+            $("#menuDetailsContainer").addClass("d-none");
+
+            // Reset values if product cleared
+            $("#MenuTitle").val("");
+            $("#IsMainMenu").prop("checked", false);
+            $("#NoSubMenus").prop("checked", false);
+        }
+    });
+</script>
+
+
 
 <script>
 
@@ -249,27 +277,6 @@
     });
 
 
-    let menuTitleValid = false;
-    let pageLevelValid = false;
-
-    $("#PageLevel").on('blur', function () {
-    let pageLevel = $("#DisplayOrder").val();
-    var productId = $("#ProductId").val();
-        $.ajax({
-            url: '/Page/CheckPageLevel',
-            type: 'POST',
-            data: { pageLevel: pageLevel,productId: productId },
-            success: function (res) {
-                if (res.exists) {
-                    pageLevelValid = false;
-                    $("#pageLevel-status").html(`<span style="color:red;">❌ Page Level exists</span>`);
-                } else {
-                    pageLevelValid = true;
-                    $("#pageLevel-status").html(`<span style="color:green;">✔ Page Level available</span>`);
-                }
-            }
-        });
-    });
 
     $("#ProductId").on("change", function () {
         let productId = $(this).val();
@@ -294,6 +301,52 @@
             $("#PageIds").empty().trigger('change');
         }
     });
+
+
+    let menuTitleValid = true;
+
+    $("#MenuTitle").on("input change", function () {
+        const menuTitle = $(this).val().trim();
+        const productId = $("#ProductId").val();
+        const status = $("#menuTitle-status");
+
+        status.text("").removeClass("text-danger text-success");
+
+        // Basic guard checks
+        if (!menuTitle || !productId) {
+            menuTitleValid = false;
+            return;
+        }
+
+        $.ajax({
+            url: "/Menu/CheckMenuTitle",   // API endpoint
+            type: "POST",
+            data: {
+                ProductId: productId,
+                MenuTitle: menuTitle
+            },
+            success: function (response) {
+                if (response.exists) {
+                    status
+                        .text("Menu title already exists")
+                        .addClass("text-danger");
+                    menuTitleValid = false;
+                } else {
+                    status
+                        .text("Menu title available")
+                        .addClass("text-success");
+                    menuTitleValid = true;
+                }
+            },
+            error: function () {
+                status
+                    .text("Unable to validate menu title")
+                    .addClass("text-danger");
+                menuTitleValid = false;
+            }
+        });
+    });
+
 
 
     document.addEventListener('DOMContentLoaded', function () {
@@ -427,6 +480,15 @@
                     icon: 'error',
                     title: 'Display Order Already Exists',
                     text: 'Please choose a different display order for this product.'
+                });
+                return; // stop form submission
+            }
+
+            if (!menuTitleValid) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Menu Title Already Exists',
+                    text: 'Please choose a different menu title for this product.'
                 });
                 return; // stop form submission
             }

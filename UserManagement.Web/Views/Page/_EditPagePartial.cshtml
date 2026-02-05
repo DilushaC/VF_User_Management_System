@@ -16,18 +16,16 @@
 
         <div class="mb-3 col-md-6">
             <label class="form-label">Page Name</label>
-            <input type="text" asp-for="PageName" class="form-control" />
+            <input type="text" asp-for="PageName" class="form-control" readonly />
         </div>
         <div class="mb-3 col-md-6">
             <label class="form-label">Page Url</label>
             <input type="text" asp-for="PageUrl" class="form-control" />
         </div>
-        <div class="row">
-            <div class="mb-3">
-                <label class="form-label">Product</label>
-                <select id="ProductId" asp-for="ProductId" class="form-control select2" asp-items="ViewBag.Products">
-                </select>
-            </div>
+        <div class="mb-3 col-md-6">
+            <label class="form-label">Product</label>
+            <select id="ProductId" asp-for="ProductId" class="form-control select2" asp-items="ViewBag.Products">
+            </select>
         </div>
         <div class="mb-3 col-md-6">
             <label asp-for="Description" class="form-label"></label>

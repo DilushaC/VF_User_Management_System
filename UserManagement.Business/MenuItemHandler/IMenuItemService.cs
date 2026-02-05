@@ -16,6 +16,6 @@ namespace UserManagement.Business.PageHandler
         public List<MenuItem> GetAllMenuList();
         Task<MenuItem> GetMenuByIdAsync(int id);
         Task<bool> UpdateMenuAsync(IFormCollection collection);
-        //Task<bool> CheckMenuTitle(IFormCollection collection,int productId);
+        Task<bool> CheckMenuTitle(IFormCollection collection);
     }
 }

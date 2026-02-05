@@ -410,35 +410,36 @@ namespace UserManagement.Business.MenuItemHandler
             }
         }
 
-        //public async Task<bool> CheckMenuTitle(IFormCollection collection,int productId)
-        //{
-        //    try
-        //    {
-        //        var menuTitle = collection["MenuTitle"].ToString();
+        public async Task<bool> CheckMenuTitle(IFormCollection collection)
+        {
+            try
+            {
+                var menuTitle = collection["MenuTitle"].ToString();
+                var productId = collection["ProductId"].ToString();
 
-        //        string sql = @"
-        //            SELECT COUNT(*)
-        //            FROM MenuItems
-        //            WHERE MenuTitle = @MenuTitle
-        //              AND ProductId = @ProductId
-        //        ";
+                string sql = @"
+                    SELECT COUNT(*)
+                    FROM MenuItems
+                    WHERE MenuTitle = @MenuTitle
+                      AND ProductId = @ProductId
+                ";
 
-        //        var parameters = new DynamicParameters();
-        //        parameters.Add("@MenuTitle", menuTitle);
-        //        parameters.Add("@ProductId", productId);
+                var parameters = new DynamicParameters();
+                parameters.Add("@MenuTitle", menuTitle);
+                parameters.Add("@ProductId", productId);
 
-        //        // Synchronous call wrapped in Task.FromResult
-        //        var result = _connectionService.ExecuteScalar(sql, parameters);
+                // Synchronous call wrapped in Task.FromResult
+                var result = _connectionService.ExecuteScalar(sql, parameters);
 
-        //        int count = Convert.ToInt32(result);
+                int count = Convert.ToInt32(result);
 
-        //        return await Task.FromResult(count > 0);
-        //    }
-        //    catch (Exception)
-        //    {
-        //        return await Task.FromResult(false);
-        //    }
-        //}
+                return await Task.FromResult(count > 0);
+            }
+            catch (Exception)
+            {
+                return await Task.FromResult(false);
+            }
+        }
 
 
     }
