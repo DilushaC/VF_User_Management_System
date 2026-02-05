@@ -273,14 +273,12 @@ namespace UserManagement.Business.PageHandler
         {
             try
             {
-                // Get values from the form and convert to int
                 if (!int.TryParse(collection["ProductId"], out int productId))
                     return false;
 
                 if (!int.TryParse(collection["DisplayOrder"], out int displayOrder))
                     return false;
 
-                // Parse CategoryId
                 if (!int.TryParse(collection["CategoryId"], out int categoryId))
                     return false;
 
@@ -290,21 +288,21 @@ namespace UserManagement.Business.PageHandler
                     id = parsedId;
                 }
 
-                // SQL: Check in MenuItems table
                 string sql = @"
                     SELECT COUNT(*)
                     FROM MenuItems
                     WHERE ProductId = @ProductId
-                      AND CategoryId = @CategoryId
+                      AND MenuCategoryId = @CategoryId
                       AND DisplayOrder = @DisplayOrder
+                      AND (@Id = 0 OR Id <> @Id)
                 ";
 
                 var parameters = new DynamicParameters();
-                parameters.Add("@CategoryId", categoryId, DbType.Int32);
                 parameters.Add("@ProductId", productId, DbType.Int32);
+                parameters.Add("@CategoryId", categoryId, DbType.Int32);
                 parameters.Add("@DisplayOrder", displayOrder, DbType.Int32);
+                parameters.Add("@Id", id, DbType.Int32);
 
-                // Execute scalar synchronously wrapped in Task.Run for async
                 var count = await Task.Run(() =>
                 {
                     var result = _connectionService.ExecuteScalar(sql, parameters);
@@ -318,6 +316,7 @@ namespace UserManagement.Business.PageHandler
                 return false;
             }
         }
+
 
 
         public async Task<bool> CheckPageLevelForExistingMenu(IFormCollection collection)

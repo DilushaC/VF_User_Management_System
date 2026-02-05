@@ -77,7 +77,13 @@
 
                             <div class="row g-2">
                                 <div class="mb-3 col-md-6 position-relative">
-                                    <label asp-for="ProductIds" class="form-label">Products</label>
+                                    <label asp-for="ProductIds" class="form-label">
+                                        Products
+                                        <small class="text-muted d-block">
+                                            Select one or more products for user access
+                                        </small>
+                                    </label>
+
                                     <select asp-for="ProductIds"
                                             id="ProductIds"
                                             name="ProductIds"

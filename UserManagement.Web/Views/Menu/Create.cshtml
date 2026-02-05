@@ -188,6 +188,7 @@
 
         let displayOrder = $(this).val();
         let productId = $("#ProductId").val();
+        let categoryId = $("#CategoryId").val();
 
         // Guard
         if (!displayOrder || !productId) {
@@ -202,6 +203,7 @@
             data: {
                 displayOrder: displayOrder,
                 productId: productId,
+                categoryId: categoryId,
                 __RequestVerificationToken: $('input[name="__RequestVerificationToken"]').val()
             },
             success: function (res) {
