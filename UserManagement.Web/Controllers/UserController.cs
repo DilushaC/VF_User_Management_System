@@ -182,7 +182,7 @@ namespace UserManagement.Web.Controllers
             return Json(new
             {
                 success = true,
-                redirectUrl = Url.Action("Index", "Home"),
+                redirectUrl = Url.Action("Management", "User"),
                 loggedUser = user.DisplayName
             });
         }
