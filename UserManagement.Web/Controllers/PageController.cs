@@ -60,9 +60,10 @@ namespace UserManagement.Web.Controllers
             // Custom search (your logic)
             if (!string.IsNullOrWhiteSpace(dtRequest.SearchValue))
             {
-                string s = dtRequest.SearchValue;
+                string s = dtRequest.SearchValue.ToLower();
                 query = query.Where(u =>
-                    u.PageName.ToLower().Contains(s));
+                    u.PageName.ToLower().Contains(s) ||
+                    u.ProductName.ToLower().Contains(s));
             }
 
             // Execute paging using common handler
