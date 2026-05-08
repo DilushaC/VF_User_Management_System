@@ -51,11 +51,6 @@
                                     aria-expanded="@ariaExpanded"
                                     aria-controls="product_@product.ProductId">
 
-                                <input type="checkbox"
-                                       class="form-check-input me-2 product-checkbox"
-                                       data-target="#product_@product.ProductId"
-                                       @(productChecked ? "checked" : "") />
-
                                 <strong>@product.ProductName</strong>
                             </button>
                         </h2>
