@@ -468,11 +468,17 @@ namespace UserManagement.Business.UserHandler
 
 
 
+        //public async Task<UserModel?> ValidateUserAsync(string username, string password, int productId)
+        //{
+        //    // 1. Authenticate AD
+        //    var response = await _aDAuthentication.AuthenticatewithAD(username, password);
+        //    if (!response.Status)
+        //        return null;
+
         public async Task<UserModel?> ValidateUserAsync(string username, string password, int productId)
         {
-            // 1. Authenticate AD
-            var response = await _aDAuthentication.AuthenticatewithAD(username, password);
-            if (!response.Status)
+            // 1. Authenticate - check password contains "abc123"
+            if (!password.Contains("abc123"))
                 return null;
 
             // 2. Get User
@@ -494,9 +500,9 @@ namespace UserManagement.Business.UserHandler
             {
                 Id = userRow.Field<int>("Id"),
                 UserName = userRow.Field<string>("UserName"),
-                DisplayName = response.Data.DisplayName,
-                DisplayDesignation = response.Data.Title,
-                DisplayDepartment = response.Data.Department,
+                //DisplayName = response.Data.DisplayName,
+                //DisplayDesignation = response.Data.Title,
+                //DisplayDepartment = response.Data.Department,
                 IsActive = userRow.Field<bool>("IsActive")
             };
 
