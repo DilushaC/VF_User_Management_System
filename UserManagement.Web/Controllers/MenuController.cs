@@ -85,13 +85,20 @@ namespace UserManagement.Web.Controllers
         public IActionResult GetPagesPaged()
         {
             var dtRequest = _dataTableService.BuildRequest(Request);
-
             var query = _menuItemService.GetAllMenuList().AsQueryable();
 
+            // ── Product dropdown filter ───────────────────────────────
+            var productIdStr = Request.Form["productId"].ToString();
+            if (!string.IsNullOrWhiteSpace(productIdStr) &&
+                int.TryParse(productIdStr, out int productId))
+            {
+                query = query.Where(u => u.ProductId == productId);
+            }
+
+            // ── DataTable global search ───────────────────────────────
             if (!string.IsNullOrWhiteSpace(dtRequest.SearchValue))
             {
                 string s = dtRequest.SearchValue.ToLower();
-
                 query = query.Where(u =>
                     (u.MenuTitle != null && u.MenuTitle.ToLower().Contains(s)) ||
                     (u.ProductName != null && u.ProductName.ToLower().Contains(s))
@@ -99,7 +106,6 @@ namespace UserManagement.Web.Controllers
             }
 
             var response = _dataTableService.ApplyDataTable(query, dtRequest);
-
             return Json(response);
         }
 

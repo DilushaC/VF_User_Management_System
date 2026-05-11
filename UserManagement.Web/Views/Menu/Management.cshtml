@@ -12,6 +12,10 @@
 <link href="~/assets/vendor/datatables.net-buttons-bs5/css/buttons.bootstrap5.min.css" rel="stylesheet" type="text/css" />
 <link href="~/assets/vendor/datatables.net-select-bs5/css/select.bootstrap5.min.css" rel="stylesheet" type="text/css" />
 
+<!-- Select2 CSS + Bootstrap 5 Theme -->
+<link href="~/assets/vendor/select2/css/select2.min.css" rel="stylesheet" type="text/css" />
+<link href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.3.0/dist/select2-bootstrap-5-theme.min.css" rel="stylesheet" />
+
 <!-- Theme Config Js -->
 <script src="~/assets/js/config.js"></script>
 
@@ -27,11 +31,24 @@
             <div class="card-body">
                 <h3 class="page-title">@ViewData["Title"]</h3>
                 <br />
-                <div class="mb-3">
+                <div class="mb-3 d-flex gap-2 align-items-center">
                     <a href="@Url.Action("Create", "Menu")" class="btn btn-primary">
-                        <i class="ri-menu-line"></i> Add Menu
+                        <i class="ri-file-list-line"></i> Add Menu
                     </a>
+
+                    <div style="width: 250px;">
+                        <select id="productFilter"
+                                class="form-select"
+                                data-placeholder="-- All Products --">
+                            <option value=""></option>
+                        </select>
+                    </div>
+
+                    <button id="resetFilter" class="btn btn-secondary">
+                        <i class="ri-refresh-line"></i> Reset
+                    </button>
                 </div>
+
                 <div class="table-responsive">
                     <table id="basic-datatable" class="table table-striped dt-responsive nowrap w-100">
                         <thead>
@@ -43,7 +60,6 @@
                                 <th>Edit</th>
                             </tr>
                         </thead>
-
                         <tbody>
                         </tbody>
                     </table>
@@ -56,7 +72,6 @@
 <div class="modal fade" id="menuEditModal" tabindex="-1" aria-labelledby="menuEditModalLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
     <div class="modal-dialog modal-lg modal-dialog-centered">
         <div class="modal-content">
-            <!-- Initial loading content -->
             <div class="modal-body text-center py-5">
                 <div class="spinner-border text-primary" role="status">
                     <span class="visually-hidden">Loading...</span>
@@ -73,21 +88,46 @@
 <script src="~/assets/vendor/datatables.net-select/js/dataTables.select.min.js"></script>
 <script src="~/assets/vendor/datatables.net-keytable/js/dataTables.keyTable.min.js"></script>
 <script src="~/assets/js/app.min.js"></script>
+<script src="~/assets/vendor/select2/js/select2.min.js"></script>
 
 <script>
-    $('#basic-datatable').DataTable({
+    // ── Select2 init ─────────────────────────────────────────
+    $('#productFilter').select2({
+        placeholder: '-- All Products --',
+        allowClear: true,
+        width: '100%'
+    });
+
+    // ── Populate products dropdown ────────────────────────────
+    $.ajax({
+        url: '/Page/GetProductsForFilter',
+        type: 'GET',
+        success: function (products) {
+            products.forEach(function (p) {
+                $('#productFilter').append(new Option(p.text, p.value, false, false));
+            });
+        }
+    });
+
+    // ── DataTable init ────────────────────────────────────────
+    var table = $('#basic-datatable').DataTable({
         processing: true,
         serverSide: true,
         ajax: {
             url: '/Menu/GetPagesPaged',
-            type: 'POST'
+            type: 'POST',
+            data: function (d) {
+                d.productId = $('#productFilter').val();
+            }
         },
         columns: [
             { data: 'menuTitle' },
             {
-              data: 'parentMenuTitle',
-                render: function(data){
-                    return data && data.trim() !== '' ? data : '<span class="badge bg-warning">Main Menu</span>';
+                data: 'parentMenuTitle',
+                render: function (data) {
+                    return data && data.trim() !== ''
+                        ? data
+                        : '<span class="badge bg-warning">Main Menu</span>';
                 }
             },
             { data: 'productName' },
@@ -107,8 +147,7 @@
                                 class="btn btn-sm btn-info edit-menu-btn"
                                 data-menu-id="${data}">
                             <i class="bi bi-pencil"></i>
-                        </button>
-                    `;
+                        </button>`;
                 }
             }
         ],
@@ -116,11 +155,26 @@
         lengthMenu: [10, 25, 50, 100],
         orderable: true
     });
+
+    // ── Filter on product change ──────────────────────────────
+    $('#productFilter').on('change', function () {
+        table.ajax.reload();
+    });
+
+    // ── Reset button ──────────────────────────────────────────
+    $('#resetFilter').on('click', function () {
+        $('#productFilter').val(null);
+        $('#productFilter').trigger('change');
+        $('#productFilter').trigger('change.select2');
+        table.search('').draw();
+    });
 </script>
+
 <script>
     $(document).ready(function () {
         const menuEditModal = new bootstrap.Modal(document.getElementById('menuEditModal'));
         const modalContent = $('#menuEditModal .modal-content');
+
         $('#basic-datatable').on('click', '.edit-menu-btn', function () {
             const Id = $(this).data('menu-id');
 
@@ -128,6 +182,7 @@
                 alert("Menu ID is missing!");
                 return;
             }
+
             modalContent.html(`
                 <div class="modal-body text-center py-5">
                     <div class="spinner-border text-primary" role="status">
@@ -138,7 +193,7 @@
             `);
 
             menuEditModal.show();
-             
+
             const url = '@Url.Action("LoadEditModal", "Menu")' + '?id=' + Id;
 
             $.ajax({
@@ -166,8 +221,4 @@
             });
         });
     });
-
-
 </script>
-
-

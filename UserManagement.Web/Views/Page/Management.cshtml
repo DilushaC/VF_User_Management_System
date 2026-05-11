@@ -151,10 +151,11 @@
         table.ajax.reload();
     });
 
-    // ✅ Reset button — place AFTER table is initialized
     $('#resetFilter').on('click', function () {
-        $('#productFilter').val(null).trigger('change'); // resets Select2 + reloads table
-        table.search('').draw();                         // resets DataTable search box too
+        $('#productFilter').val(null);                      
+        $('#productFilter').trigger('change');              
+        $('#productFilter').trigger('change.select2');      
+        table.search('').draw();
     });
 </script>
 
