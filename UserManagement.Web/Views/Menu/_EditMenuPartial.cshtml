@@ -15,7 +15,6 @@
     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
 </div>
 
-
 <form id="updateMenuForm" asp-action="UpdateMenuByIdAsync" asp-controller="Menu" method="post">
     <input type="hidden" asp-for="Id" />
 
@@ -31,7 +30,8 @@
         <div class="row g-2" id="parentMenuContainer">
             <div class="mb-3 col-md-6">
                 <label class="form-label">Parent Menu</label>
-                <select id="ParentMenuItemId" name="ParentMenuItemId" class="form-control select2" data-placeholder="Select Parent Menu" asp-items="ViewBag.ParentMenus">
+                <select id="ParentMenuItemId" name="ParentMenuItemId" class="form-control select2"
+                        data-placeholder="Select Parent Menu" asp-items="ViewBag.ParentMenus">
                     <option value="">Select Parent Menu</option>
                 </select>
             </div>
@@ -41,7 +41,8 @@
         <div class="row g-2" id="pageContainer">
             <div class="mb-3 col-md-6">
                 <label class="form-label">Page</label>
-                <select id="PageId" name="PageId" class="form-control select2" data-placeholder="Select Page" asp-items="ViewBag.Pages">
+                <select id="PageId" name="PageId" class="form-control select2"
+                        data-placeholder="Select Page" asp-items="ViewBag.Pages">
                     <option value="">Select Page</option>
                 </select>
             </div>
@@ -59,23 +60,33 @@
             <div class="mb-3 col-md-3" id="displayOrderContainer">
                 <label asp-for="DisplayOrder" class="form-label d-flex justify-content-between">
                     <span>Display Order</span>
+                    <span id="displayOrderValue" class="badge bg-primary">@Model.DisplayOrder</span>
                 </label>
 
-                <input type="number"
-                       asp-for="DisplayOrder"
-                       id="DisplayOrder"
-                       class="form-control"
-                       min="1"
-                       max="20"
-                       step="1"
-                       value="@Model.DisplayOrder" />
+                <div class="d-flex align-items-center gap-2">
+                    <input type="range"
+                           asp-for="DisplayOrder"
+                           id="DisplayOrder"
+                           class="form-range"
+                           min="1"
+                           max="20"
+                           step="1"
+                           value="@Model.DisplayOrder"
+                           style="writing-mode: vertical-lr; direction: ltr; width: 40px; height: 200px; cursor: pointer;" />
 
-                <!-- Validation Message -->
-                <small id="displayOrder-status" class="d-block mt-1 text-danger"></small>
+                    <!-- Tick labels -->
+                    <div class="d-flex flex-column justify-content-between" style="height: 200px;">
+                        <small class="text-muted">1</small>
+                        <small class="text-muted">5</small>
+                        <small class="text-muted">10</small>
+                        <small class="text-muted">15</small>
+                        <small class="text-muted">20</small>
+                    </div>
+                </div>
+
+                <small id="displayOrder-status" class="d-block mt-1"></small>
             </div>
-
         </div>
-
 
         <!-- Product -->
         <div class="mb-3 col-md-6">
@@ -85,6 +96,7 @@
             </select>
         </div>
 
+        <!-- Category -->
         <div class="mb-3 col-md-6">
             <label class="form-label">Category</label>
             <select id="CategoryId" asp-for="CategoryId" class="form-control select2" asp-items="ViewBag.Categories">
@@ -119,41 +131,40 @@
         // Initialize Select2
         $('#ParentMenuItemId, #PageId, #ProductId, #Status, #CategoryId').select2({ width: '100%' });
 
-        const parentMenuContainer = $('#parentMenuContainer');
-        const pageContainer = $('#pageContainer');
-        const iconContainer = $('#iconClassContainer');
-        const displayOrderContainer = $('#displayOrderContainer');
+        var parentMenuContainer  = $('#parentMenuContainer');
+        var pageContainer        = $('#pageContainer');
+        var iconContainer        = $('#iconClassContainer');
+        var displayOrderContainer = $('#displayOrderContainer');
 
-        const parentSelect = $('#ParentMenuItemId');
-        const pageSelect = $('#PageId');
-        const iconInput = $('#IconClass');
-        const displayOrderInput = $('#DisplayOrder');
-        const displayOrderStatus = $('#displayOrder-status'); // <-- validation message
+        var parentSelect      = $('#ParentMenuItemId');
+        var pageSelect        = $('#PageId');
+        var iconInput         = $('#IconClass');
+        var displayOrderInput = $('#DisplayOrder');
+        var displayOrderStatus = $('#displayOrder-status');
 
-        let displayOrderValid = true; // Track validity
+        // ── Store original value to skip check when unchanged ──
+        var originalDisplayOrder = parseInt('@Model.DisplayOrder');
+        var displayOrderValid = true;
 
         // Set initial values from model
         parentSelect.val('@Model.ParentMenuItemId').trigger('change');
         pageSelect.val('@Model.PageId').trigger('change');
 
-        // Toggle fields depending on parent menu
+        // ── Toggle fields depending on parent menu ─────────────
         function toggleFields() {
-            const parentVal = parentSelect.val();
-            const pageVal = pageSelect.val();
-
-            const isMainMenu = !parentVal || parentVal === "0";
-            const showPageWhenParentNull = (!parentVal || parentVal === "0") && pageVal;
+            var parentVal = parentSelect.val();
+            var pageVal   = pageSelect.val();
+            var isMainMenu = !parentVal || parentVal === "0";
 
             if (isMainMenu) {
                 parentMenuContainer.hide();
                 iconContainer.show();
                 displayOrderContainer.show();
-
                 iconInput.attr('required', 'required');
                 displayOrderInput.attr('required', 'required');
                 parentSelect.removeAttr('required');
 
-                if (showPageWhenParentNull) {
+                if (pageVal) {
                     pageContainer.show();
                     pageSelect.attr('required', 'required');
                 } else {
@@ -166,87 +177,106 @@
                 pageContainer.show();
                 iconContainer.hide();
                 displayOrderContainer.hide();
-
                 iconInput.removeAttr('required');
                 displayOrderInput.removeAttr('required');
-
                 parentSelect.attr('required', 'required');
                 pageSelect.attr('required', 'required');
             }
         }
 
-        // Initial toggle
         toggleFields();
-
-        // On Parent Menu change
         parentSelect.on('change', toggleFields);
 
-        // Check display order availability on change
-        displayOrderInput.on('change', function () {
-            const displayOrder = $(this).val();
-            const productId = $('#ProductId').val();
-            const categoryId = $('#CategoryId').val();
-            const Id = $('#Id').val();
+        // ── Slider visual update ───────────────────────────────
+        function updateSliderDisplay(val) {
+            val = parseInt(val);
+            var milestones = [1, 5, 10, 15, 20];
+            if (milestones.indexOf(val) === -1) {
+                $("#displayOrderValue").text(val).removeClass("bg-primary").addClass("bg-warning text-dark");
+            } else {
+                $("#displayOrderValue").text(val).removeClass("bg-warning text-dark").addClass("bg-primary");
+            }
+        }
 
-            if (!displayOrder || !productId) {
+        // Init slider display
+        updateSliderDisplay(displayOrderInput.val());
+
+        // ── Slider input — update visual only ─────────────────
+        displayOrderInput.on("input", function () {
+            updateSliderDisplay($(this).val());
+            // Clear status while sliding
+            displayOrderStatus.text('');
+            displayOrderValid = true;
+        });
+
+        // ── AJAX check only fires on slider release (change) ──
+        // and only if value actually changed from original
+        displayOrderInput.on('change', function () {
+            var newVal   = parseInt($(this).val());
+            var productId  = $('#ProductId').val();
+            var categoryId = $('#CategoryId').val();
+            var id         = $('#Id').val();
+
+            // ✅ Skip check if value is same as original
+            if (newVal === originalDisplayOrder) {
                 displayOrderStatus.text('');
-                displayOrderValid = false;
+                displayOrderValid = true;
+                return;
+            }
+
+            if (!newVal || !productId) {
+                displayOrderStatus.text('');
+                displayOrderValid = true;
                 return;
             }
 
             $.ajax({
-                url: '/Page/CheckPageLevel', // your backend endpoint
+                url: '/Page/CheckPageLevel',
                 type: 'POST',
                 data: {
                     ProductId: productId,
-                    DisplayOrder: displayOrder,
+                    DisplayOrder: newVal,
                     categoryId: categoryId,
-                    Id : Id,
+                    Id: id,
                     __RequestVerificationToken: $('input[name="__RequestVerificationToken"]').val()
                 },
                 success: function (res) {
                     if (res.exists === true) {
                         displayOrderValid = false;
                         displayOrderStatus
-                            .text('❌ Display order already exists')
+                            .text('Display order already exists')
                             .removeClass('text-success')
                             .addClass('text-danger');
                     } else {
                         displayOrderValid = true;
                         displayOrderStatus
-                            .text('✔ Display order available')
+                            .text('Display order available')
                             .removeClass('text-danger')
                             .addClass('text-success');
                     }
                 },
                 error: function () {
                     displayOrderValid = false;
-                    displayOrderStatus.text('⚠ Unable to validate display order').removeClass('text-success').addClass('text-danger');
+                    displayOrderStatus
+                        .text('Unable to validate display order')
+                        .removeClass('text-success')
+                        .addClass('text-danger');
                 }
             });
         });
 
-        // Form submission
+        // ── Form submission ────────────────────────────────────
         $('#updateMenuForm').on('submit', function (e) {
             e.preventDefault();
-            let form = $(this);
+            var form = $(this);
 
             if (!form[0].checkValidity()) {
-                Swal.fire({
-                    icon: 'warning',
-                    title: 'Missing Information',
-                    text: 'Please fill in all required fields.'
-                });
+                Swal.fire({ icon: 'warning', title: 'Missing Information', text: 'Please fill in all required fields.' });
                 return;
             }
 
-            // Check display order before submit
             if (!displayOrderValid) {
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Invalid Display Order',
-                    text: 'The selected display order already exists for this product.'
-                });
+                Swal.fire({ icon: 'error', title: 'Invalid Display Order', text: 'The selected display order already exists for this product.' });
                 return;
             }
 
@@ -256,49 +286,38 @@
                 showCancelButton: true,
                 confirmButtonText: 'Yes, Update',
                 cancelButtonText: 'Cancel'
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    Swal.fire({ title: 'Updating...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
+            }).then(function (result) {
+                if (!result.isConfirmed) return;
 
-                    $.ajax({
-                        url: '/Menu/LoadEditModal',
-                        type: 'POST',
-                        data: form.serialize(),
-                        headers: { "X-Requested-With": "XMLHttpRequest" },
+                Swal.fire({ title: 'Updating...', allowOutsideClick: false, didOpen: function () { Swal.showLoading(); } });
 
-                        success: function (response) {
-                            Swal.close();
-
-                            if (response.success) {
-                                Swal.fire({
-                                    icon: 'success',
-                                    title: response.message,
-                                    showConfirmButton: false,
-                                    timer: 1500
-                                }).then(() => {
-                                    window.location.href = response.redirectUrl;
-                                });
-                            } else {
-                                Swal.fire({
-                                    icon: 'error',
-                                    title: 'Error',
-                                    text: response.message || 'Failed to create menu.'
-                                });
-                            }
-                        },
-
-                        error: function () {
+                $.ajax({
+                    url: '/Menu/LoadEditModal',
+                    type: 'POST',
+                    data: form.serialize(),
+                    headers: { "X-Requested-With": "XMLHttpRequest" },
+                    success: function (response) {
+                        Swal.close();
+                        if (response.success) {
                             Swal.fire({
-                                icon: 'error',
-                                title: 'Error',
-                                text: 'Something went wrong! Please try again.'
+                                icon: 'success',
+                                title: response.message,
+                                title: response.message,
+                                showConfirmButton: false,
+                                timer: 1500
+                            }).then(function () {
+                                window.location.href = response.redirectUrl;
                             });
+                        } else {
+                            Swal.fire({ icon: 'error', title: 'Error', text: response.message || 'Failed to update menu.' });
                         }
-                    });
-                }
+                    },
+                    error: function () {
+                        Swal.fire({ icon: 'error', title: 'Error', text: 'Something went wrong! Please try again.' });
+                    }
+                });
             });
         });
 
     });
 </script>
-
