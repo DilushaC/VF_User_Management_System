@@ -54,10 +54,17 @@ namespace UserManagement.Web.Controllers
         {
             var dtRequest = _dataTableService.BuildRequest(Request);
 
-            // Build query
             var query = _pageService.GetAllPagesList().AsQueryable();
 
-            // Custom search (your logic)
+            // ── Product dropdown filter ──────────────────────────────
+            var productIdStr = Request.Form["productId"].ToString();
+            if (!string.IsNullOrWhiteSpace(productIdStr) &&
+                int.TryParse(productIdStr, out int productId))
+            {
+                query = query.Where(u => u.ProductId == productId);
+            }
+
+            // ── DataTable global search ──────────────────────────────
             if (!string.IsNullOrWhiteSpace(dtRequest.SearchValue))
             {
                 string s = dtRequest.SearchValue.ToLower();
@@ -66,10 +73,18 @@ namespace UserManagement.Web.Controllers
                     u.ProductName.ToLower().Contains(s));
             }
 
-            // Execute paging using common handler
             var response = _dataTableService.ApplyDataTable(query, dtRequest);
-
             return Json(response);
+        }
+
+        [HttpGet]
+        public IActionResult GetProductsForFilter()
+        {
+            var products = _productService.GetAllActiveProductList()
+                .Select(x => new { value = x.Id.ToString(), text = x.ProductName })
+                .ToList();
+
+            return Json(products);
         }
 
         [HttpPost]

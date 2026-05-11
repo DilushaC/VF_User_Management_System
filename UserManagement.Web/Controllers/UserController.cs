@@ -61,7 +61,7 @@ namespace UserManagement.Web.Controllers
                     u.UserName.ToLower().Contains(s) ||
                     u.FirstName.ToLower().Contains(s) ||
                     u.LastName.ToLower().Contains(s) ||
-                    u.Email.ToLower().Contains(s));
+                    u.DesignationName.ToLower().Contains(s));
             }
 
             // Execute paging using common handler

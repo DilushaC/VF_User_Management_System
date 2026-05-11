@@ -27,10 +27,24 @@
             <div class="card-body">
                 <h3 class="page-title">@ViewData["Title"]</h3>
                 <br />
-                <div class="mb-3">
+                <!-- Add this dropdown ABOVE the table, inside card-body, after the "Add page" button div -->
+                <div class="mb-3 d-flex gap-2 align-items-center">
                     <a href="@Url.Action("Create", "Page")" class="btn btn-primary">
                         <i class="ri-file-list-line"></i> Add page
                     </a>
+
+                    <div style="width: 250px;">
+                        <select id="productFilter"
+                                class="form-select"
+                                data-placeholder="-- All Products --">
+                            <option value=""></option>
+                        </select>
+                    </div>
+
+                    <!-- Reset button -->
+                    <button id="resetFilter" class="btn btn-secondary">
+                        <i class="ri-refresh-line"></i> Reset
+                    </button>
                 </div>
                 <div class="table-responsive">
                     <table id="basic-datatable" class="table table-striped dt-responsive nowrap w-100">
@@ -72,27 +86,48 @@
 <script src="~/assets/vendor/datatables.net-select/js/dataTables.select.min.js"></script>
 <script src="~/assets/vendor/datatables.net-keytable/js/dataTables.keyTable.min.js"></script>
 <script src="~/assets/js/app.min.js"></script>
+<script src="~/assets/vendor/select2/js/select2.min.js"></script>
 
 <script>
-    $('#basic-datatable').DataTable({
+    // Init Select2 with bootstrap-5 theme
+    $('#productFilter').select2({
+        placeholder: '-- All Products --',
+        allowClear: true,
+        width: '100%'
+    });
+
+    // Fetch products and populate
+    $.ajax({
+        url: '/Page/GetProductsForFilter',
+        type: 'GET',
+        success: function (products) {
+            products.forEach(function (p) {
+                $('#productFilter').append(new Option(p.text, p.value, false, false));
+            });
+        }
+    });
+
+    // Init DataTable
+    var table = $('#basic-datatable').DataTable({
         processing: true,
         serverSide: true,
         ajax: {
             url: '/Page/GetPagesPaged',
-            type: 'POST'
+            type: 'POST',
+            data: function (d) {
+                d.productId = $('#productFilter').val();
+            }
         },
         columns: [
             { data: 'pageName' },
             { data: 'productName' },
             {
                 data: 'isActive',
-                render: function (data, type, row) {
-                    if (data === true || data === "Active") {
-                        return '<span class="badge bg-success">Active</span>';
-                    } else {
-                        return '<span class="badge bg-danger">Inactive</span>';
-                    }
-            },
+                render: function (data) {
+                    return data === true || data === "Active"
+                        ? '<span class="badge bg-success">Active</span>'
+                        : '<span class="badge bg-danger">Inactive</span>';
+                }
             },
             {
                 data: 'id',
@@ -102,8 +137,7 @@
                                 class="btn btn-sm btn-info edit-page-btn"
                                 data-page-id="${data}">
                             <i class="bi bi-pencil"></i>
-                        </button>
-                    `;
+                        </button>`;
                 }
             }
         ],
@@ -112,7 +146,16 @@
         orderable: true
     });
 
+    // Change event covers both select and clear
+    $('#productFilter').on('change', function () {
+        table.ajax.reload();
+    });
 
+    // ✅ Reset button — place AFTER table is initialized
+    $('#resetFilter').on('click', function () {
+        $('#productFilter').val(null).trigger('change'); // resets Select2 + reloads table
+        table.search('').draw();                         // resets DataTable search box too
+    });
 </script>
 
 <script>
