@@ -215,6 +215,39 @@ namespace UserManagement.Web.Controllers
         }
 
         [HttpPost]
+        public async Task<IActionResult> DeleteMenu(IFormCollection form)
+        {
+            try
+            {
+                var result = await _menuItemService.DeleteMenuAsync(form);
+
+                if (!result)
+                {
+                    return Ok(new
+                    {
+                        success = false,
+                        message = "Failed to delete menu."
+                    });
+                }
+
+                return Ok(new
+                {
+                    success = true,
+                    message = "Menu deleted successfully.",
+                    redirectUrl = Url.Action("Management", "Menu")
+                });
+            }
+            catch (Exception ex)
+            {
+                return Ok(new
+                {
+                    success = false,
+                    message = $"Error: {ex.Message}"
+                });
+            }
+        }
+
+        [HttpPost]
         public async Task<IActionResult> CheckMenuTitle(IFormCollection collection)
         {
             bool exists = await _menuItemService.CheckMenuTitle(collection);

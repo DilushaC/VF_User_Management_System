@@ -142,15 +142,12 @@
         var displayOrderInput = $('#DisplayOrder');
         var displayOrderStatus = $('#displayOrder-status');
 
-        // ── Store original value to skip check when unchanged ──
         var originalDisplayOrder = parseInt('@Model.DisplayOrder');
         var displayOrderValid = true;
 
-        // Set initial values from model
         parentSelect.val('@Model.ParentMenuItemId').trigger('change');
         pageSelect.val('@Model.PageId').trigger('change');
 
-        // ── Toggle fields depending on parent menu ─────────────
         function toggleFields() {
             var parentVal = parentSelect.val();
             var pageVal   = pageSelect.val();
@@ -198,19 +195,16 @@
             }
         }
 
-        // Init slider display
+
         updateSliderDisplay(displayOrderInput.val());
 
-        // ── Slider input — update visual only ─────────────────
         displayOrderInput.on("input", function () {
             updateSliderDisplay($(this).val());
-            // Clear status while sliding
             displayOrderStatus.text('');
             displayOrderValid = true;
         });
 
-        // ── AJAX check only fires on slider release (change) ──
-        // and only if value actually changed from original
+
         displayOrderInput.on('change', function () {
             var newVal   = parseInt($(this).val());
             var productId  = $('#ProductId').val();
