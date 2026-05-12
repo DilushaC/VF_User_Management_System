@@ -42,7 +42,7 @@
         </div>
         <div class="row">
             <div class="row g-2">
-                <div class="mb-3 col-md-6 position-relative">
+                <div class="mb-3 col-md-12 position-relative">
                     <label asp-for="ProductIds" class="form-label">Products</label>
                     <select asp-for="ProductIds"
                             id="ProductIds"
@@ -63,7 +63,7 @@
             </div>
         </div>
 
-        <div class="mb-3">
+        <div class="mb-3 col-md-6">
             <label class="form-label">Designation</label>
             <select id="DesignationId" asp-for="DesignationId" class="form-select" asp-items="ViewBag.Designations">
             </select>
