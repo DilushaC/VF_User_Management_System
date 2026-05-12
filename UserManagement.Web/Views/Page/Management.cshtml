@@ -53,7 +53,7 @@
                                 <th>Page Name</th>
                                 <th>Product</th>
                                 <th>Active</th>
-                                <th>Edit</th>
+                                <th>Actions</th>
                             </tr>
                         </thead>
 
@@ -86,6 +86,7 @@
 <script src="~/assets/vendor/datatables.net-select/js/dataTables.select.min.js"></script>
 <script src="~/assets/vendor/datatables.net-keytable/js/dataTables.keyTable.min.js"></script>
 <script src="~/assets/js/app.min.js"></script>
+<script src="~/assets/js/sweetalert2.all.min.js"></script>
 <script src="~/assets/vendor/select2/js/select2.min.js"></script>
 
 <script>
@@ -129,15 +130,35 @@
                         : '<span class="badge bg-danger">Inactive</span>';
                 }
             },
+            // Actions
             {
                 data: 'id',
+                orderable: false,
+                searchable: false,
+                className: 'text-center',
+
                 render: function (data) {
                     return `
-                        <button type="button"
-                                class="btn btn-sm btn-info edit-page-btn"
-                                data-page-id="${data}">
-                            <i class="bi bi-pencil"></i>
-                        </button>`;
+                        <div class="d-flex justify-content-center gap-1">
+
+                            <!-- Edit -->
+                            <button type="button"
+                                    class="btn btn-sm btn-info edit-page-btn"
+                                    data-page-id="${data}"
+                                    title="Edit Page">
+                                <i class="bi bi-pencil"></i>
+                            </button>
+
+                            <!-- Delete -->
+                            <button type="button"
+                                    class="btn btn-sm btn-danger delete-page-btn"
+                                    data-page-id="${data}"
+                                    title="Delete Page">
+                                <i class="bi bi-trash"></i>
+                            </button>
+
+                        </div>
+                    `;
                 }
             }
         ],
@@ -208,6 +229,114 @@
         });
     });
 
+
+</script>
+
+<script>
+
+    // ── Delete Menu ─────────────────────────────────────────
+    $('#basic-datatable').on('click', '.delete-page-btn', function () {
+
+        const id = $(this).data('page-id');
+
+        // Validate ID
+        if (!id) {
+
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: 'Page ID not found.'
+            });
+
+            return;
+        }
+
+        // Confirmation Alert
+        Swal.fire({
+
+            title: 'Delete Page?',
+            text: 'This action cannot be undone.',
+            icon: 'warning',
+
+            showCancelButton: true,
+            confirmButtonColor: '#d33',
+            cancelButtonColor: '#6c757d',
+
+            confirmButtonText: 'Yes, Delete',
+            cancelButtonText: 'Cancel'
+
+        }).then((result) => {
+
+            // Cancel
+            if (!result.isConfirmed)
+                return;
+
+            // Loading
+            Swal.fire({
+                title: 'Deleting...',
+                text: 'Please wait',
+                allowOutsideClick: false,
+                didOpen: () => {
+                    Swal.showLoading();
+                }
+            });
+
+            // AJAX Delete
+            $.ajax({
+
+                url: '/Page/DeletePage',
+                type: 'POST',
+
+                data: {
+                    id: id
+                },
+
+                success: function (response) {
+
+                    Swal.close();
+
+                    // Success
+                    if (response.success) {
+
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Deleted',
+                            text: response.message,
+                            timer: 1500,
+                            showConfirmButton: false
+                        });
+
+                        // Reload DataTable
+                        table.ajax.reload(null, false);
+
+                    }
+                    else {
+
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error',
+                            text: response.message || 'Failed to delete Page.'
+                        });
+
+                    }
+
+                },
+
+                error: function () {
+
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Server Error',
+                        text: 'Something went wrong while deleting.'
+                    });
+
+                }
+
+            });
+
+        });
+
+    });
 
 </script>
 

@@ -382,6 +382,31 @@ namespace UserManagement.Business.PageHandler
         }
 
 
+        public async Task<bool> DeletePageAsync(IFormCollection collection)
+        {
+            try
+            {
+                int id = Convert.ToInt32(collection["id"]);
+
+                string sql = @"
+                    DELETE FROM Pages
+                    WHERE Id = @Id
+                ";
+
+                var parameters = new DynamicParameters();
+                parameters.Add("@Id", id, DbType.Int32);
+
+                int rows = _connectionService.ExecuteWithPara(sql, parameters);
+
+                return rows > 0;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
+
 
 
     }

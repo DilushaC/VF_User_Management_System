@@ -4,6 +4,7 @@ using UserManagement.Business.BranchHandler;
 using UserManagement.Business.DatatableHandler;
 using UserManagement.Business.DepartmentHandler;
 using UserManagement.Business.DesignationHandler;
+using UserManagement.Business.MenuItemHandler;
 using UserManagement.Business.PageHandler;
 using UserManagement.Business.ProductHandler;
 using UserManagement.Business.UserHandler;
@@ -196,6 +197,39 @@ namespace UserManagement.Web.Controllers
             {
                 Console.WriteLine(ex);
                 return Json(new { exists = false });
+            }
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> DeletePage(IFormCollection form)
+        {
+            try
+            {
+                var result = await _pageService.DeletePageAsync(form);
+
+                if (!result)
+                {
+                    return Ok(new
+                    {
+                        success = false,
+                        message = "Failed to delete Page."
+                    });
+                }
+
+                return Ok(new
+                {
+                    success = true,
+                    message = "Page deleted successfully.",
+                    redirectUrl = Url.Action("Management", "Page")
+                });
+            }
+            catch (Exception ex)
+            {
+                return Ok(new
+                {
+                    success = false,
+                    message = $"Error: {ex.Message}"
+                });
             }
         }
 

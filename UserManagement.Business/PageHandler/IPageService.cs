@@ -15,6 +15,7 @@ namespace UserManagement.Business.PageHandler
         Task<List<PageModel>> GetPagesByProduct(int productId);
         Task<PageModel> GetPageByIdAsync(int id);
         Task<bool> UpdatePageAsync(IFormCollection collection);
+        Task<bool> DeletePageAsync(IFormCollection collection);
         Task<bool> CheckPageNameExists(IFormCollection collection);
         Task<bool> CheckPageLevelExists(IFormCollection collection);
         Task<bool> CheckPageLevelForExistingMenu(IFormCollection collection);
