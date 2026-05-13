@@ -120,6 +120,39 @@ namespace UserManagement.Web.Controllers
             }
         }
 
+        [HttpDelete]
+        public async Task<IActionResult> DeleteDepartment(IFormCollection form)
+        {
+            try
+            {
+                var result = await _departmentService.DeleteDepartmentAsync(form);
+
+                if (!result)
+                {
+                    return Ok(new
+                    {
+                        success = false,
+                        message = "Department is linked to User"
+                    });
+                }
+
+                return Ok(new
+                {
+                    success = true,
+                    message = "Department deleted successfully.",
+                    redirectUrl = Url.Action("Management", "Department")
+                });
+            }
+            catch (Exception ex)
+            {
+                return Ok(new
+                {
+                    success = false,
+                    message = $"Error: {ex.Message}"
+                });
+            }
+        }
+
         [HttpPost]
         public async Task<IActionResult> CheckDepartmentName(IFormCollection collection)
         {

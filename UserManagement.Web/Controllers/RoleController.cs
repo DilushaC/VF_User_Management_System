@@ -120,7 +120,7 @@ namespace UserManagement.Web.Controllers
             }
         }
 
-        [HttpPost]
+        [HttpDelete]
         public async Task<IActionResult> DeleteRole(IFormCollection form)
         {
             try

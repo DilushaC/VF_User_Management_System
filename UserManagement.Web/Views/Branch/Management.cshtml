@@ -30,7 +30,7 @@
                     <br />
                     <div class="mb-3">
                         <a href="@Url.Action("Create", "Branch")" class="btn btn-primary">
-                            <i class="ri-building-2-line"></i> Add Branch
+                            <i class="ri-building-2-line"></i> Create Branch
                         </a>
                     </div>
                     <div class="table-responsive">
@@ -240,7 +240,7 @@
             $.ajax({
 
                 url: '/Branch/DeleteBranch',
-                type: 'POST',
+                type: 'DELETE',
 
                 data: {
                     id: id

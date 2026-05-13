@@ -121,7 +121,7 @@ namespace UserManagement.Web.Controllers
         }
 
 
-        [HttpPost]
+        [HttpDelete]
         public async Task<IActionResult> DeleteBranch(IFormCollection form)
         {
             try
@@ -141,7 +141,7 @@ namespace UserManagement.Web.Controllers
                 {
                     success = true,
                     message = "Branch deleted successfully.",
-                    redirectUrl = Url.Action("Management", "Role")
+                    redirectUrl = Url.Action("Management", "Branch")
                 });
             }
             catch (Exception ex)

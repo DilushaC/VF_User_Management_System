@@ -33,7 +33,7 @@
                 <br />
                 <div class="mb-3 d-flex gap-2 align-items-center">
                     <a href="@Url.Action("Create", "Menu")" class="btn btn-primary">
-                        <i class="ri-file-list-line"></i> Add Menu
+                        <i class="ri-file-list-line"></i> Create Menu
                     </a>
 
                     <div style="width: 250px;">
@@ -57,7 +57,7 @@
                                 <th>Parent Menu</th>
                                 <th>Product</th>
                                 <th>Active</th>
-                                <th>Edit</th>
+                                <th>Actions</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -337,7 +337,7 @@
             $.ajax({
 
                 url: '/Menu/DeleteMenu',
-                type: 'POST',
+                type: 'DELETE',
 
                 data: {
                     id: id

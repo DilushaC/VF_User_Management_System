@@ -214,7 +214,7 @@ namespace UserManagement.Web.Controllers
             }
         }
 
-        [HttpPost]
+        [HttpDelete]
         public async Task<IActionResult> DeleteMenu(IFormCollection form)
         {
             try

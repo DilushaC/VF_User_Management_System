@@ -39,7 +39,7 @@
                 <br />
                 <div class="mb-3">
                     <a href="@Url.Action("Create", "Role")" class="btn btn-primary">
-                        <i class="ri-shield-user-line"></i> Add Role
+                        <i class="ri-shield-user-line"></i> Create Role
                     </a>
                 </div>
                 <div class="table-responsive">
@@ -249,7 +249,7 @@
             $.ajax({
 
                 url: '/Role/DeleteRole',
-                type: 'POST',
+                type: 'DELETE',
 
                 data: {
                     id: id

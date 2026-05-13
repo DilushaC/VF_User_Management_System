@@ -79,21 +79,6 @@ namespace UserManagement.Web.Controllers
             }
         }
 
-        //// POST: DesignationController/Create
-        //[HttpPost]
-        //[ValidateAntiForgeryToken]
-        //public ActionResult Create(IFormCollection collection)
-        //{
-        //    try
-        //    {
-        //        return RedirectToAction(nameof(Index));
-        //    }
-        //    catch
-        //    {
-        //        return View();
-        //    }
-        //}
-
         // GET: DesignationController/Edit/5
         public ActionResult Edit(int id)
         {
@@ -156,39 +141,36 @@ namespace UserManagement.Web.Controllers
             }
         }
 
-        // POST: DesignationController/Edit/5
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Edit(int id, IFormCollection collection)
+        [HttpDelete]
+        public async Task<IActionResult> DeleteDesignation(IFormCollection form)
         {
             try
             {
-                return RedirectToAction(nameof(Index));
-            }
-            catch
-            {
-                return View();
-            }
-        }
+                var result = await _designationService.DeleteDesignationAsync(form);
 
-        // GET: DesignationController/Delete/5
-        public ActionResult Delete(int id)
-        {
-            return View();
-        }
+                if (!result)
+                {
+                    return Ok(new
+                    {
+                        success = false,
+                        message = "Designation is assigned to a User"
+                    });
+                }
 
-        // POST: DesignationController/Delete/5
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Delete(int id, IFormCollection collection)
-        {
-            try
-            {
-                return RedirectToAction(nameof(Index));
+                return Ok(new
+                {
+                    success = true,
+                    message = "Designation deleted successfully.",
+                    redirectUrl = Url.Action("Management", "Designation")
+                });
             }
-            catch
+            catch (Exception ex)
             {
-                return View();
+                return Ok(new
+                {
+                    success = false,
+                    message = $"Error: {ex.Message}"
+                });
             }
         }
 

@@ -200,7 +200,7 @@ namespace UserManagement.Web.Controllers
             }
         }
 
-        [HttpPost]
+        [HttpDelete]
         public async Task<IActionResult> DeletePage(IFormCollection form)
         {
             try
