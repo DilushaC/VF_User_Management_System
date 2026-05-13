@@ -1,4 +1,4 @@
-﻿﻿@using System.Text.Json
+﻿@using System.Text.Json
 @using UserManagement.Data.Models
 @{
     var username = Context.Session.GetString("UserName");
@@ -29,14 +29,27 @@
         .OrderBy(m => m.DisplayOrder)
         .ToList();
 
+    // Current path (no query string, no trailing slash, lowercased)
+    var currentPath = Context.Request.Path.ToString()
+        .ToLower()
+        .TrimEnd('/');
+    if (string.IsNullOrWhiteSpace(currentPath))
+        currentPath = "/";
 
+    // Exact-match helper: "/role/management" == "/role/management"  — no partial hits
+    Func<string, bool> matches = (url) =>
+    {
+        if (string.IsNullOrWhiteSpace(url)) return false;
+        var normalized = "/" + url.ToLower().TrimStart('/').TrimEnd('/');
+        return currentPath == normalized;
+    };
 }
 
 <!DOCTYPE html>
 <html lang="en">
 <head>
 
-    @* scrpts from template *@
+    @* scripts from template *@
     <meta charset="utf-8" />
     <title>User Management System</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -72,9 +85,9 @@
             transition: opacity 0.2s ease-in-out;
         }
 
-        .page-fade.show {
-            opacity: 1;
-        }
+            .page-fade.show {
+                opacity: 1;
+            }
 
         .side-nav-link.active,
         .menu-item.active {
@@ -89,11 +102,11 @@
             border-radius: 8px;
         }
 
-        .side-nav-link:hover,
-        .menu-item:hover {
-            transform: translateX(3px);
-            background-color: rgba(114, 124, 245, 0.08);
-        }
+            .side-nav-link:hover,
+            .menu-item:hover {
+                transform: translateX(3px);
+                background-color: rgba(114, 124, 245, 0.08);
+            }
 
         .side-nav-second-level .menu-item,
         .side-nav-third-level .menu-item {
@@ -202,10 +215,6 @@
                             <span class="leftbar-user-name mt-2">Tosha Minner</span>
                         </a>
                     </div>
-                    @* =========================
-   SIDEBAR MENU (MODIFIED)
-   User Friendly Version
-   ========================= *@
 
                     <ul class="side-nav" id="side-menu">
 
@@ -226,25 +235,11 @@
 
                                 var mainCollapseId = $"sidebar_{mainMenu.Id}";
 
-                                var currentPath = Context.Request.Path.ToString().ToLower();
-
                                 bool isMainActive =
-                                (!string.IsNullOrWhiteSpace(mainMenu.PageUrl) &&
-                                currentPath.Contains(mainMenu.PageUrl.ToLower()))
-                                ||
-                                level1Menus.Any(l1 =>
-                                (!string.IsNullOrWhiteSpace(l1.PageUrl) &&
-                                currentPath.Contains(l1.PageUrl.ToLower()))
-                                ||
-                                menus.Any(l2 =>
-                                l2.ParentMenuItemId == l1.Id &&
-                                !string.IsNullOrWhiteSpace(l2.PageUrl) &&
-                                currentPath.Contains(l2.PageUrl.ToLower())
-                                ));
+                                matches(mainMenu.PageUrl) || level1Menus.Any(l1 =>
+                                matches(l1.PageUrl)|| menus.Any(l2 =>
+                                l2.ParentMenuItemId == l1.Id && l2.IsActive && matches(l2.PageUrl)));
 
-                                @* =========================
-               MAIN MENU WITH CHILDREN
-               ========================= *@
                                 @if (level1Menus.Any())
                                 {
                                     <li class="side-nav-item">
@@ -254,18 +249,13 @@
                                            href="#@mainCollapseId"
                                            aria-expanded="@(isMainActive.ToString().ToLower())">
 
-                                            <i class="@(string.IsNullOrWhiteSpace(mainMenu.IconClass)
-                                                                           ? "ri-asterisk"
-                                                                           : mainMenu.IconClass)">
-                                </i>
+                                            <i class="@(string.IsNullOrWhiteSpace(mainMenu.IconClass) ? "ri-asterisk": mainMenu.IconClass)"></i>
 
-                                            <span class="fw-semibold">
-                                                @mainMenu.MenuTitle
-                                            </span>
-
-                                            <span class="menu-arrow"></span>
+                                <span class="fw-semibold">
+                                    @mainMenu.MenuTitle
+                                </span>
+                                <span class="menu-arrow"></span>
                                         </a>
-
                                         <div class="collapse @(isMainActive ? "show" : "")"
                                              id="@mainCollapseId">
 
@@ -281,18 +271,11 @@
                                                     var level1CollapseId = $"sidebar_{level1.Id}";
 
                                                     bool isLevel1Active =
-                                                    (!string.IsNullOrWhiteSpace(level1.PageUrl) &&
-                                                    currentPath.Contains(level1.PageUrl.ToLower()))
-                                                    ||
-                                                    level2Menus.Any(l2 =>
-                                                    !string.IsNullOrWhiteSpace(l2.PageUrl) &&
-                                                    currentPath.Contains(l2.PageUrl.ToLower()));
+                                                    matches(level1.PageUrl)
+                                                    || level2Menus.Any(l2 => matches(l2.PageUrl));
 
                                                     <li class="side-nav-item">
 
-                                                        @* =========================
-                                       LEVEL 1 WITH CHILDREN
-                                       ========================= *@
                                                         @if (level2Menus.Any())
                                                         {
                                                             <a class="side-nav-link @(isLevel1Active ? "" : "collapsed")"
@@ -300,9 +283,7 @@
                                                                href="#@level1CollapseId"
                                                                aria-expanded="@(isLevel1Active.ToString().ToLower())">
 
-                                                                <span>
-                                                                    @level1.MenuTitle
-                                                                </span>
+                                                                <span>@level1.MenuTitle</span>
 
                                                                 <span class="menu-arrow"></span>
                                                             </a>
@@ -314,9 +295,7 @@
 
                                                                     @foreach (var level2 in level2Menus)
                                                                     {
-                                                                        bool isLevel2Active =
-                                                                        !string.IsNullOrWhiteSpace(level2.PageUrl) &&
-                                                                        currentPath.Contains(level2.PageUrl.ToLower());
+                                                                        bool isLevel2Active = matches(level2.PageUrl);
 
                                                                         <li>
                                                                             <a class="menu-item @(isLevel2Active ? "active" : "")"
@@ -333,14 +312,11 @@
                                                             </div>
                                                         }
 
-                                                        @* =========================
-                                       LEVEL 1 DIRECT LINK
-                                       ========================= *@
                                                         else
                                                         {
-                                                            bool isLevel1DirectActive =
-                                                            !string.IsNullOrWhiteSpace(level1.PageUrl) &&
-                                                            currentPath.Contains(level1.PageUrl.ToLower());
+                                                            // ── FIXED: exact match ───────────────────
+                                                            bool isLevel1DirectActive = matches(level1.PageUrl);
+                                                            // ─────────────────────────────────────────
 
                                                             <a class="menu-item @(isLevel1DirectActive ? "active" : "")"
                                                                href="@Url.Content("~/" + level1.PageUrl)">
@@ -359,31 +335,24 @@
                                     </li>
                                 }
 
-                                @* =========================
-                                       MAIN MENU DIRECT LINK
-                                       ========================= *@
                                 else if (!string.IsNullOrWhiteSpace(mainMenu.PageUrl))
                                 {
-                                    bool isDirectMainActive =
-                                    currentPath.Contains(mainMenu.PageUrl.ToLower());
+                                    bool isDirectMainActive = matches(mainMenu.PageUrl);
 
                                     <li class="side-nav-item">
 
                                         <a class="side-nav-link @(isDirectMainActive ? "active" : "")"
                                            href="@Url.Content("~/" + mainMenu.PageUrl)">
 
-                                            <i class="@(string.IsNullOrWhiteSpace(mainMenu.IconClass)
-                                                                           ? "ri-asterisk"
-                                                                           : mainMenu.IconClass)">
-                                </i>
+                                            <i class="@(string.IsNullOrWhiteSpace(mainMenu.IconClass) ? "ri-asterisk" : mainMenu.IconClass)"></i>
 
-                                            <span class="fw-semibold">
-                                                @mainMenu.MenuTitle
-                                            </span>
-                                        </a>
+                                <span class="fw-semibold">
+                                    @mainMenu.MenuTitle
+                                </span>
+                                </a>
 
                                     </li>
-                                                }
+                                 }
                             }
                         }
 
@@ -420,7 +389,6 @@
     <script src="~/lib/jquery-validation/jquery.validate.min.js"></script>
     <script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
 
-
     <script src="~/assets/js/vendor.min.js"></script>
 
     <script src="~/assets/vendor/daterangepicker/moment.min.js"></script>
@@ -438,7 +406,7 @@
     @await RenderSectionAsync("Scripts", required: false)
 
     <script>
-                document.addEventListener('DOMContentLoaded', function () {
+        document.addEventListener('DOMContentLoaded', function () {
             const pageContent = document.getElementById('pageContent');
 
             // Show page with fade-in
@@ -453,7 +421,7 @@
                 link.addEventListener('click', function (e) {
                     const href = this.getAttribute('href');
 
-                    // Skip external links
+                    // Skip collapse toggles and external links
                     if (!href || href.startsWith('http') || href.startsWith('#')) return;
 
                     e.preventDefault();
@@ -468,7 +436,6 @@
                 });
             });
         });
-
     </script>
 
 </body>

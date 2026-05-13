@@ -120,6 +120,40 @@ namespace UserManagement.Web.Controllers
             }
         }
 
+        //[HttpPost]
+        //public async Task<IActionResult> DeleteRole(IFormCollection form)
+        //{
+        //    try
+        //    {
+        //        var result = await _roleService.DeleteRoleAsync(form);
+
+        //        if (!result)
+        //        {
+        //            return Ok(new
+        //            {
+        //                success = false,
+        //                message = "Page is linked to a Menu Item"
+        //            });
+        //        }
+
+        //        return Ok(new
+        //        {
+        //            success = true,
+        //            message = "Page deleted successfully.",
+        //            redirectUrl = Url.Action("Management", "Page")
+        //        });
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        return Ok(new
+        //        {
+        //            success = false,
+        //            message = $"Error: {ex.Message}"
+        //        });
+        //    }
+        //}
+
+
         [HttpPost]
         public async Task<IActionResult> CheckRoleName(IFormCollection collection)
         {
