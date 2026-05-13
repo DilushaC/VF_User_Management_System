@@ -124,6 +124,39 @@ namespace UserManagement.Web.Controllers
             }
         }
 
+        [HttpDelete]
+        public async Task<IActionResult> DeleteProduct(IFormCollection form)
+        {
+            try
+            {
+                var result = await _productService.DeleteProductAsync(form);
+
+                if (!result)
+                {
+                    return Ok(new
+                    {
+                        success = false,
+                        message = "Product is assigned to a User"
+                    });
+                }
+
+                return Ok(new
+                {
+                    success = true,
+                    message = "Product deleted successfully.",
+                    redirectUrl = Url.Action("Management", "Product")
+                });
+            }
+            catch (Exception ex)
+            {
+                return Ok(new
+                {
+                    success = false,
+                    message = $"Error: {ex.Message}"
+                });
+            }
+        }
+
         [HttpPost]
         public async Task<IActionResult> CheckProductName(IFormCollection collection)
         {

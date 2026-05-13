@@ -38,7 +38,7 @@
                             <tr>
                                 <th>Product Name</th>
                                 <th>Active</th>
-                                <th>Edit</th>
+                                <th>Actions</th>
                             </tr>
                         </thead>
 
@@ -71,9 +71,10 @@
 <script src="~/assets/vendor/datatables.net-select/js/dataTables.select.min.js"></script>
 <script src="~/assets/vendor/datatables.net-keytable/js/dataTables.keyTable.min.js"></script>
 <script src="~/assets/js/app.min.js"></script>
+<script src="~/assets/js/sweetalert2.all.min.js"></script>
 
 <script>
-    $('#basic-datatable').DataTable({
+    var table = $('#basic-datatable').DataTable({
         processing: true,
         serverSide: true,
         ajax: {
@@ -92,15 +93,34 @@
                     }
             },
             },
+            // Actions
             {
                 data: 'id',
+                orderable: false,
+                searchable: false,
+                className: 'text-center',
+
                 render: function (data) {
                     return `
-                        <button type="button"
-                                class="btn btn-sm btn-info edit-product-btn"
-                                data-product-id="${data}">
-                            <i class="bi bi-pencil"></i>
-                        </button>
+                        <div class="d-flex justify-content-center gap-1">
+
+                            <!-- Edit -->
+                            <button type="button"
+                                    class="btn btn-sm btn-info edit-product-btn"
+                                    data-product-id="${data}"
+                                    title="Edit Product">
+                                <i class="bi bi-pencil"></i>
+                            </button>
+
+                            <!-- Delete -->
+                            <button type="button"
+                                    class="btn btn-sm btn-danger delete-product-btn"
+                                    data-product-id="${data}"
+                                    title="Delete Product">
+                                <i class="bi bi-trash"></i>
+                            </button>
+
+                        </div>
                     `;
                 }
             }
@@ -162,6 +182,114 @@
         });
     });
 
+
+</script>
+
+<script>
+
+    // ── Delete Branch ─────────────────────────────────────────
+    $('#basic-datatable').on('click', '.delete-product-btn', function () {
+
+        const id = $(this).data('product-id');
+
+        // Validate ID
+        if (!id) {
+
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: 'Product ID not found.'
+            });
+
+            return;
+        }
+
+        // Confirmation Alert
+        Swal.fire({
+
+            title: 'Delete Product?',
+            text: 'This action cannot be undone.',
+            icon: 'warning',
+
+            showCancelButton: true,
+            confirmButtonColor: '#d33',
+            cancelButtonColor: '#6c757d',
+
+            confirmButtonText: 'Yes, Delete',
+            cancelButtonText: 'Cancel'
+
+        }).then((result) => {
+
+            // Cancel
+            if (!result.isConfirmed)
+                return;
+
+            // Loading
+            Swal.fire({
+                title: 'Deleting...',
+                text: 'Please wait',
+                allowOutsideClick: false,
+                didOpen: () => {
+                    Swal.showLoading();
+                }
+            });
+
+            // AJAX Delete
+            $.ajax({
+
+                url: '/Product/DeleteProduct',
+                type: 'DELETE',
+
+                data: {
+                    id: id
+                },
+
+                success: function (response) {
+
+                    Swal.close();
+
+                    // Success
+                    if (response.success) {
+
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Deleted',
+                            text: response.message,
+                            timer: 1500,
+                            showConfirmButton: false
+                        });
+
+                        // Reload DataTable
+                        table.ajax.reload(null, false);
+
+                    }
+                    else {
+
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error',
+                            text: response.message || 'Failed to delete Product.'
+                        });
+
+                    }
+
+                },
+
+                error: function () {
+
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Server Error',
+                        text: 'Something went wrong while deleting.'
+                    });
+
+                }
+
+            });
+
+        });
+
+    });
 
 </script>
 
