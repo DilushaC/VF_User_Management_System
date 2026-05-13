@@ -15,6 +15,7 @@ namespace UserManagement.Business.BranchHandler
         Task<bool> CreateBranchAsync(IFormCollection collection);
         Task<BranchModel> GetBranchByIdAsync(int id);
         Task<bool> UpdateBranchAsync(IFormCollection collection);
+        Task<bool> DeleteBranchAsync(IFormCollection collection);
         Task<bool> CheckBranchNameExists(IFormCollection collection);
     }
 }

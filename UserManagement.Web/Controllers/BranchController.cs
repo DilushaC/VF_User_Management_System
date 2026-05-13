@@ -120,6 +120,41 @@ namespace UserManagement.Web.Controllers
             }
         }
 
+
+        [HttpPost]
+        public async Task<IActionResult> DeleteBranch(IFormCollection form)
+        {
+            try
+            {
+                var result = await _branchService.DeleteBranchAsync(form);
+
+                if (!result)
+                {
+                    return Ok(new
+                    {
+                        success = false,
+                        message = "Branch is linked to User"
+                    });
+                }
+
+                return Ok(new
+                {
+                    success = true,
+                    message = "Branch deleted successfully.",
+                    redirectUrl = Url.Action("Management", "Role")
+                });
+            }
+            catch (Exception ex)
+            {
+                return Ok(new
+                {
+                    success = false,
+                    message = $"Error: {ex.Message}"
+                });
+            }
+        }
+
+
         [HttpPost]
         public async Task<IActionResult> CheckBranchName(IFormCollection collection)
         {

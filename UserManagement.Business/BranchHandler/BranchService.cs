@@ -190,6 +190,33 @@ namespace UserManagement.Business.BranchHandler
             }
         }
 
+
+        public async Task<bool> DeleteBranchAsync(IFormCollection collection)
+        {
+            try
+            {
+                int id = Convert.ToInt32(collection["id"]);
+                var parameters = new DynamicParameters();
+                parameters.Add("@Id", id, DbType.Int32);
+
+                // Check if branch has assigned users
+                string checkSql = "SELECT COUNT(1) FROM UserAccessBranch WHERE BranchId = @Id";
+                object result = _connectionService.ExecuteScalar(checkSql, parameters);
+                int userCount = Convert.ToInt32(result);
+
+                if (userCount > 0)
+                    return false;
+
+                string deleteSql = "DELETE FROM Branch WHERE Id = @Id";
+                int rows = _connectionService.ExecuteWithPara(deleteSql, parameters);
+                return rows > 0;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
         public async Task<bool> CheckBranchNameExists(IFormCollection collection)
         {
             try
