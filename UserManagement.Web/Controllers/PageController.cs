@@ -212,7 +212,7 @@ namespace UserManagement.Web.Controllers
                     return Ok(new
                     {
                         success = false,
-                        message = "Failed to delete Page."
+                        message = "Page is linked to a Menu Item"
                     });
                 }
 
