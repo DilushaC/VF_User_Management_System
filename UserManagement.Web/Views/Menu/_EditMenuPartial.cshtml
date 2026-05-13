@@ -63,26 +63,14 @@
                     <span id="displayOrderValue" class="badge bg-primary">@Model.DisplayOrder</span>
                 </label>
 
-                <div class="d-flex align-items-center gap-2">
-                    <input type="range"
-                           asp-for="DisplayOrder"
-                           id="DisplayOrder"
-                           class="form-range"
-                           min="1"
-                           max="20"
-                           step="1"
-                           value="@Model.DisplayOrder"
-                           style="writing-mode: vertical-lr; direction: ltr; width: 40px; height: 200px; cursor: pointer;" />
-
-                    <!-- Tick labels -->
-                    <div class="d-flex flex-column justify-content-between" style="height: 200px;">
-                        <small class="text-muted">1</small>
-                        <small class="text-muted">5</small>
-                        <small class="text-muted">10</small>
-                        <small class="text-muted">15</small>
-                        <small class="text-muted">20</small>
-                    </div>
-                </div>
+                <input type="number"
+                       asp-for="DisplayOrder"
+                       id="DisplayOrder"
+                       class="form-control"
+                       min="1"
+                       max="20"
+                       step="1"
+                       value="@Model.DisplayOrder" />
 
                 <small id="displayOrder-status" class="d-block mt-1"></small>
             </div>
