@@ -254,5 +254,29 @@ namespace UserManagement.Business.RoleHandler
                 return await Task.FromResult(false);
             }
         }
+
+        public async Task<bool> DeleteRoleAsync(IFormCollection collection)
+        {
+            try
+            {
+                int id = Convert.ToInt32(collection["id"]);
+
+                string sql = @"
+                    DELETE FROM Roles
+                    WHERE Id = @Id
+                ";
+
+                var parameters = new DynamicParameters();
+                parameters.Add("@Id", id, DbType.Int32);
+
+                int rows = _connectionService.ExecuteWithPara(sql, parameters);
+
+                return rows > 0;
+            }
+            catch
+            {
+                return false;
+            }
+        }
     }
 }

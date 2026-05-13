@@ -235,10 +235,8 @@
 
                                 var mainCollapseId = $"sidebar_{mainMenu.Id}";
 
-                                bool isMainActive =
-                                matches(mainMenu.PageUrl) || level1Menus.Any(l1 =>
-                                matches(l1.PageUrl)|| menus.Any(l2 =>
-                                l2.ParentMenuItemId == l1.Id && l2.IsActive && matches(l2.PageUrl)));
+                                bool isMainActive = matches(mainMenu.PageUrl) || level1Menus.Any(l1 =>
+                                matches(l1.PageUrl)|| menus.Any(l2 => l2.ParentMenuItemId == l1.Id && l2.IsActive && matches(l2.PageUrl)));
 
                                 @if (level1Menus.Any())
                                 {
@@ -270,12 +268,9 @@
 
                                                     var level1CollapseId = $"sidebar_{level1.Id}";
 
-                                                    bool isLevel1Active =
-                                                    matches(level1.PageUrl)
-                                                    || level2Menus.Any(l2 => matches(l2.PageUrl));
+                                                    bool isLevel1Active = matches(level1.PageUrl) || level2Menus.Any(l2 => matches(l2.PageUrl));
 
                                                     <li class="side-nav-item">
-
                                                         @if (level2Menus.Any())
                                                         {
                                                             <a class="side-nav-link @(isLevel1Active ? "" : "collapsed")"
@@ -314,9 +309,7 @@
 
                                                         else
                                                         {
-                                                            // ── FIXED: exact match ───────────────────
                                                             bool isLevel1DirectActive = matches(level1.PageUrl);
-                                                            // ─────────────────────────────────────────
 
                                                             <a class="menu-item @(isLevel1DirectActive ? "active" : "")"
                                                                href="@Url.Content("~/" + level1.PageUrl)">
