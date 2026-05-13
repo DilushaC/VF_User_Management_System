@@ -200,7 +200,7 @@ namespace UserManagement.Business.BranchHandler
                 parameters.Add("@Id", id, DbType.Int32);
 
                 // Check if branch has assigned users
-                string checkSql = "SELECT COUNT(1) FROM UserAccessBranch WHERE BranchId = @Id";
+                string checkSql = "SELECT COUNT(1) FROM Users WHERE PrimaryBranchId = @Id";
                 object result = _connectionService.ExecuteScalar(checkSql, parameters);
                 int userCount = Convert.ToInt32(result);
 
