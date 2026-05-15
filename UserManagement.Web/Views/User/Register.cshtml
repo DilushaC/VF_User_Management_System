@@ -17,73 +17,65 @@
 
                             <!-- Username -->
                             <div class="row g-2">
-                                <div class="mb-3 col-md-6 position-relative">
+                                <div class="mb-3 col-md-6">
                                     <label asp-for="UserName" class="form-label">User Name</label>
-                                    <input asp-for="UserName" class="form-control round"
+                                    <input asp-for="UserName"
+                                           class="form-control round"
                                            id="UserName"
                                            required
-                                           autocomplete="off"
-                                           data-bs-toggle="tooltip"
-                                           data-bs-placement="right"
-                                           title="User Name is required" />
-
-                                    <span asp-validation-for="UserName" class="invalid-tooltip">
-                                        User Name is required
-                                    </span>
-
-                                    <small id="username-status"></small>
+                                           autocomplete="off" />
+                                    <small id="username-status" class="form-text"></small>
                                 </div>
                             </div>
 
                             <!-- First name + Last name -->
                             <div class="row g-2">
-                                <div class="mb-3 col-md-6 position-relative">
+                                <div class="mb-3 col-md-6">
                                     <label asp-for="FirstName" class="form-label">First Name</label>
-                                    <input asp-for="FirstName" class="form-control round" required />
-                                    <span asp-validation-for="FirstName" class="invalid-tooltip">First Name is required</span>
+                                    <input asp-for="FirstName" class="form-control round" id="FirstName" required />
+                                    <small id="firstname-status" class="form-text"></small>
                                 </div>
-                                <div class="mb-3 col-md-6 position-relative">
+                                <div class="mb-3 col-md-6">
                                     <label asp-for="LastName" class="form-label">Last Name</label>
-                                    <input asp-for="LastName" class="form-control round" required />
-                                    <span asp-validation-for="LastName" class="invalid-tooltip">Last Name is required</span>
+                                    <input asp-for="LastName" class="form-control round" id="LastName" required />
+                                    <small id="lastname-status" class="form-text"></small>
                                 </div>
                             </div>
 
                             <!-- Email -->
                             <div class="row g-2">
-                                <div class="mb-3 col-md-6 position-relative">
+                                <div class="mb-3 col-md-6">
                                     <label asp-for="Email" class="form-label">Email</label>
-                                    <input asp-for="Email" type="email" class="form-control round" required />
-                                    <span asp-validation-for="Email" class="invalid-tooltip">Email is required</span>
-                                    <small id="email-status"></small>
-
+                                    <input asp-for="Email" type="email" class="form-control round" id="Email" required />
+                                    <small id="email-status" class="form-text"></small>
                                 </div>
                             </div>
 
                             <!-- Phone -->
                             <div class="row g-2">
-                                <div class="mb-3 col-md-6 position-relative">
+                                <div class="mb-3 col-md-6">
                                     <label asp-for="Phone" class="form-label">Phone</label>
                                     <input asp-for="Phone"
                                            id="Phone"
-                                           type="text"
+                                           type="tel"
                                            class="form-control round"
                                            required
-                                           autocomplete="off" />
-                                    <span asp-validation-for="Phone" class="invalid-tooltip">Phone is required</span>
-                                    <small id="phone-status"></small>
+                                           autocomplete="off"
+                                           maxlength="10"
+                                           placeholder="07XXXXXXXX" />
+                                    <small id="phone-status" class="form-text"></small>
                                 </div>
                             </div>
 
+                            <!-- Products -->
                             <div class="row g-2">
-                                <div class="mb-3 col-md-6 position-relative">
+                                <div class="mb-3 col-md-6">
                                     <label asp-for="ProductIds" class="form-label">
                                         Products
                                         <small class="text-muted d-block">
                                             Select one or more products for user access
                                         </small>
                                     </label>
-
                                     <select asp-for="ProductIds"
                                             id="ProductIds"
                                             name="ProductIds"
@@ -91,62 +83,54 @@
                                             multiple="multiple"
                                             required
                                             data-placeholder=""
-                                            data-bs-toggle="tooltip"
-                                            data-bs-placement="right"
-                                            title="Please select at least one product"
                                             asp-items="ViewBag.Products">
                                     </select>
-                                    <span asp-validation-for="ProductIds" class="invalid-tooltip">
-                                        Please select at least one product
-                                    </span>
+                                    <small id="products-status" class="form-text"></small>
                                 </div>
                             </div>
 
                             <!-- Designation -->
                             <div class="row g-2">
-                                <div class="mb-3 col-md-6 position-relative">
+                                <div class="mb-3 col-md-6">
                                     <label asp-for="DesignationId" class="form-label">Designation Name</label>
                                     <select asp-for="DesignationId"
+                                            id="DesignationId"
                                             class="form-control select2 round"
                                             required
                                             asp-items="ViewBag.Designations">
                                         <option value="">Select Designation</option>
                                     </select>
-                                    <span asp-validation-for="DesignationId" class="invalid-tooltip">
-                                        Please select a designation
-                                    </span>
+                                    <small id="designation-status" class="form-text"></small>
                                 </div>
                             </div>
 
                             <!-- Branch -->
                             <div class="row g-2">
-                                <div class="mb-3 col-md-6 position-relative">
+                                <div class="mb-3 col-md-6">
                                     <label asp-for="PrimaryBranchId" class="form-label">Branch Name</label>
                                     <select asp-for="PrimaryBranchId"
+                                            id="PrimaryBranchId"
                                             class="form-control select2 round"
                                             required
                                             asp-items="ViewBag.Branches">
                                         <option value="">Select Branch</option>
                                     </select>
-                                    <span asp-validation-for="PrimaryBranchId" class="invalid-tooltip">
-                                        Please select a Branch
-                                    </span>
+                                    <small id="branch-status" class="form-text"></small>
                                 </div>
                             </div>
 
                             <!-- Department -->
                             <div class="row g-2">
-                                <div class="mb-3 col-md-6 position-relative">
+                                <div class="mb-3 col-md-6">
                                     <label asp-for="PrimaryDepartmentId" class="form-label">Primary Department</label>
                                     <select asp-for="PrimaryDepartmentId"
+                                            id="PrimaryDepartmentId"
                                             class="form-control select2 round"
                                             required
                                             asp-items="ViewBag.Departments">
                                         <option value="">Select Department</option>
                                     </select>
-                                    <span asp-validation-for="PrimaryDepartmentId" class="invalid-tooltip">
-                                        Please select a Primary Department
-                                    </span>
+                                    <small id="department-status" class="form-text"></small>
                                 </div>
                             </div>
 
@@ -166,24 +150,42 @@
 
 <script>
 
-    // Select2 Init
+    // ── Helpers ──────────────────────────────────────────────────────────────
+    function setMsg(id, text, isError) {
+        $("#" + id).html(text
+            ? '<span style="color:' + (isError ? 'red' : 'green') + ';">' +
+              (isError ? '❌ ' : '✔ ') + text + '</span>'
+            : '');
+    }
+
+    function clearMsg(id) { $("#" + id).html(''); }
+
+    // ── Select2 Init ─────────────────────────────────────────────────────────
     $("#PrimaryBranchId").select2({ placeholder: "Select Branch" });
     $("#PrimaryDepartmentId").select2({ placeholder: "Select Department" });
     $("#DesignationId").select2({ placeholder: "Select Designation" });
     $("#ProductIds").select2({ placeholder: "" });
 
-    let usernameValid = false; // Track if username is available
-    let emailValid = false;
+    // ── Tracking flags ───────────────────────────────────────────────────────
+    let usernameValid = false;
+    let emailValid    = false;
+    let phoneValid    = false;
 
+    // ── Username ─────────────────────────────────────────────────────────────
     $("#UserName").on('blur', function () {
         let username = $(this).val().trim();
 
-        if (username.length < 3) {
-            $("#username-status").html(`<span style="color:gray;">Minimum 4 characters required</span>`);
+        if (username.length === 0) {
+            setMsg('username-status', 'User Name is required.', true);
             usernameValid = false;
             return;
         }
 
+        if (username.length < 3) {
+            setMsg('username-status', 'Minimum 3 characters required.', true);
+            usernameValid = false;
+            return;
+        }
 
         $.ajax({
             url: '/User/CheckUsername',
@@ -192,110 +194,150 @@
             success: function (res) {
                 if (res.exists) {
                     usernameValid = false;
-                    $("#username-status").html(`<span style="color:red;">❌ Username already exists</span>`);
+                    setMsg('username-status', 'Username already exists.', true);
                 } else {
                     usernameValid = true;
-                    $("#username-status").html(`<span style="color:green;">✔ Username available</span>`);
+                    setMsg('username-status', 'Username available.', false);
                 }
             }
         });
     });
 
-    $("#Email").on("keyup", function () {
+    // ── First Name ───────────────────────────────────────────────────────────
+    $("#FirstName").on('blur', function () {
+        if ($(this).val().trim() === '') {
+            setMsg('firstname-status', 'First Name is required.', true);
+        } else {
+            clearMsg('firstname-status');
+        }
+    });
+
+    // ── Last Name ────────────────────────────────────────────────────────────
+    $("#LastName").on('blur', function () {
+        if ($(this).val().trim() === '') {
+            setMsg('lastname-status', 'Last Name is required.', true);
+        } else {
+            clearMsg('lastname-status');
+        }
+    });
+
+    // ── Email ────────────────────────────────────────────────────────────────
+    $("#Email").on("keyup blur", function () {
         let email = $(this).val().trim();
 
         if (email.length === 0) {
-            $("#email-status").html("");
+            setMsg('email-status', 'Email is required.', true);
             emailValid = false;
             return;
         }
 
-        if (!email.includes("@@") || !email.includes(".")) {
+        // Basic email format check
+        let emailRegex = /^[^\s@@]+@@[^\s@@]+\.[^\s@@]+$/;
+        if (!emailRegex.test(email)) {
             emailValid = false;
-            $("#email-status").html(
-                '<span style="color:red;">❌ Email must contain @@ and .</span>'
-            );
+            setMsg('email-status', 'Please enter a valid email address.', true);
         } else {
             emailValid = true;
-            $("#email-status").html(
-                '<span style="color:green;">✔ Email looks valid</span>'
-            );
+            setMsg('email-status', 'Email looks valid.', false);
         }
     });
 
-    let phoneValid = false;
-
-    $("#Phone").on("keyup", function () {
+    // ── Phone ────────────────────────────────────────────────────────────────
+    $("#Phone").on("keyup blur", function () {
         let phone = $(this).val().trim();
 
         if (phone.length === 0) {
-            $("#phone-status").html("");
+            setMsg('phone-status', 'Phone number is required.', true);
             phoneValid = false;
             return;
         }
 
-        // Remove spaces
         phone = phone.replace(/\s+/g, '');
-
-        // Sri Lankan mobile number regex
         let slRegex = /^(?:\+94|94|0)7\d{8}$/;
 
         if (!slRegex.test(phone)) {
             phoneValid = false;
-            $("#phone-status").html(
-                '<span style="color:red;">❌ Invalid Sri Lankan phone number</span>'
-            );
+            setMsg('phone-status', 'Enter a valid Sri Lankan mobile number (e.g. 07XXXXXXXX).', true);
         } else {
             phoneValid = true;
-            $("#phone-status").html(
-                '<span style="color:green;">✔ Valid Sri Lankan phone number</span>'
-            );
+            setMsg('phone-status', 'Valid Sri Lankan phone number.', false);
         }
     });
 
+    // ── Select dropdowns / multi-select ──────────────────────────────────────
+    function validateSelect(selectId, statusId, message) {
+        let val = $("#" + selectId).val();
+        let empty = !val || (Array.isArray(val) ? val.length === 0 : val === '');
+        if (empty) {
+            setMsg(statusId, message, true);
+            return false;
+        } else {
+            clearMsg(statusId);
+            return true;
+        }
+    }
 
+    $("#ProductIds").on('change', function () {
+        validateSelect('ProductIds', 'products-status', 'Please select at least one product.');
+    });
 
+    $("#DesignationId").on('change', function () {
+        validateSelect('DesignationId', 'designation-status', 'Please select a designation.');
+    });
 
-    // Form Submit
+    $("#PrimaryBranchId").on('change', function () {
+        validateSelect('PrimaryBranchId', 'branch-status', 'Please select a branch.');
+    });
+
+    $("#PrimaryDepartmentId").on('change', function () {
+        validateSelect('PrimaryDepartmentId', 'department-status', 'Please select a department.');
+    });
+
+    // ── Form Submit ───────────────────────────────────────────────────────────
     $("#RegisterForm").on("submit", function (e) {
         e.preventDefault();
 
-        let form = this;
+        let isValid = true;
 
-        if (!usernameValid) {
-            Swal.fire({
-                icon: 'error',
-                title: 'Username Already Exists',
-                text: 'Please Type Another Username.'
-            });
-            return;
+        // Trigger all blur/change validations on submit
+        if ($("#UserName").val().trim() === '') {
+            setMsg('username-status', 'User Name is required.', true);
+            usernameValid = false;
+        }
+        if (!usernameValid)    isValid = false;
+
+        if ($("#FirstName").val().trim() === '') {
+            setMsg('firstname-status', 'First Name is required.', true);
+            isValid = false;
+        }
+
+        if ($("#LastName").val().trim() === '') {
+            setMsg('lastname-status', 'Last Name is required.', true);
+            isValid = false;
         }
 
         if (!emailValid) {
-            Swal.fire({
-                icon: 'error',
-                title: 'Invalid Email',
-                text: 'Please enter a valid email address.'
-            });
-            return;
+            if ($("#Email").val().trim() === '') {
+                setMsg('email-status', 'Email is required.', true);
+            }
+            isValid = false;
         }
 
         if (!phoneValid) {
-            Swal.fire({
-                icon: 'error',
-                title: 'Invalid Phone Number',
-                text: 'Please enter a valid Sri Lankan mobile number.'
-            });
-            return;
+            if ($("#Phone").val().trim() === '') {
+                setMsg('phone-status', 'Phone number is required.', true);
+            }
+            isValid = false;
         }
 
+        if (!validateSelect('ProductIds',          'products-status',    'Please select at least one product.'))  isValid = false;
+        if (!validateSelect('DesignationId',        'designation-status', 'Please select a designation.'))         isValid = false;
+        if (!validateSelect('PrimaryBranchId',      'branch-status',      'Please select a branch.'))              isValid = false;
+        if (!validateSelect('PrimaryDepartmentId',  'department-status',  'Please select a department.'))          isValid = false;
 
+        if (!isValid) return;
 
-        if (!form.checkValidity()) {
-            $(this).addClass("was-validated");
-            return;
-        }
-
+        // Confirm then submit
         Swal.fire({
             title: 'Create User?',
             icon: 'warning',
@@ -316,38 +358,37 @@
                 url: '/User/Register',
                 type: 'POST',
                 data: $("#RegisterForm").serialize(),
-                    headers: { "X-Requested-With": "XMLHttpRequest" },
+                headers: { "X-Requested-With": "XMLHttpRequest" },
 
-                    success: function (response) {
-                        Swal.close();
+                success: function (response) {
+                    Swal.close();
 
-                        if (response.success) {
-                            Swal.fire({
-                                icon: 'success',
-                                title: response.message,
-                                showConfirmButton: false,
-                                timer: 1500
-                            }).then(() => {
-                                window.location.href = response.redirectUrl;
-                            });
-                        } else {
-                            Swal.fire({
-                                icon: 'error',
-                                title: 'Error',
-                                text: response.message || 'Failed to create menu.'
-                            });
-                        }
-                    },
-
-                    error: function () {
+                    if (response.success) {
+                        Swal.fire({
+                            icon: 'success',
+                            title: response.message,
+                            showConfirmButton: false,
+                            timer: 1500
+                        }).then(() => {
+                            window.location.href = response.redirectUrl;
+                        });
+                    } else {
                         Swal.fire({
                             icon: 'error',
                             title: 'Error',
-                            text: 'Something went wrong! Please try again.'
+                            text: response.message || 'Failed to create user.'
                         });
                     }
-            });
+                },
 
+                error: function () {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: 'Something went wrong! Please try again.'
+                    });
+                }
+            });
         });
     });
 

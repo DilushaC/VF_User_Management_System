@@ -104,6 +104,29 @@
 <script src="~/assets/vendor/select2/js/select2.min.js"></script>
 
 <script>
+
+// Hide products section initially
+$("#productList").closest(".row.mb-3").hide();
+
+// Show/hide products section based on role selection
+$("#RoleId").on("change", function () {
+    if ($(this).val()) {
+        $("#productList").closest(".row.mb-3").show();
+    } else {
+        $("#productList").closest(".row.mb-3").hide();
+
+        // Reset all checkboxes and selections when role is cleared
+        $(".product-checkbox").prop("checked", false);
+        $(".page-select-container").hide();
+        selectedProducts = [];
+        selectedPages = {};
+        $("#ProductId").val("");
+        $("#PageIdsContainer").empty();
+    }
+});
+</script>
+
+<script>
     $(".select2").select2({ width: "100%" });
 
     let selectedProducts = [];

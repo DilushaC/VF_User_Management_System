@@ -9,20 +9,24 @@
     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
 </div>
 
-<form id="updateUserForm" asp-action="UpdateUser" asp-controller="Users" method="post" autocomplete="off">
+<form id="updateUserForm" asp-action="UpdateUser" asp-controller="Users" method="post" autocomplete="off" novalidate>
     <input type="hidden" asp-for="Id" />
 
     <div class="modal-body">
 
+        <!-- Username -->
         <div class="mb-3 col-md-6">
             <label class="form-label">UserName</label>
-            <input type="text" asp-for="UserName" class="form-control" />
+            <input type="text" asp-for="UserName" id="UserName" class="form-control" autocomplete="off" />
+            <small id="username-status" class="form-text"></small>
         </div>
 
+        <!-- First Name / Last Name -->
         <div class="row">
             <div class="mb-3 col-md-6">
-                <label class="form-label">First Name</label>
-                <input type="text" asp-for="FirstName" class="form-control" required />
+                <label class="form-label">First Name <span class="text-danger">*</span></label>
+                <input type="text" asp-for="FirstName" id="FirstName" class="form-control" required />
+                <small id="firstName-status" class="form-text"></small>
             </div>
             <div class="mb-3 col-md-6">
                 <label class="form-label">Last Name</label>
@@ -30,20 +34,24 @@
             </div>
         </div>
 
+        <!-- Email / Phone -->
         <div class="row">
             <div class="mb-3 col-md-6">
-                <label class="form-label">Email Address</label>
-                <input type="email" asp-for="Email" class="form-control" required />
+                <label class="form-label">Email Address <span class="text-danger">*</span></label>
+                <input type="email" asp-for="Email" id="Email" class="form-control" required />
+                <small id="email-status" class="form-text"></small>
             </div>
             <div class="mb-3 col-md-6">
                 <label class="form-label">Phone Number</label>
                 <input type="text" asp-for="Phone" class="form-control" />
             </div>
         </div>
+
+        <!-- Products -->
         <div class="row">
             <div class="row g-2">
                 <div class="mb-3 col-md-12 position-relative">
-                    <label asp-for="ProductIds" class="form-label">Products</label>
+                    <label asp-for="ProductIds" class="form-label">Products <span class="text-danger">*</span></label>
                     <select asp-for="ProductIds"
                             id="ProductIds"
                             name="ProductIds"
@@ -51,24 +59,21 @@
                             multiple="multiple"
                             required
                             data-placeholder="Select Products"
-                            data-bs-toggle="tooltip"
-                            data-bs-placement="right"
-                            title="Please select at least one product"
                             asp-items="ViewBag.Products">
                     </select>
-                    <span asp-validation-for="ProductIds" class="invalid-tooltip">
-                        Please select at least one product
-                    </span>
+                    <small id="products-status" class="form-text"></small>
                 </div>
             </div>
         </div>
 
+        <!-- Designation -->
         <div class="mb-3 col-md-6">
             <label class="form-label">Designation</label>
             <select id="DesignationId" asp-for="DesignationId" class="form-select" asp-items="ViewBag.Designations">
             </select>
         </div>
 
+        <!-- Branch / Department -->
         <div class="row">
             <div class="mb-3 col-md-6">
                 <label class="form-label">Primary Branch</label>
@@ -82,9 +87,10 @@
             </div>
         </div>
 
+        <!-- Status -->
         <div class="mb-3 col-md-2">
             <label class="form-label">Status</label>
-            <select id="Status" asp-for="IsActive" class="form-select">
+            <select id="IsActive" asp-for="IsActive" class="form-select">
                 <option value="true">Active</option>
                 <option value="false">Inactive</option>
             </select>
@@ -98,95 +104,236 @@
     </div>
 </form>
 
-<!-- Load jQuery only ONCE -->
 <script src="~/assets/lib/jquery/jquery.min.js"></script>
 <script src="~/assets/js/sweetalert2.all.min.js"></script>
-<!-- Load Select2 JS -->
 <script src="~/assets/vendor/select2/js/select2.min.js"></script>
 
 <script>
-    $("#DesignationId").select2({
-        placeholder: "Select Designation",
-    });
-    $("#PrimaryBranchId").select2({
-        placeholder: "Select Branch",
-    });
-    $("#PrimaryDepartmentId").select2({
-        placeholder: "Select Department",
-    });
-    $("#Status").select2({
-        placeholder: "Select Status",
-    });
-    $("#ProductIds").select2({
-        placeholder: "Select Product",
+
+    // ── Helper ────────────────────────────────────────────────────────────────
+    function setMsg(id, text, isError) {
+        $("#" + id).html(text
+            ? '<span style="color:' + (isError ? 'red' : 'green') + ';">' +
+              (isError ? '\u274C ' : '\u2714 ') + text + '</span>'
+            : '');
+    }
+
+    function isValidEmail(val) {
+        var re = new RegExp('^[^\\s\\x40]+\\x40[^\\s\\x40]+\\.[^\\s\\x40]+$');
+        return re.test(val);
+    }
+
+    // ── Select2 Init ─────────────────────────────────────────────────────────
+    // dropdownParent fixes dropdown clipping/z-index inside Bootstrap modals
+    var $modal = $("#updateUserForm").closest(".modal");
+    if ($modal.length === 0) { $modal = $(document.body); }
+
+    $("#DesignationId").select2({    placeholder: "Select Designation", dropdownParent: $modal });
+    $("#PrimaryBranchId").select2({  placeholder: "Select Branch",      dropdownParent: $modal });
+    $("#PrimaryDepartmentId").select2({ placeholder: "Select Department", dropdownParent: $modal });
+    $("#IsActive").select2({         placeholder: "Select Status",       dropdownParent: $modal });
+    $("#ProductIds").select2({       placeholder: "Select Products",     dropdownParent: $modal });
+
+    // ── Validation flags ──────────────────────────────────────────────────────
+    var usernameValid  = true;   // assume valid until user edits it
+    var firstNameValid = false;
+    var emailValid     = false;
+    var productsValid  = false;
+
+    // Capture originals — skip duplicate-check when value is unchanged
+    var originalUsername = $("#UserName").val().trim();
+    var originalEmail    = $("#Email").val().trim();
+
+    // ── Pre-validate on modal open ────────────────────────────────────────────
+    (function preValidate() {
+        if ($("#FirstName").val().trim().length >= 2) {
+            firstNameValid = true;
+        }
+        var emailVal = $("#Email").val().trim();
+        if (emailVal.length > 0) {
+            emailValid = true;   // existing saved email is always considered valid
+        }
+        if ($("#ProductIds").val() && $("#ProductIds").val().length > 0) {
+            productsValid = true;
+        }
+    })();
+
+    // ── Username blur check ───────────────────────────────────────────────────
+    $("#UserName").on('blur', function () {
+        var username = $(this).val().trim();
+
+        if (username.length === 0) {
+            setMsg('username-status', 'Username is required.', true);
+            usernameValid = false;
+            return;
+        }
+        if (username.length < 3) {
+            setMsg('username-status', 'Minimum 3 characters required.', true);
+            usernameValid = false;
+            return;
+        }
+        // Unchanged — no need to check
+        if (username === originalUsername) {
+            setMsg('username-status', '', false);
+            usernameValid = true;
+            return;
+        }
+
+        $.ajax({
+            url: '/User/CheckUserName',
+            type: 'POST',
+            data: { userName: username },
+            success: function (res) {
+                if (res.exists) {
+                    usernameValid = false;
+                    setMsg('username-status', 'Username already taken.', true);
+                } else {
+                    usernameValid = true;
+                    setMsg('username-status', 'Username available.', false);
+                }
+            },
+            error: function () {
+                usernameValid = false;
+                setMsg('username-status', 'Could not verify username.', true);
+            }
+        });
     });
 
+    // ── First Name blur check ─────────────────────────────────────────────────
+    $("#FirstName").on('blur', function () {
+        var val = $(this).val().trim();
+        if (val.length === 0) {
+            setMsg('firstName-status', 'First Name is required.', true);
+            firstNameValid = false;
+        } else if (val.length < 2) {
+            setMsg('firstName-status', 'Minimum 2 characters required.', true);
+            firstNameValid = false;
+        } else {
+            setMsg('firstName-status', 'Looks good.', false);
+            firstNameValid = true;
+        }
+    });
+
+    // ── Email blur check ──────────────────────────────────────────────────────
+    $("#Email").on('blur', function () {
+        var val = $(this).val().trim();
+
+        if (val.length === 0) {
+            setMsg('email-status', 'Email Address is required.', true);
+            emailValid = false;
+        } else if (val === originalEmail) {
+            // User kept the original email — always valid, clear any error
+            setMsg('email-status', '', false);
+            emailValid = true;
+        } else if (!isValidEmail(val)) {
+            setMsg('email-status', 'Enter a valid email address.', true);
+            emailValid = false;
+        } else {
+            setMsg('email-status', 'Valid email.', false);
+            emailValid = true;
+        }
+    });
+
+    // ── Products change check ─────────────────────────────────────────────────
+    $("#ProductIds").on('change', function () {
+        var selected = $(this).val();
+        if (!selected || selected.length === 0) {
+            setMsg('products-status', 'Please select at least one product.', true);
+            productsValid = false;
+        } else {
+            setMsg('products-status', 'Product(s) selected.', false);
+            productsValid = true;
+        }
+    });
+
+    // ── Form Submit ───────────────────────────────────────────────────────────
     $("#updateUserForm").on("submit", function (e) {
-        debugger;
         e.preventDefault();
-        let form = $(this);
+        var $form = $(this);   // cache — $(this) breaks inside .then()
 
-        if (!form[0].checkValidity()) {
+        // Re-check First Name
+        if ($("#FirstName").val().trim() === '') {
+            setMsg('firstName-status', 'First Name is required.', true);
+            firstNameValid = false;
+        }
+
+        // Re-check Email
+        var emailVal = $("#Email").val().trim();
+        if (emailVal === '') {
+            setMsg('email-status', 'Email Address is required.', true);
+            emailValid = false;
+        } else if (emailVal !== originalEmail && !isValidEmail(emailVal)) {
+            setMsg('email-status', 'Enter a valid email address.', true);
+            emailValid = false;
+        }
+
+        // Re-check Products
+        if (!$("#ProductIds").val() || $("#ProductIds").val().length === 0) {
+            setMsg('products-status', 'Please select at least one product.', true);
+            productsValid = false;
+        }
+
+        if (!usernameValid || !firstNameValid || !emailValid || !productsValid) {
             Swal.fire({
-                icon: "warning",
-                title: "Missing Information",
-                text: "Please fill in all required fields."
+                icon: 'warning',
+                title: 'Missing Information',
+                text: 'Please fix the highlighted fields before saving.'
             });
             return;
         }
+
         Swal.fire({
             title: 'Update User?',
+            text: 'Are you sure you want to save changes?',
             icon: 'warning',
             showCancelButton: true,
             confirmButtonText: 'Yes, Update',
             cancelButtonText: 'Cancel'
-        }).then((result) => {
-            if (result.isConfirmed) {
-                Swal.fire({
-                    title: 'Updating...',
-                    allowOutsideClick: false,
-                    didOpen: () => {
-                        Swal.showLoading();
-                    }
-                });
-                $.ajax({
-                    url: '/User/LoadEditModal',
-                    type: 'POST',
-                    data: form.serialize(),
-                    headers: { "X-Requested-With": "XMLHttpRequest" },
+        }).then(function (result) {
 
-                    success: function (response) {
-                        Swal.close();
+            if (!result.isConfirmed) return;
 
-                        if (response.success) {
-                            Swal.fire({
-                                icon: 'success',
-                                title: response.message,
-                                showConfirmButton: false,
-                                timer: 1500
-                            }).then(() => {
-                                window.location.href = response.redirectUrl;
-                            });
-                        } else {
-                            Swal.fire({
-                                icon: 'error',
-                                title: 'Error',
-                                text: response.message || 'Failed to create menu.'
-                            });
-                        }
-                    },
+            Swal.fire({
+                title: 'Updating...',
+                allowOutsideClick: false,
+                didOpen: function () { Swal.showLoading(); }
+            });
 
-                    error: function () {
+            $.ajax({
+                url: '/User/LoadEditModal',
+                type: 'POST',
+                data: $form.serialize(),
+                headers: { "X-Requested-With": "XMLHttpRequest" },
+
+                success: function (response) {
+                    Swal.close();
+                    if (response.success) {
+                        Swal.fire({
+                            icon: 'success',
+                            title: response.message,
+                            showConfirmButton: false,
+                            timer: 1500
+                        }).then(function () {
+                            window.location.href = response.redirectUrl;
+                        });
+                    } else {
                         Swal.fire({
                             icon: 'error',
                             title: 'Error',
-                            text: 'Something went wrong! Please try again.'
+                            text: response.message || 'Failed to update user.'
                         });
                     }
-                });
-            }
+                },
+
+                error: function () {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: 'Something went wrong! Please try again.'
+                    });
+                }
+            });
         });
     });
+
 </script>
-
-

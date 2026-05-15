@@ -5,7 +5,6 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-
 <div class="row">
     <div class="row p-2">
         <div class="col-12">
@@ -15,54 +14,72 @@
                     <br />
                     <form asp-action="Create" asp-controller="Designation" method="post" id="RegisterForm" autocomplete="off" novalidate>
                         <fieldset>
+
+                            <!-- Designation Name -->
                             <div class="row g-2">
-                                <div class="mb-3 col-md-6 position-relative">
+                                <div class="mb-3 col-md-6">
                                     <label asp-for="DesignationName" class="form-label">Designation Name</label>
-                                    <input asp-for="DesignationName" class="form-control round" required
-                                           data-bs-toggle="tooltip" data-bs-placement="right" title="Designation Name is required" />
-                                    <span asp-validation-for="DesignationName" class="invalid-tooltip">Designation Name is required</span>
-                                    <small id="designationName-status"></small>
+                                    <input asp-for="DesignationName"
+                                           id="DesignationName"
+                                           class="form-control round"
+                                           required
+                                           autocomplete="off" />
+                                    <small id="designationName-status" class="form-text"></small>
                                 </div>
                             </div>
+
+                            <!-- Active Status -->
                             <div class="row g-2">
-                                <div class="mb-3 col-md-2 position-relative">
+                                <div class="mb-3 col-md-2">
                                     <label asp-for="IsActive" class="form-label">Active Status</label>
-                                    <select asp-for="IsActive" class="form-select select2">
+                                    <select asp-for="IsActive" id="IsActive" class="form-select select2">
                                         <option value="true">Active</option>
                                         <option value="false">Inactive</option>
                                     </select>
-                                    <span asp-validation-for="IsActive" class="invalid-tooltip">Active Status is required</span>
                                 </div>
                             </div>
 
                             <button type="submit" class="btn btn-primary">Create Designation</button>
                         </fieldset>
                     </form>
-
-
-                </div> <!-- end card-body -->
-            </div> <!-- end card-->
-        </div> <!-- end col -->
+                </div>
+            </div>
+        </div>
     </div>
 </div>
-<!-- Load jQuery only ONCE -->
+
 <script src="~/assets/lib/jquery/jquery.min.js"></script>
 <script src="~/assets/js/sweetalert2.all.min.js"></script>
-<!-- Load Select2 JS -->
 <script src="~/assets/vendor/select2/js/select2.min.js"></script>
 
 <script>
-    $("#IsActive").select2({
-        placeholder: "Select Status",
-    });
 
+    // ── Helper ────────────────────────────────────────────────────────────────
+    function setMsg(id, text, isError) {
+        $("#" + id).html(text
+            ? '<span style="color:' + (isError ? 'red' : 'green') + ';">' +
+              (isError ? '❌ ' : '✔ ') + text + '</span>'
+            : '');
+    }
+
+    // ── Select2 Init ──────────────────────────────────────────────────────────
+    $("#IsActive").select2({ placeholder: "Select Status" });
+
+    // ── Tracking flag ─────────────────────────────────────────────────────────
     let designationNameValid = false;
 
+    // ── Designation Name validation ───────────────────────────────────────────
     $("#DesignationName").on('blur', function () {
-    let designationName = $(this).val().trim();
+        let designationName = $(this).val().trim();
+
+        if (designationName.length === 0) {
+            setMsg('designationName-status', 'Designation Name is required.', true);
+            designationNameValid = false;
+            return;
+        }
 
         if (designationName.length < 3) {
-            $("#designationName-status").html(`<span style="color:gray;">Minimum 3 characters required</span>`);
+            setMsg('designationName-status', 'Minimum 3 characters required.', true);
             designationNameValid = false;
             return;
         }
@@ -74,91 +91,85 @@
             success: function (res) {
                 if (res.exists) {
                     designationNameValid = false;
-                    $("#designationName-status").html(`<span style="color:red;">❌ Designation already exists</span>`);
+                    setMsg('designationName-status', 'Designation already exists.', true);
                 } else {
                     designationNameValid = true;
-                    $("#designationName-status").html(`<span style="color:green;">✔ Designation available</span>`);
+                    setMsg('designationName-status', 'Designation name available.', false);
                 }
             }
         });
     });
 
-
+    // ── Form Submit ───────────────────────────────────────────────────────────
     $("#RegisterForm").on("submit", function (e) {
         e.preventDefault();
-        let form = $(this)[0];
 
-        if (!designationNameValid) {
-            Swal.fire({
-                icon: 'error',
-                title: 'Designation Already Exists',
-                text: 'Please choose another designation.'
-            });
-            return;
+        let isValid = true;
+
+        // Validate designation name
+        if ($("#DesignationName").val().trim() === '') {
+            setMsg('designationName-status', 'Designation Name is required.', true);
+            designationNameValid = false;
         }
 
-        if (!form.checkValidity()) {
-            $(this).addClass('was-validated');
-            return;
-        }
+        if (!designationNameValid) isValid = false;
 
+        if (!isValid) return;
+
+        // Confirm then submit
         Swal.fire({
             title: 'Create Designation?',
-            text: "Are you sure you want to create?",
+            text: 'Are you sure you want to create?',
             icon: 'warning',
             showCancelButton: true,
             confirmButtonText: 'Yes, Save',
             cancelButtonText: 'Cancel'
         }).then((result) => {
-            if (result.isConfirmed) {
-                Swal.fire({
-                    title: 'Saving...',
-                    allowOutsideClick: false,
-                    didOpen: () => {
-                        Swal.showLoading();
-                    }
-                });
-                $.ajax({
-                    url: '/Designation/Create',
-                    type: 'POST',
-                    data: $("#RegisterForm").serialize(),
-                    headers: { "X-Requested-With": "XMLHttpRequest" },
 
-                    success: function (response) {
-                        Swal.close();
+            if (!result.isConfirmed) return;
 
-                        if (response.success) {
-                            Swal.fire({
-                                icon: 'success',
-                                title: response.message,
-                                showConfirmButton: false,
-                                timer: 1500
-                            }).then(() => {
-                                window.location.href = response.redirectUrl;
-                            });
-                        } else {
-                            Swal.fire({
-                                icon: 'error',
-                                title: 'Error',
-                                text: response.message || 'Failed to create menu.'
-                            });
-                        }
-                    },
+            Swal.fire({
+                title: 'Saving...',
+                allowOutsideClick: false,
+                didOpen: () => Swal.showLoading()
+            });
 
-                    error: function () {
+            $.ajax({
+                url: '/Designation/Create',
+                type: 'POST',
+                data: $("#RegisterForm").serialize(),
+                headers: { "X-Requested-With": "XMLHttpRequest" },
+
+                success: function (response) {
+                    Swal.close();
+
+                    if (response.success) {
+                        Swal.fire({
+                            icon: 'success',
+                            title: response.message,
+                            showConfirmButton: false,
+                            timer: 1500
+                        }).then(() => {
+                            window.location.href = response.redirectUrl;
+                        });
+                    } else {
                         Swal.fire({
                             icon: 'error',
                             title: 'Error',
-                            text: 'Something went wrong! Please try again.'
+                            text: response.message || 'Failed to create designation.'
                         });
                     }
-                });
-            }
+                },
+
+                error: function () {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: 'Something went wrong! Please try again.'
+                    });
+                }
+            });
         });
     });
 
-
-
-
 </script>
-
