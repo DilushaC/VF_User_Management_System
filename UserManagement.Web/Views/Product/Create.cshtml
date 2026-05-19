@@ -14,55 +14,86 @@
                     <br />
                     <form asp-action="Create" asp-controller="Product" method="post" id="RegisterForm" autocomplete="off" novalidate>
                         <fieldset>
+
+                            <!-- Product Name -->
                             <div class="row g-2">
-                                <div class="mb-3 col-md-6 position-relative">
+                                <div class="mb-3 col-md-6">
                                     <label asp-for="ProductName" class="form-label">Product Name</label>
-                                    <input asp-for="ProductName" class="form-control round" required
-                                           data-bs-toggle="tooltip" data-bs-placement="right" title="Product Name is required" />
-                                    <span asp-validation-for="ProductName" class="invalid-tooltip">Product Name is required</span>
-                                    <small id="productName-status"></small>
+                                    <input asp-for="ProductName"
+                                           id="ProductName"
+                                           class="form-control round"
+                                           required
+                                           autocomplete="off" />
+                                    <small id="productName-status" class="form-text"></small>
                                 </div>
                             </div>
+
+                            <!-- Description -->
                             <div class="row g-2">
-                                <div class="mb-3 col-md-6 position-relative">
+                                <div class="mb-3 col-md-6">
                                     <label asp-for="Description" class="form-label">Description</label>
-                                    <textarea asp-for="Description" class="form-control round" required
-                                              data-bs-toggle="tooltip" data-bs-placement="right" title="Description is required"></textarea>
-                                    <span asp-validation-for="Description" class="invalid-tooltip">Description is required</span>
+                                    <textarea asp-for="Description"
+                                              id="Description"
+                                              class="form-control round"
+                                              required
+                                              autocomplete="off"></textarea>
+                                    <small id="description-status" class="form-text"></small>
                                 </div>
                             </div>
+
+                            <!-- Active Status -->
                             <div class="row g-2">
                                 <div class="mb-3 col-md-2">
                                     <label asp-for="IsActive" class="form-label">Active Status</label>
-                                    <select asp-for="IsActive" class="form-select">
+                                    <select asp-for="IsActive" id="IsActive" class="form-select select2">
                                         <option value="true">Active</option>
                                         <option value="false">Inactive</option>
                                     </select>
-                                    <span asp-validation-for="IsActive" class="text-danger"></span>
                                 </div>
                             </div>
+
                             <button type="submit" class="btn btn-primary">Create Product</button>
                         </fieldset>
                     </form>
-                </div> <!-- end card-body -->
-            </div> <!-- end card-->
-        </div> <!-- end col -->
+                </div>
+            </div>
+        </div>
     </div>
 </div>
-<!-- Load jQuery only ONCE -->
+
 <script src="~/assets/lib/jquery/jquery.min.js"></script>
 <script src="~/assets/js/sweetalert2.all.min.js"></script>
-<!-- Load Select2 JS -->
 <script src="~/assets/vendor/select2/js/select2.min.js"></script>
 
 <script>
-    let productNameValid = false;
 
+    // ── Helper ────────────────────────────────────────────────────────────────
+    function setMsg(id, text, isError) {
+        $("#" + id).html(text
+            ? '<span style="color:' + (isError ? 'red' : 'green') + ';">' +
+              (isError ? '❌ ' : '✔ ') + text + '</span>'
+            : '');
+    }
+
+    // ── Select2 Init ──────────────────────────────────────────────────────────
+    $("#IsActive").select2({ placeholder: "Select Status" });
+
+    // ── Tracking flags ────────────────────────────────────────────────────────
+    let productNameValid = false;
+    let descriptionValid = false;
+
+    // ── Product Name validation ───────────────────────────────────────────────
     $("#ProductName").on('blur', function () {
-    let productName = $(this).val().trim();
+        let productName = $(this).val().trim();
+
+        if (productName.length === 0) {
+            setMsg('productName-status', 'Product Name is required.', true);
+            productNameValid = false;
+            return;
+        }
 
         if (productName.length < 3) {
-            $("#productName-status").html(`<span style="color:gray;">Minimum 3 characters required</span>`);
+            setMsg('productName-status', 'Minimum 3 characters required.', true);
             productNameValid = false;
             return;
         }
@@ -74,87 +105,112 @@
             success: function (res) {
                 if (res.exists) {
                     productNameValid = false;
-                    $("#productName-status").html(`<span style="color:red;">❌ Product already exists</span>`);
+                    setMsg('productName-status', 'Product already exists.', true);
                 } else {
                     productNameValid = true;
-                    $("#productName-status").html(`<span style="color:green;">✔ Product available</span>`);
+                    setMsg('productName-status', 'Product name available.', false);
                 }
             }
         });
     });
+
+    // ── Description validation ────────────────────────────────────────────────
+    $("#Description").on('blur', function () {
+        let description = $(this).val().trim();
+
+        if (description.length === 0) {
+            setMsg('description-status', 'Description is required.', true);
+            descriptionValid = false;
+            return;
+        }
+
+        if (description.length < 5) {
+            setMsg('description-status', 'Minimum 5 characters required.', true);
+            descriptionValid = false;
+            return;
+        }
+
+        descriptionValid = true;
+        setMsg('description-status', 'Description looks good.', false);
+    });
+
+    // ── Form Submit ───────────────────────────────────────────────────────────
     $("#RegisterForm").on("submit", function (e) {
         e.preventDefault();
-        let form = $(this)[0];
 
-        if (!productNameValid) {
-            Swal.fire({
-                icon: 'error',
-                title: 'Product Already Exists',
-                text: 'Please choose another Product.'
-            });
-            return;
+        let isValid = true;
+
+        // Validate product name
+        if ($("#ProductName").val().trim() === '') {
+            setMsg('productName-status', 'Product Name is required.', true);
+            productNameValid = false;
         }
 
-        if (!form.checkValidity()) {
-            $(this).addClass('was-validated');
-            return;
+        // Validate description
+        if ($("#Description").val().trim() === '') {
+            setMsg('description-status', 'Description is required.', true);
+            descriptionValid = false;
         }
+
+        if (!productNameValid) isValid = false;
+        if (!descriptionValid) isValid = false;
+
+        if (!isValid) return;
+
+        // Confirm then submit
         Swal.fire({
             title: 'Create Product?',
-            text: "Are you sure you want to create?",
+            text: 'Are you sure you want to create?',
             icon: 'warning',
             showCancelButton: true,
             confirmButtonText: 'Yes, Save',
             cancelButtonText: 'Cancel'
         }).then((result) => {
-            if (result.isConfirmed) {
-                Swal.fire({
-                    title: 'Saving...',
-                    allowOutsideClick: false,
-                    didOpen: () => {
-                        Swal.showLoading();
-                    }
-                });
-                $.ajax({
-                    url: '/Product/Create',
-                    type: 'POST',
-                    data: $("#RegisterForm").serialize(),
-                    headers: { "X-Requested-With": "XMLHttpRequest" },
 
-                    success: function (response) {
-                        Swal.close();
+            if (!result.isConfirmed) return;
 
-                        if (response.success) {
-                            Swal.fire({
-                                icon: 'success',
-                                title: response.message,
-                                showConfirmButton: false,
-                                timer: 1500
-                            }).then(() => {
-                                window.location.href = response.redirectUrl;
-                            });
-                        } else {
-                            Swal.fire({
-                                icon: 'error',
-                                title: 'Error',
-                                text: response.message || 'Failed to create menu.'
-                            });
-                        }
-                    },
+            Swal.fire({
+                title: 'Saving...',
+                allowOutsideClick: false,
+                didOpen: () => Swal.showLoading()
+            });
 
-                    error: function () {
+            $.ajax({
+                url: '/Product/Create',
+                type: 'POST',
+                data: $("#RegisterForm").serialize(),
+                headers: { "X-Requested-With": "XMLHttpRequest" },
+
+                success: function (response) {
+                    Swal.close();
+
+                    if (response.success) {
+                        Swal.fire({
+                            icon: 'success',
+                            title: response.message,
+                            showConfirmButton: false,
+                            timer: 1500
+                        }).then(() => {
+                            window.location.href = response.redirectUrl;
+                        });
+                    } else {
                         Swal.fire({
                             icon: 'error',
                             title: 'Error',
-                            text: 'Something went wrong! Please try again.'
+                            text: response.message || 'Failed to create product.'
                         });
                     }
-                });
-            }
+                },
+
+                error: function () {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: 'Something went wrong! Please try again.'
+                    });
+                }
+            });
         });
     });
 
-
-
 </script>
-
