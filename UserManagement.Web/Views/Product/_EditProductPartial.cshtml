@@ -1,122 +1,479 @@
 ﻿@using UserManagement.Data.Models
 @model ProductModel
+
 @{
     Layout = null;
 }
 
 <div class="modal-header">
-    <h5 class="modal-title" id="userEditModalLabel">Edit Product: @Model.ProductName</h5>
-    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+    <h5 class="modal-title" id="userEditModalLabel">
+        Edit Product: @Model.ProductName
+    </h5>
+
+    <button type="button"
+            class="btn-close"
+            data-bs-dismiss="modal"
+            aria-label="Close">
+    </button>
 </div>
 
-<form id="updateProductForm" asp-action="LoadEditModal" asp-controller="Product" method="post" autocomplete="off">
+<form id="updateProductForm"
+      asp-action="LoadEditModal"
+      asp-controller="Product"
+      method="post"
+      autocomplete="off"
+      novalidate>
+
     <input type="hidden" asp-for="Id" />
 
     <div class="modal-body">
 
+        <!-- Product Name -->
         <div class="mb-3 col-md-6">
-            <label class="form-label">ProductName</label>
-            <input type="text" asp-for="ProductName" class="form-control" />
-        </div>
-        <div class="mb-3 col-md-6">
-            <label asp-for="Description" class="form-label"></label>
-            <textarea asp-for="Description" class="form-control" rows="4"></textarea>
-            <span asp-validation-for="Description" class="text-danger"></span>
+
+            <label class="form-label">
+                Product Name <span class="text-danger">*</span>
+            </label>
+
+            <input type="text"
+                   asp-for="ProductName"
+                   id="ProductName"
+                   class="form-control"
+                   autocomplete="off" />
+
+            <small id="product-status"
+                   class="text-danger validation-message d-none">
+            </small>
+
         </div>
 
-        <div class="mb-3  col-md-3">
-            <label class="form-label">Status</label>
-            <select id="Status" asp-for="IsActive" class="form-select">
+        <!-- Description -->
+        <div class="mb-3 col-md-6">
+
+            <label class="form-label">
+                Description <span class="text-danger">*</span>
+            </label>
+
+            <textarea asp-for="Description"
+                      id="Description"
+                      class="form-control"
+                      rows="4"
+                      autocomplete="off"></textarea>
+
+            <small id="description-status"
+                   class="text-danger validation-message d-none">
+            </small>
+
+        </div>
+
+        <!-- Status -->
+        <div class="mb-3 col-md-3">
+
+            <label class="form-label">
+                Status
+            </label>
+
+            <select id="Status"
+                    asp-for="IsActive"
+                    class="form-select">
+
                 <option value="true">Active</option>
                 <option value="false">Inactive</option>
+
             </select>
+
         </div>
 
     </div>
 
     <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-        <button type="submit" class="btn btn-primary">Save Changes</button>
+
+        <button type="button"
+                class="btn btn-secondary"
+                data-bs-dismiss="modal">
+            Cancel
+        </button>
+
+        <button type="submit"
+                class="btn btn-primary">
+            Save Changes
+        </button>
+
     </div>
+
 </form>
 
-<!-- Load jQuery only ONCE -->
+<style>
+
+    .validation-message {
+        font-size: 13px;
+        margin-top: 4px;
+        display: block;
+    }
+
+    .select2-container {
+        width: 100% !important;
+    }
+
+</style>
+
+<!-- jQuery -->
 <script src="~/assets/lib/jquery/jquery.min.js"></script>
+
+<!-- SweetAlert -->
 <script src="~/assets/js/sweetalert2.all.min.js"></script>
-<!-- Load Select2 JS -->
+
+<!-- Select2 -->
 <script src="~/assets/vendor/select2/js/select2.min.js"></script>
 
 <script>
-    $("#Status").select2({
-        placeholder: "Select Status",
+
+    // ============================================
+    // SELECT2 INIT
+    // ============================================
+
+    $(document).ready(function () {
+
+        var modal = $("#updateProductForm").closest(".modal");
+
+        $("#Status").select2({
+            placeholder: "Select Status",
+            dropdownParent: modal,
+            width: '100%'
+        });
+
     });
 
-    $("#updateProductForm").on("submit", function (e) {
-        debugger;
-        e.preventDefault();
-        let form = $(this);
+    // ============================================
+    // VALIDATION HELPERS
+    // ============================================
 
-        if (!form[0].checkValidity()) {
-            Swal.fire({
-                icon: "warning",
-                title: "Missing Information",
-                text: "Please fill in all required fields."
-            });
+    function showError(messageId, message) {
+
+        $(messageId)
+            .removeClass("d-none")
+            .text(message);
+    }
+
+    function clearError(messageId) {
+
+        $(messageId)
+            .addClass("d-none")
+            .text("");
+    }
+
+    // ============================================
+    // ORIGINAL VALUE
+    // ============================================
+
+    let originalProductName = $("#ProductName").val().trim();
+
+    let productNameValid = true;
+    let descriptionValid = true;
+
+    // ============================================
+    // PRODUCT NAME VALIDATION
+    // ============================================
+
+    $("#ProductName").on("keyup blur", function () {
+
+        let productName = $(this).val().trim();
+
+        if (productName === "") {
+
+            showError(
+                "#product-status",
+                "Product Name is required."
+            );
+
+            productNameValid = false;
+
             return;
         }
-        Swal.fire({
-            title: 'Update Product?',
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonText: 'Yes, Update',
-            cancelButtonText: 'Cancel'
-        }).then((result) => {
-            if (result.isConfirmed) {
-                Swal.fire({
-                    title: 'Updating...',
-                    allowOutsideClick: false,
-                    didOpen: () => {
-                        Swal.showLoading();
-                    }
-                });
-                $.ajax({
-                    url: '/Product/LoadEditModal',
-                    type: 'POST',
-                    data: form.serialize(),
-                    headers: { "X-Requested-With": "XMLHttpRequest" },
 
-                    success: function (response) {
-                        Swal.close();
+        if (productName.length < 3) {
 
-                        if (response.success) {
-                            Swal.fire({
-                                icon: 'success',
-                                title: response.message,
-                                showConfirmButton: false,
-                                timer: 1500
-                            }).then(() => {
-                                window.location.href = response.redirectUrl;
-                            });
-                        } else {
-                            Swal.fire({
-                                icon: 'error',
-                                title: 'Error',
-                                text: response.message || 'Failed to create menu.'
-                            });
-                        }
-                    },
+            showError(
+                "#product-status",
+                "Minimum 3 characters required."
+            );
 
-                    error: function () {
-                        Swal.fire({
-                            icon: 'error',
-                            title: 'Error',
-                            text: 'Something went wrong! Please try again.'
-                        });
-                    }
-                });
+            productNameValid = false;
+
+            return;
+        }
+
+        // SAME NAME = VALID
+        if (productName.toLowerCase() === originalProductName.toLowerCase()) {
+
+            clearError("#product-status");
+
+            productNameValid = true;
+
+            return;
+        }
+
+        // CHECK EXISTING NAME
+        $.ajax({
+
+            url: '/Product/CheckProductName',
+
+            type: 'POST',
+
+            data: {
+                productName: productName
+            },
+
+            success: function (res) {
+
+                if (res.exists) {
+
+                    showError(
+                        "#product-status",
+                        "Product already exists."
+                    );
+
+                    productNameValid = false;
+
+                } else {
+
+                    clearError("#product-status");
+
+                    productNameValid = true;
+                }
+            },
+
+            error: function () {
+
+                showError(
+                    "#product-status",
+                    "Unable to validate product name."
+                );
+
+                productNameValid = false;
             }
+
         });
+
     });
+
+    // ============================================
+    // DESCRIPTION VALIDATION
+    // ============================================
+
+    $("#Description").on("keyup blur", function () {
+
+        let description = $(this).val().trim();
+
+        if (description === "") {
+
+            showError(
+                "#description-status",
+                "Description is required."
+            );
+
+            descriptionValid = false;
+
+            return;
+        }
+
+        if (description.length < 5) {
+
+            showError(
+                "#description-status",
+                "Minimum 5 characters required."
+            );
+
+            descriptionValid = false;
+
+            return;
+        }
+
+        clearError("#description-status");
+
+        descriptionValid = true;
+
+    });
+
+    // ============================================
+    // FORM SUBMIT
+    // ============================================
+
+    $("#updateProductForm").on("submit", function (e) {
+
+        e.preventDefault();
+
+        let isValid = true;
+
+        let productName = $("#ProductName").val().trim();
+        let description = $("#Description").val().trim();
+
+        // PRODUCT NAME
+        if (productName === "") {
+
+            showError(
+                "#product-status",
+                "Product Name is required."
+            );
+
+            isValid = false;
+        }
+
+        else if (productName.length < 3) {
+
+            showError(
+                "#product-status",
+                "Minimum 3 characters required."
+            );
+
+            isValid = false;
+        }
+
+        else if (!productNameValid) {
+
+            isValid = false;
+        }
+
+        else {
+
+            clearError("#product-status");
+        }
+
+        // DESCRIPTION
+        if (description === "") {
+
+            showError(
+                "#description-status",
+                "Description is required."
+            );
+
+            isValid = false;
+        }
+
+        else if (description.length < 5) {
+
+            showError(
+                "#description-status",
+                "Minimum 5 characters required."
+            );
+
+            isValid = false;
+        }
+
+        else {
+
+            clearError("#description-status");
+
+            descriptionValid = true;
+        }
+
+        // STOP
+        if (!isValid) {
+            return;
+        }
+
+        // ============================================
+        // CONFIRM UPDATE
+        // ============================================
+
+        Swal.fire({
+
+            title: 'Update Product?',
+
+            icon: 'warning',
+
+            showCancelButton: true,
+
+            confirmButtonText: 'Yes, Update',
+
+            cancelButtonText: 'Cancel'
+
+        }).then((result) => {
+
+            if (!result.isConfirmed) {
+                return;
+            }
+
+            Swal.fire({
+
+                title: 'Updating...',
+
+                allowOutsideClick: false,
+
+                didOpen: () => {
+                    Swal.showLoading();
+                }
+
+            });
+
+            $.ajax({
+
+                url: '/Product/LoadEditModal',
+
+                type: 'POST',
+
+                data: $("#updateProductForm").serialize(),
+
+                headers: {
+                    "X-Requested-With": "XMLHttpRequest"
+                },
+
+                success: function (response) {
+
+                    Swal.close();
+
+                    if (response.success) {
+
+                        Swal.fire({
+
+                            icon: 'success',
+
+                            title: response.message,
+
+                            showConfirmButton: false,
+
+                            timer: 1500
+
+                        }).then(() => {
+
+                            window.location.href = response.redirectUrl;
+
+                        });
+
+                    } else {
+
+                        Swal.fire({
+
+                            icon: 'error',
+
+                            title: 'Error',
+
+                            text: response.message || 'Failed to update product.'
+
+                        });
+
+                    }
+
+                },
+
+                error: function () {
+
+                    Swal.fire({
+
+                        icon: 'error',
+
+                        title: 'Error',
+
+                        text: 'Something went wrong! Please try again.'
+
+                    });
+
+                }
+
+            });
+
+        });
+
+    });
+
 </script>
-
-
