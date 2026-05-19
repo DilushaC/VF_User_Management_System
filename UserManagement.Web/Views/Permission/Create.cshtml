@@ -23,21 +23,34 @@
                     <!-- Role -->
                     <div class="row mb-3">
                         <div class="col-md-6">
-                            <label asp-for="RoleId" class="form-label">Role Name</label>
+                            <label asp-for="RoleId" class="form-label">
+                                Role Name <span class="text-danger">*</span>
+                            </label>
+
                             <select asp-for="RoleId"
+                                    id="RoleId"
                                     class="form-control select2"
                                     asp-items="ViewBag.Roles"
                                     required>
-                                <option value=""></option>
+                                <option value="">Select Role</option>
                             </select>
+
+                            <small class="text-danger validation-message d-none">
+                                Please select a role.
+                            </small>
                         </div>
                     </div>
 
                     <!-- Products -->
-                    <div class="row mb-3">
+                    <div class="row mb-3" id="ProductsSection">
                         <div class="col-md-12">
-                            <label class="form-label">Products</label>
+
+                            <label class="form-label">
+                                Products <span class="text-danger">*</span>
+                            </label>
+
                             <div class="list-group" id="productList">
+
                                 @{
                                     var products = ViewBag.Products as IEnumerable<SelectListItem>
                                     ?? Enumerable.Empty<SelectListItem>();
@@ -46,46 +59,69 @@
                                 @foreach (var product in products)
                                 {
                                     <div class="list-group-item d-flex flex-column align-items-start">
+
+                                        <!-- Product Checkbox -->
                                         <div class="form-check w-100">
-                                            <input type="checkbox" class="form-check-input product-checkbox"
-                                                   value="@product.Value" id="product_@product.Value" />
+                                            <input type="checkbox"
+                                                   class="form-check-input product-checkbox"
+                                                   value="@product.Value"
+                                                   id="product_@product.Value" />
+
                                             <label class="form-check-label fw-semibold"
                                                    for="product_@product.Value">
                                                 @product.Text
                                             </label>
                                         </div>
-                                        <!-- Pages dropdown container -->
+
+                                        <!-- Pages -->
                                         <div class="m-2 page-select-container"
                                              id="pagesContainer_@product.Value"
                                              style="display:none; width:100%;">
+
                                             <select class="form-control product-pages select2"
                                                     data-product="@product.Value"
                                                     multiple
                                                     style="width:100%;">
                                             </select>
+
+                                            <small class="text-danger page-error d-none">
+                                                Please select at least one page.
+                                            </small>
                                         </div>
+
                                     </div>
                                 }
+
                             </div>
 
+                            <small id="productError"
+                                   class="text-danger d-none">
+                                Please select at least one product.
+                            </small>
+
                             <input type="hidden" id="ProductId" name="ProductId" />
-                            <!-- Container for dynamically generated hidden inputs for PageIds -->
+
+                            <!-- Dynamic PageIds -->
                             <div id="PageIdsContainer"></div>
+
                         </div>
                     </div>
 
+                    <!-- Submit -->
                     <button type="submit" class="btn btn-primary mt-3">
                         Create Permission
                     </button>
 
                 </form>
+
             </div>
         </div>
     </div>
 </div>
 
-<!-- CSS Fix for Select2 width -->
+<!-- CSS -->
 <style>
+
     .page-select-container {
         width: 100%;
     }
@@ -97,97 +133,190 @@
     .product-pages {
         width: 100% !important;
     }
+
+    .validation-message,
+    .page-error,
+    #productError {
+        display: block;
+        margin-top: 5px;
+        font-size: 13px;
+    }
+
+    .select2-container--default.select2-container--focus .select2-selection--multiple,
+    .is-invalid .select2-selection {
+        border-color: #dc3545 !important;
+    }
+
 </style>
 
+<!-- Scripts -->
 <script src="~/assets/lib/jquery/jquery.min.js"></script>
 <script src="~/assets/js/sweetalert2.all.min.js"></script>
 <script src="~/assets/vendor/select2/js/select2.min.js"></script>
 
 <script>
 
-// Hide products section initially
-$("#productList").closest(".row.mb-3").hide();
-
-// Show/hide products section based on role selection
-$("#RoleId").on("change", function () {
-    if ($(this).val()) {
-        $("#productList").closest(".row.mb-3").show();
-    } else {
-        $("#productList").closest(".row.mb-3").hide();
-
-        // Reset all checkboxes and selections when role is cleared
-        $(".product-checkbox").prop("checked", false);
-        $(".page-select-container").hide();
-        selectedProducts = [];
-        selectedPages = {};
-        $("#ProductId").val("");
-        $("#PageIdsContainer").empty();
-    }
-});
-</script>
-
-<script>
-    $(".select2").select2({ width: "100%" });
+    $(".select2").select2({
+        width: "100%"
+    });
 
     let selectedProducts = [];
-    let selectedPages = {}; // productId -> [pageIds]
+    let selectedPages = {};
 
-    // When a product checkbox is toggled
+    // Hide products section initially
+    $("#ProductsSection").hide();
+
+    // Role Change
+    $("#RoleId").on("change", function () {
+
+        const roleValue = $(this).val();
+
+        if (roleValue) {
+
+            $("#ProductsSection").show();
+
+            $(this).removeClass("is-invalid");
+
+            $(this).closest(".col-md-6")
+                   .find(".validation-message")
+                   .addClass("d-none");
+
+        } else {
+
+            $("#ProductsSection").hide();
+
+            // Reset everything
+            $(".product-checkbox").prop("checked", false);
+
+            $(".page-select-container").hide();
+
+            $(".product-pages").val(null).trigger("change");
+
+            selectedProducts = [];
+
+            selectedPages = {};
+
+            $("#ProductId").val("");
+
+            $("#PageIdsContainer").empty();
+
+            $("#productError").addClass("d-none");
+
+            $(".page-error").addClass("d-none");
+        }
+    });
+
+    // Product Checkbox Change
     $(document).on("change", ".product-checkbox", function () {
+
         const productId = $(this).val();
+
         const container = $(`#pagesContainer_${productId}`);
 
         if (this.checked) {
-            selectedProducts.push(productId);
+
+            if (!selectedProducts.includes(productId)) {
+
+                selectedProducts.push(productId);
+            }
+
             container.show();
+
             loadPages(productId);
+
         } else {
+
             selectedProducts = selectedProducts.filter(p => p !== productId);
+
             delete selectedPages[productId];
+
             container.hide();
-            container.find("select").val(null).trigger("change");
+
+            container.find("select")
+                     .val(null)
+                     .trigger("change");
         }
 
         $("#ProductId").val(selectedProducts.join(","));
+
+        // Hide product error
+        if (selectedProducts.length > 0) {
+
+            $("#productError").addClass("d-none");
+        }
+
         updateHiddenPageIds();
     });
 
-    // Load pages via AJAX
+    // Load Pages
     function loadPages(productId) {
+
         const $select = $(`#pagesContainer_${productId} select`);
+
         $select.empty();
 
         $.ajax({
+
             url: "/Permission/GetPagesByProduct",
+
             type: "GET",
-            data: { productId: productId },
+
+            data: {
+                productId: productId
+            },
+
             success: function (res) {
+
                 if (!res.success) return;
 
-                res.data.forEach(p => {
-                    $select.append(new Option(p.pageName, p.id));
+                res.data.forEach(function (p) {
+
+                    $select.append(
+                        new Option(p.pageName, p.id)
+                    );
                 });
 
-                // Re-initialize Select2 with full width
-                $select.select2({ width: "100%" });
+                $select.select2({
+                    width: "100%"
+                });
+
                 selectedPages[productId] = [];
             }
         });
     }
 
-    // When pages are selected
+    // Pages Change
     $(document).on("change", ".product-pages", function () {
+
         const productId = $(this).data("product");
+
         selectedPages[productId] = $(this).val() || [];
+
+        const error = $(this)
+            .closest(".page-select-container")
+            .find(".page-error");
+
+        if (selectedPages[productId].length > 0) {
+
+            error.addClass("d-none");
+
+        } else {
+
+            error.removeClass("d-none");
+        }
+
         updateHiddenPageIds();
     });
 
-    // Update hidden inputs for PageIds (one input per page)
+    // Hidden Inputs
     function updateHiddenPageIds() {
+
         $("#PageIdsContainer").empty();
 
-        Object.values(selectedPages).forEach(pageArray => {
-            pageArray.forEach(pageId => {
+        Object.values(selectedPages).forEach(function (pageArray) {
+
+            pageArray.forEach(function (pageId) {
+
                 $("#PageIdsContainer").append(
                     `<input type="hidden" name="PageIds" value="${pageId}" />`
                 );
@@ -195,58 +324,155 @@ $("#RoleId").on("change", function () {
         });
     }
 
-    // Form submit
+    // Submit
     $("#RegisterForm").on("submit", function (e) {
+
         e.preventDefault();
 
-        if (!this.checkValidity()) {
-            $(this).addClass("was-validated");
-            return;
+        let isValid = true;
+
+        // =========================
+        // Role Validation
+        // =========================
+
+        if (!$("#RoleId").val()) {
+
+            isValid = false;
+
+            $("#RoleId").addClass("is-invalid");
+
+            $("#RoleId")
+                .closest(".col-md-6")
+                .find(".validation-message")
+                .removeClass("d-none");
+
+        } else {
+
+            $("#RoleId").removeClass("is-invalid");
+
+            $("#RoleId")
+                .closest(".col-md-6")
+                .find(".validation-message")
+                .addClass("d-none");
         }
 
+        // =========================
+        // Product Validation
+        // =========================
+
+        if (selectedProducts.length === 0) {
+
+            isValid = false;
+
+            $("#productError").removeClass("d-none");
+
+        } else {
+
+            $("#productError").addClass("d-none");
+        }
+
+        // =========================
+        // Page Validation
+        // =========================
+
+        selectedProducts.forEach(function (productId) {
+
+            const pages = selectedPages[productId] || [];
+
+            const error = $(`#pagesContainer_${productId}`)
+                .find(".page-error");
+
+            if (pages.length === 0) {
+
+                isValid = false;
+
+                error.removeClass("d-none");
+
+            } else {
+
+                error.addClass("d-none");
+            }
+        });
+
+        // Stop if invalid
+        if (!isValid) return;
+
+        // Confirmation
         Swal.fire({
+
             title: "Create Page Permission?",
+
             icon: "warning",
+
             showCancelButton: true,
+
             confirmButtonText: "Yes"
-        }).then(result => {
+
+        }).then((result) => {
+
             if (!result.isConfirmed) return;
 
             $.ajax({
+
                 url: "/Permission/Create",
+
                 type: "POST",
-                data: $(this).serialize(),
-                    headers: { "X-Requested-With": "XMLHttpRequest" },
 
-                    success: function (response) {
-                        Swal.close();
+                data: $("#RegisterForm").serialize(),
 
-                        if (response.success) {
-                            Swal.fire({
-                                icon: 'success',
-                                title: response.message,
-                                showConfirmButton: false,
-                                timer: 1500
-                            }).then(() => {
-                                window.location.href = response.redirectUrl;
-                            });
-                        } else {
-                            Swal.fire({
-                                icon: 'error',
-                                title: 'Error',
-                                text: response.message || 'Failed to create menu.'
-                            });
-                        }
-                    },
+                headers: {
+                    "X-Requested-With": "XMLHttpRequest"
+                },
 
-                    error: function () {
+                success: function (response) {
+
+                    Swal.close();
+
+                    if (response.success) {
+
                         Swal.fire({
-                            icon: 'error',
-                            title: 'Error',
-                            text: 'Something went wrong! Please try again.'
+
+                            icon: "success",
+
+                            title: response.message,
+
+                            showConfirmButton: false,
+
+                            timer: 1500
+
+                        }).then(() => {
+
+                            window.location.href = response.redirectUrl;
+                        });
+
+                    } else {
+
+                        Swal.fire({
+
+                            icon: "error",
+
+                            title: "Error",
+
+                            text: response.message || "Failed to create permission."
                         });
                     }
+                },
+
+                error: function () {
+
+                    Swal.fire({
+
+                        icon: "error",
+
+                        title: "Error",
+
+                        text: "Something went wrong! Please try again."
+                    });
+                }
             });
+
         });
+
     });
+
 </script>
