@@ -14,54 +14,86 @@
                     <br />
                     <form asp-action="Create" asp-controller="Role" method="post" id="RegisterForm" autocomplete="off" novalidate>
                         <fieldset>
+
+                            <!-- Role Name -->
                             <div class="row g-2">
-                                <div class="mb-3 col-md-6 position-relative">
+                                <div class="mb-3 col-md-6">
                                     <label asp-for="RoleName" class="form-label">Role Name</label>
-                                    <input asp-for="RoleName" class="form-control round" required
-                                           data-bs-toggle="tooltip" data-bs-placement="right" title="Role Name is required" />
-                                    <span asp-validation-for="RoleName" class="invalid-tooltip">Role Name is required</span>
-                                    <small id="roleName-status"></small>
+                                    <input asp-for="RoleName"
+                                           id="RoleName"
+                                           class="form-control round"
+                                           required
+                                           autocomplete="off" />
+                                    <small id="roleName-status" class="form-text"></small>
                                 </div>
                             </div>
+
+                            <!-- Description -->
                             <div class="row g-2">
-                                <div class="mb-3 col-md-6 position-relative">
+                                <div class="mb-3 col-md-6">
                                     <label asp-for="Description" class="form-label">Description</label>
-                                    <textarea asp-for="Description" class="form-control round" required
-                                              data-bs-toggle="tooltip" data-bs-placement="right" title="Description is required"></textarea>
-                                    <span asp-validation-for="Description" class="invalid-tooltip">Description is required</span>
+                                    <textarea asp-for="Description"
+                                              id="Description"
+                                              class="form-control round"
+                                              required
+                                              autocomplete="off"></textarea>
+                                    <small id="description-status" class="form-text"></small>
                                 </div>
                             </div>
+
+                            <!-- Active Status -->
                             <div class="row g-2">
-                                <div class="mb-3 col-md-2 position-relative">
+                                <div class="mb-3 col-md-2">
                                     <label asp-for="IsActive" class="form-label">Active</label>
-                                    <select asp-for="IsActive" class="form-select select2">
+                                    <select asp-for="IsActive" id="IsActive" class="form-select select2">
                                         <option value="true">Active</option>
                                         <option value="false">Inactive</option>
                                     </select>
-                                    <span asp-validation-for="IsActive" class="invalid-tooltip">Active Status is required</span>
                                 </div>
                             </div>
+
                             <button type="submit" class="btn btn-primary">Create Role</button>
                         </fieldset>
                     </form>
-                </div> <!-- end card-body -->
-            </div> <!-- end card-->
-        </div> <!-- end col -->
+                </div>
+            </div>
+        </div>
     </div>
 </div>
-<!-- Load jQuery only ONCE -->
+
 <script src="~/assets/lib/jquery/jquery.min.js"></script>
 <script src="~/assets/js/sweetalert2.all.min.js"></script>
-
+<script src="~/assets/vendor/select2/js/select2.min.js"></script>
 
 <script>
-    let roleNameValid = false;
 
+    // ── Helper ────────────────────────────────────────────────────────────────
+    function setMsg(id, text, isError) {
+        $("#" + id).html(text
+            ? '<span style="color:' + (isError ? 'red' : 'green') + ';">' +
+              (isError ? '❌ ' : '✔ ') + text + '</span>'
+            : '');
+    }
+
+    // ── Select2 Init ──────────────────────────────────────────────────────────
+    $("#IsActive").select2({ placeholder: "Select Status" });
+
+    // ── Tracking flags ────────────────────────────────────────────────────────
+    let roleNameValid = false;
+    let descriptionValid = false;
+
+    // ── Role Name validation ──────────────────────────────────────────────────
     $("#RoleName").on('blur', function () {
-    let roleName = $(this).val().trim();
+        let roleName = $(this).val().trim();
+
+        if (roleName.length === 0) {
+            setMsg('roleName-status', 'Role Name is required.', true);
+            roleNameValid = false;
+            return;
+        }
 
         if (roleName.length < 2) {
-            $("#roleName-status").html(`<span style="color:gray;">Minimum 2 characters required</span>`);
+            setMsg('roleName-status', 'Minimum 2 characters required.', true);
             roleNameValid = false;
             return;
         }
@@ -73,89 +105,112 @@
             success: function (res) {
                 if (res.exists) {
                     roleNameValid = false;
-                    $("#roleName-status").html(`<span style="color:red;">❌ Role already exists</span>`);
+                    setMsg('roleName-status', 'Role already exists.', true);
                 } else {
                     roleNameValid = true;
-                    $("#roleName-status").html(`<span style="color:green;">✔ Role available</span>`);
+                    setMsg('roleName-status', 'Role name available.', false);
                 }
             }
         });
     });
 
+    // ── Description validation ────────────────────────────────────────────────
+    $("#Description").on('blur', function () {
+        let description = $(this).val().trim();
+
+        if (description.length === 0) {
+            setMsg('description-status', 'Description is required.', true);
+            descriptionValid = false;
+            return;
+        }
+
+        if (description.length < 5) {
+            setMsg('description-status', 'Minimum 5 characters required.', true);
+            descriptionValid = false;
+            return;
+        }
+
+        descriptionValid = true;
+        setMsg('description-status', 'Description looks good.', false);
+    });
+
+    // ── Form Submit ───────────────────────────────────────────────────────────
     $("#RegisterForm").on("submit", function (e) {
         e.preventDefault();
-        let form = $(this)[0];
 
+        let isValid = true;
 
-        if (!roleNameValid) {
-            Swal.fire({
-                icon: 'error',
-                title: 'Role Already Exists',
-                text: 'Please choose another Role.'
-            });
-            return;
+        // Validate role name
+        if ($("#RoleName").val().trim() === '') {
+            setMsg('roleName-status', 'Role Name is required.', true);
+            roleNameValid = false;
         }
 
-        if (!form.checkValidity()) {
-            $(this).addClass('was-validated');
-            return;
+        // Validate description
+        if ($("#Description").val().trim() === '') {
+            setMsg('description-status', 'Description is required.', true);
+            descriptionValid = false;
         }
+
+        if (!roleNameValid) isValid = false;
+        if (!descriptionValid) isValid = false;
+
+        if (!isValid) return;
+
+        // Confirm then submit
         Swal.fire({
             title: 'Create Role?',
-            text: "Are you sure you want to create?",
+            text: 'Are you sure you want to create?',
             icon: 'warning',
             showCancelButton: true,
             confirmButtonText: 'Yes, Save',
             cancelButtonText: 'Cancel'
         }).then((result) => {
-            if (result.isConfirmed) {
-                Swal.fire({
-                    title: 'Saving...',
-                    allowOutsideClick: false,
-                    didOpen: () => {
-                        Swal.showLoading();
-                    }
-                });
-                $.ajax({
-                    url: '/Role/Create',
-                    type: 'POST',
-                    data: $("#RegisterForm").serialize(),
-                    headers: { "X-Requested-With": "XMLHttpRequest" },
 
-                    success: function (response) {
-                        Swal.close();
+            if (!result.isConfirmed) return;
 
-                        if (response.success) {
-                            Swal.fire({
-                                icon: 'success',
-                                title: response.message,
-                                showConfirmButton: false,
-                                timer: 1500
-                            }).then(() => {
-                                window.location.href = response.redirectUrl;
-                            });
-                        } else {
-                            Swal.fire({
-                                icon: 'error',
-                                title: 'Error',
-                                text: response.message || 'Failed to create menu.'
-                            });
-                        }
-                    },
+            Swal.fire({
+                title: 'Saving...',
+                allowOutsideClick: false,
+                didOpen: () => Swal.showLoading()
+            });
 
-                    error: function () {
+            $.ajax({
+                url: '/Role/Create',
+                type: 'POST',
+                data: $("#RegisterForm").serialize(),
+                headers: { "X-Requested-With": "XMLHttpRequest" },
+
+                success: function (response) {
+                    Swal.close();
+
+                    if (response.success) {
+                        Swal.fire({
+                            icon: 'success',
+                            title: response.message,
+                            showConfirmButton: false,
+                            timer: 1500
+                        }).then(() => {
+                            window.location.href = response.redirectUrl;
+                        });
+                    } else {
                         Swal.fire({
                             icon: 'error',
                             title: 'Error',
-                            text: 'Something went wrong! Please try again.'
+                            text: response.message || 'Failed to create role.'
                         });
                     }
-                });
-            }
+                },
+
+                error: function () {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: 'Something went wrong! Please try again.'
+                    });
+                }
+            });
         });
     });
 
-
-
 </script>
-
