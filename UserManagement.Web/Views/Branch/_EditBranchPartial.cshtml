@@ -1,113 +1,400 @@
 ﻿@using UserManagement.Data.Models
 @model BranchModel
+
 @{
     Layout = null;
 }
 
 <div class="modal-header">
-    <h5 class="modal-title" id="branchEditModalLabel">Edit Department: @Model.BranchName</h5>
-    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+    <h5 class="modal-title" id="branchEditModalLabel">
+        Edit Branch: @Model.BranchName
+    </h5>
+
+    <button type="button"
+            class="btn-close"
+            data-bs-dismiss="modal"
+            aria-label="Close">
+    </button>
 </div>
 
-<form id="updateBranchForm" asp-action="LoadEditModal" asp-controller="Branch" method="post" autocomplete="off">
+<form id="updateBranchForm"
+      asp-action="LoadEditModal"
+      asp-controller="Branch"
+      method="post"
+      autocomplete="off"
+      novalidate>
+
     <input type="hidden" asp-for="Id" />
+
     <div class="modal-body">
+
+        <!-- Branch Name -->
         <div class="mb-3 col-md-6">
-            <label class="form-label">BranchName</label>
-            <input type="text" asp-for="BranchName" class="form-control" />
+
+            <label class="form-label">
+                Branch Name <span class="text-danger">*</span>
+            </label>
+
+            <input type="text"
+                   asp-for="BranchName"
+                   id="BranchName"
+                   class="form-control"
+                   autocomplete="off" />
+
+            <small id="branchName-status"
+                   class="text-danger validation-message d-none">
+            </small>
+
         </div>
-        <div class="mb-3  col-md-3">
-            <label class="form-label">Status</label>
-            <select id="Status" asp-for="IsActive" class="form-select">
+
+        <!-- Status -->
+        <div class="mb-3 col-md-3">
+
+            <label class="form-label">
+                Status
+            </label>
+
+            <select id="Status"
+                    asp-for="IsActive"
+                    class="form-select">
+
                 <option value="true">Active</option>
                 <option value="false">Inactive</option>
+
             </select>
+
         </div>
 
     </div>
 
     <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-        <button type="submit" class="btn btn-primary">Save Changes</button>
+
+        <button type="button"
+                class="btn btn-secondary"
+                data-bs-dismiss="modal">
+            Cancel
+        </button>
+
+        <button type="submit"
+                class="btn btn-primary">
+            Save Changes
+        </button>
+
     </div>
+
 </form>
 
-<!-- Load jQuery only ONCE -->
+<style>
+
+    .validation-message {
+        font-size: 13px;
+        margin-top: 4px;
+        display: block;
+    }
+
+    .select2-container {
+        width: 100% !important;
+    }
+
+</style>
+
+<!-- jQuery -->
 <script src="~/assets/lib/jquery/jquery.min.js"></script>
+
+<!-- SweetAlert -->
 <script src="~/assets/js/sweetalert2.all.min.js"></script>
-<!-- Load Select2 JS -->
+
+<!-- Select2 -->
 <script src="~/assets/vendor/select2/js/select2.min.js"></script>
 
 <script>
-    $("#Status").select2({
-        placeholder: "Select Status",
+
+    // ============================================
+    // SELECT2 INIT
+    // ============================================
+
+    $(document).ready(function () {
+
+        var modal = $("#updateBranchForm").closest(".modal");
+
+        $("#Status").select2({
+            placeholder: "Select Status",
+            dropdownParent: modal,
+            width: '100%'
+        });
+
     });
 
-    $("#updateBranchForm").on("submit", function (e) {
-        debugger;
-        e.preventDefault();
-        let form = $(this);
+    // ============================================
+    // VALIDATION HELPERS
+    // ============================================
 
-        if (!form[0].checkValidity()) {
-            Swal.fire({
-                icon: "warning",
-                title: "Missing Information",
-                text: "Please fill in all required fields."
-            });
+    function showError(messageId, message) {
+
+        $(messageId)
+            .removeClass("d-none")
+            .text(message);
+    }
+
+    function clearError(messageId) {
+
+        $(messageId)
+            .addClass("d-none")
+            .text("");
+    }
+
+    // ============================================
+    // EXISTING BRANCH NAME
+    // ============================================
+
+    let originalBranchName = $("#BranchName").val().trim();
+
+    let branchNameValid = true;
+
+    // ============================================
+    // LIVE VALIDATION
+    // ============================================
+
+    $("#BranchName").on("keyup blur", function () {
+
+        let branchName = $(this).val().trim();
+
+        // Required
+        if (branchName === "") {
+
+            showError(
+                "#branchName-status",
+                "Branch Name is required."
+            );
+
+            branchNameValid = false;
+
             return;
         }
-        Swal.fire({
-            title: 'Update Branch?',
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonText: 'Yes, Update',
-            cancelButtonText: 'Cancel'
-        }).then((result) => {
-            if (result.isConfirmed) {
-                Swal.fire({
-                    title: 'Updating...',
-                    allowOutsideClick: false,
-                    didOpen: () => {
-                        Swal.showLoading();
-                    }
-                });
-                $.ajax({
-                    url: '/Branch/LoadEditModal',
-                    type: 'POST',
-                    data: form.serialize(),
-                    headers: { "X-Requested-With": "XMLHttpRequest" },
-                    success: function (response) {
-                        Swal.close();
 
-                        if (response.success) {
-                            Swal.fire({
-                                icon: 'success',
-                                title: response.message,
-                                showConfirmButton: false,
-                                timer: 1500
-                            }).then(() => {
-                                window.location.href = response.redirectUrl;
-                            });
-                        } else {
-                            Swal.fire({
-                                icon: 'error',
-                                title: 'Error',
-                                text: response.message || 'Failed to create menu.'
-                            });
-                        }
-                    },
+        // Minimum length
+        if (branchName.length < 2) {
 
-                    error: function () {
-                        Swal.fire({
-                            icon: 'error',
-                            title: 'Error',
-                            text: 'Something went wrong! Please try again.'
-                        });
-                    }
-                });
+            showError(
+                "#branchName-status",
+                "Minimum 2 characters required."
+            );
+
+            branchNameValid = false;
+
+            return;
+        }
+
+        // Same existing value
+        if (branchName.toLowerCase() === originalBranchName.toLowerCase()) {
+
+            clearError("#branchName-status");
+
+            branchNameValid = true;
+
+            return;
+        }
+
+        // Check duplicate
+        $.ajax({
+
+            url: "/Branch/CheckBranchName",
+
+            type: "POST",
+
+            data: {
+                branchName: branchName
+            },
+
+            success: function (res) {
+
+                if (res.exists) {
+
+                    showError(
+                        "#branchName-status",
+                        "Branch already exists."
+                    );
+
+                    branchNameValid = false;
+
+                }
+                else {
+
+                    clearError("#branchName-status");
+
+                    branchNameValid = true;
+                }
+
+            },
+
+            error: function () {
+
+                showError(
+                    "#branchName-status",
+                    "Unable to validate branch name."
+                );
+
+                branchNameValid = false;
             }
+
         });
+
     });
+
+    // ============================================
+    // FORM SUBMIT
+    // ============================================
+
+    $("#updateBranchForm").on("submit", function (e) {
+
+        e.preventDefault();
+
+        let branchName = $("#BranchName").val().trim();
+
+        let isValid = true;
+
+        // ====================================
+        // VALIDATION
+        // ====================================
+
+        if (branchName === "") {
+
+            showError(
+                "#branchName-status",
+                "Branch Name is required."
+            );
+
+            isValid = false;
+        }
+        else if (branchName.length < 2) {
+
+            showError(
+                "#branchName-status",
+                "Minimum 2 characters required."
+            );
+
+            isValid = false;
+        }
+        else if (!branchNameValid) {
+
+            isValid = false;
+        }
+        else {
+
+            clearError("#branchName-status");
+        }
+
+        // ====================================
+        // STOP IF INVALID
+        // ====================================
+
+        if (!isValid) {
+            return;
+        }
+
+        // ====================================
+        // CONFIRM UPDATE
+        // ====================================
+
+        Swal.fire({
+
+            title: 'Update Branch?',
+
+            icon: 'warning',
+
+            showCancelButton: true,
+
+            confirmButtonText: 'Yes, Update',
+
+            cancelButtonText: 'Cancel'
+
+        }).then((result) => {
+
+            if (!result.isConfirmed) {
+                return;
+            }
+
+            Swal.fire({
+
+                title: 'Updating...',
+
+                allowOutsideClick: false,
+
+                didOpen: () => {
+                    Swal.showLoading();
+                }
+
+            });
+
+            $.ajax({
+
+                url: '/Branch/LoadEditModal',
+
+                type: 'POST',
+
+                data: $("#updateBranchForm").serialize(),
+
+                headers: {
+                    "X-Requested-With": "XMLHttpRequest"
+                },
+
+                success: function (response) {
+
+                    Swal.close();
+
+                    if (response.success) {
+
+                        Swal.fire({
+
+                            icon: 'success',
+
+                            title: response.message,
+
+                            showConfirmButton: false,
+
+                            timer: 1500
+
+                        }).then(() => {
+
+                            window.location.href = response.redirectUrl;
+
+                        });
+
+                    }
+                    else {
+
+                        Swal.fire({
+
+                            icon: 'error',
+
+                            title: 'Error',
+
+                            text: response.message || 'Failed to update branch.'
+
+                        });
+
+                    }
+
+                },
+
+                error: function () {
+
+                    Swal.fire({
+
+                        icon: 'error',
+
+                        title: 'Error',
+
+                        text: 'Something went wrong! Please try again.'
+
+                    });
+
+                }
+
+            });
+
+        });
+
+    });
+
 </script>
-
-
