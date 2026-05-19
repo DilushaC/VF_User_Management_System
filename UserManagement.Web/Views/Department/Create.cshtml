@@ -14,47 +14,72 @@
                     <br />
                     <form asp-action="Create" asp-controller="Department" method="post" id="RegisterForm" autocomplete="off" novalidate>
                         <fieldset>
+
+                            <!-- Department Name -->
                             <div class="row g-2">
-                                <div class="mb-3 col-md-6 position-relative">
+                                <div class="mb-3 col-md-6">
                                     <label asp-for="DepartmentName" class="form-label">Department Name</label>
-                                    <input asp-for="DepartmentName" class="form-control round" required
-                                           data-bs-toggle="tooltip" data-bs-placement="right" title="Department Name is required" />
-                                    <span asp-validation-for="DepartmentName" class="invalid-tooltip">Department Name is required</span>
-                                    <small id="departmentName-status"></small>
+                                    <input asp-for="DepartmentName"
+                                           id="DepartmentName"
+                                           class="form-control round"
+                                           required
+                                           autocomplete="off" />
+                                    <small id="departmentName-status" class="form-text"></small>
                                 </div>
                             </div>
+
+                            <!-- Active Status -->
                             <div class="row g-2">
-                                <div class="mb-3 col-md-2 position-relative">
+                                <div class="mb-3 col-md-2">
                                     <label asp-for="IsActive" class="form-label">Active Status</label>
-                                    <select asp-for="IsActive" class="form-select select2">
+                                    <select asp-for="IsActive" id="IsActive" class="form-select select2">
                                         <option value="true">Active</option>
                                         <option value="false">Inactive</option>
                                     </select>
-                                    <span asp-validation-for="IsActive" class="invalid-tooltip">Active Status is required</span>
                                 </div>
                             </div>
+
                             <button type="submit" class="btn btn-primary">Create Department</button>
                         </fieldset>
                     </form>
-                </div> <!-- end card-body -->
-            </div> <!-- end card-->
-        </div> <!-- end col -->
+                </div>
+            </div>
+        </div>
     </div>
 </div>
-<!-- Load jQuery only ONCE -->
+
 <script src="~/assets/lib/jquery/jquery.min.js"></script>
 <script src="~/assets/js/sweetalert2.all.min.js"></script>
-<!-- Load Select2 JS -->
 <script src="~/assets/vendor/select2/js/select2.min.js"></script>
 
 <script>
+
+    // ── Helper ────────────────────────────────────────────────────────────────
+    function setMsg(id, text, isError) {
+        $("#" + id).html(text
+            ? '<span style="color:' + (isError ? 'red' : 'green') + ';">' +
+              (isError ? '❌ ' : '✔ ') + text + '</span>'
+            : '');
+    }
+
+    // ── Select2 Init ──────────────────────────────────────────────────────────
+    $("#IsActive").select2({ placeholder: "Select Status" });
+
+    // ── Tracking flag ─────────────────────────────────────────────────────────
     let departmentNameValid = false;
 
+    // ── Department Name validation ────────────────────────────────────────────
     $("#DepartmentName").on('blur', function () {
-    let departmentName = $(this).val().trim();
+        let departmentName = $(this).val().trim();
+
+        if (departmentName.length === 0) {
+            setMsg('departmentName-status', 'Department Name is required.', true);
+            departmentNameValid = false;
+            return;
+        }
 
         if (departmentName.length < 2) {
-            $("#departmentName-status").html(`<span style="color:gray;">Minimum 2 characters required</span>`);
+            setMsg('departmentName-status', 'Minimum 2 characters required.', true);
             departmentNameValid = false;
             return;
         }
@@ -66,88 +91,85 @@
             success: function (res) {
                 if (res.exists) {
                     departmentNameValid = false;
-                    $("#departmentName-status").html(`<span style="color:red;">❌ Department already exists</span>`);
+                    setMsg('departmentName-status', 'Department already exists.', true);
                 } else {
                     departmentNameValid = true;
-                    $("#departmentName-status").html(`<span style="color:green;">✔ Department available</span>`);
+                    setMsg('departmentName-status', 'Department name available.', false);
                 }
             }
         });
     });
+
+    // ── Form Submit ───────────────────────────────────────────────────────────
     $("#RegisterForm").on("submit", function (e) {
         e.preventDefault();
-        let form = $(this)[0];
 
-        if (!departmentNameValid) {
-            Swal.fire({
-                icon: 'error',
-                title: 'Department Already Exists',
-                text: 'Please choose another Department.'
-            });
-            return;
+        let isValid = true;
+
+        // Validate department name
+        if ($("#DepartmentName").val().trim() === '') {
+            setMsg('departmentName-status', 'Department Name is required.', true);
+            departmentNameValid = false;
         }
 
+        if (!departmentNameValid) isValid = false;
 
-        if (!form.checkValidity()) {
-            $(this).addClass('was-validated');
-            return;
-        }
+        if (!isValid) return;
+
+        // Confirm then submit
         Swal.fire({
             title: 'Create Department?',
-            text: "Are you sure you want to create?",
+            text: 'Are you sure you want to create?',
             icon: 'warning',
             showCancelButton: true,
             confirmButtonText: 'Yes, Save',
             cancelButtonText: 'Cancel'
         }).then((result) => {
-            if (result.isConfirmed) {
-                Swal.fire({
-                    title: 'Saving...',
-                    allowOutsideClick: false,
-                    didOpen: () => {
-                        Swal.showLoading();
-                    }
-                });
-                $.ajax({
-                    url: '/Department/Create',
-                    type: 'POST',
-                    data: $("#RegisterForm").serialize(),
-                    headers: { "X-Requested-With": "XMLHttpRequest" },
 
-                    success: function (response) {
-                        Swal.close();
+            if (!result.isConfirmed) return;
 
-                        if (response.success) {
-                            Swal.fire({
-                                icon: 'success',
-                                title: response.message,
-                                showConfirmButton: false,
-                                timer: 1500
-                            }).then(() => {
-                                window.location.href = response.redirectUrl;
-                            });
-                        } else {
-                            Swal.fire({
-                                icon: 'error',
-                                title: 'Error',
-                                text: response.message || 'Failed to create menu.'
-                            });
-                        }
-                    },
+            Swal.fire({
+                title: 'Saving...',
+                allowOutsideClick: false,
+                didOpen: () => Swal.showLoading()
+            });
 
-                    error: function () {
+            $.ajax({
+                url: '/Department/Create',
+                type: 'POST',
+                data: $("#RegisterForm").serialize(),
+                headers: { "X-Requested-With": "XMLHttpRequest" },
+
+                success: function (response) {
+                    Swal.close();
+
+                    if (response.success) {
+                        Swal.fire({
+                            icon: 'success',
+                            title: response.message,
+                            showConfirmButton: false,
+                            timer: 1500
+                        }).then(() => {
+                            window.location.href = response.redirectUrl;
+                        });
+                    } else {
                         Swal.fire({
                             icon: 'error',
                             title: 'Error',
-                            text: 'Something went wrong! Please try again.'
+                            text: response.message || 'Failed to create department.'
                         });
                     }
-                });
-            }
+                },
+
+                error: function () {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: 'Something went wrong! Please try again.'
+                    });
+                }
+            });
         });
     });
 
-
-
 </script>
-
