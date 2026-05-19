@@ -24,60 +24,49 @@
                                     <select id="ProductId"
                                             asp-for="ProductId"
                                             class="form-control select2 round"
-                                            data-bs-toggle="tooltip"
-                                            data-bs-placement="right"
-                                            title="Product is required"
                                             required
                                             data-placeholder="Select Base Product"
                                             asp-items="ViewBag.Products">
                                         <option value="">Select Base Product</option>
                                     </select>
+                                    <small id="productId-status" class="form-text"></small>
                                 </div>
                             </div>
 
-                            <!-- Menu Details (Hidden initially) -->
+                            <!-- Menu Details (hidden until product selected) -->
                             <div id="menuDetailsContainer" class="d-none">
 
-                                <!-- Menu Title -->
                                 <!-- Menu Title -->
                                 <div class="row g-2">
                                     <div class="mb-3 col-md-6">
                                         <label asp-for="MenuTitle" class="form-label">Menu Title</label>
-                                        <input asp-for="MenuTitle" id="MenuTitle" class="form-control round" required />
-                                        <span asp-validation-for="MenuTitle" class="invalid-tooltip"></span>
-                                        <small id="menuTitle-status"></small>
+                                        <input asp-for="MenuTitle"
+                                               id="MenuTitle"
+                                               class="form-control round"
+                                               required
+                                               autocomplete="off" />
+                                        <small id="menuTitle-status" class="form-text"></small>
                                     </div>
                                 </div>
 
-
-                                <!-- Is Main Menu -->
+                                <!-- Checkboxes -->
                                 <div class="row g-2">
                                     <div class="mb-3 col-md-3 form-check">
                                         <input type="checkbox" class="form-check-input" id="IsMainMenu" name="IsMainMenu">
-                                        <label class="form-check-label" for="IsMainMenu">
-                                            This is a Main Menu
-                                        </label>
+                                        <label class="form-check-label" for="IsMainMenu">This is a Main Menu</label>
                                     </div>
-
                                     <div class="mb-3 col-md-3 form-check">
-                                        <input type="checkbox"
-                                               class="form-check-input"
-                                               id="NoSubMenus"
-                                               name="NoSubMenus">
-                                        <label class="form-check-label" for="NoSubMenus">
-                                            No Sub Menus
-                                        </label>
+                                        <input type="checkbox" class="form-check-input" id="NoSubMenus" name="NoSubMenus">
+                                        <label class="form-check-label" for="NoSubMenus">No Sub Menus</label>
                                     </div>
                                 </div>
 
                             </div>
-
 
                             <!-- Pages -->
                             <div id="pageContainer" class="row g-2">
                                 <div class="mb-3 col-md-6">
                                     <label asp-for="PageId" class="form-label">Page Name</label>
-
                                     <select asp-for="PageId"
                                             id="PageIds"
                                             class="form-control select2 round"
@@ -85,11 +74,9 @@
                                             required>
                                         <option value=""></option>
                                     </select>
-
-                                    <span asp-validation-for="PageId" class="text-danger"></span>
+                                    <small id="pageIds-status" class="form-text"></small>
                                 </div>
                             </div>
-
 
                             <!-- Parent Menu -->
                             <div id="parentMenuContainer" class="row g-2">
@@ -98,17 +85,16 @@
                                     <select id="ParentMenuItemId"
                                             asp-for="ParentMenuItemId"
                                             class="form-control select2 round"
-                                            data-bs-toggle="tooltip"
-                                            data-bs-placement="right"
-                                            title="Parent Menu required"
                                             required
                                             data-placeholder="Select Parent Menu"
                                             asp-items="ViewBag.ParentMenus">
                                         <option value="">Select Parent Menu</option>
                                     </select>
+                                    <small id="parentMenuItemId-status" class="form-text"></small>
                                 </div>
                             </div>
 
+                            <!-- Category -->
                             <div id="categoryContainer" class="row g-2 d-none">
                                 <div class="mb-3 col-md-6">
                                     <label class="form-label">Select Category</label>
@@ -120,13 +106,10 @@
                                 </div>
                             </div>
 
+                            <!-- Display Order -->
                             <div id="displayOrderContainer" class="row g-2">
                                 <div class="mb-3 col-md-2">
-                                    <label asp-for="DisplayOrder"
-                                           class="form-label d-flex justify-content-between align-items-center">
-                                        <span>Display Order</span>
-                                    </label>
-
+                                    <label asp-for="DisplayOrder" class="form-label">Display Order</label>
                                     <input type="number"
                                            asp-for="DisplayOrder"
                                            id="DisplayOrder"
@@ -135,36 +118,30 @@
                                            max="20"
                                            step="1"
                                            value="@displayOrder" />
-
-                                    <small id="displayOrder-status" class="d-block mt-1"></small>
+                                    <small id="displayOrder-status" class="form-text d-block mt-1"></small>
                                 </div>
                             </div>
-
 
                             <!-- Icon Class -->
                             <div id="iconClassContainer" class="row g-2 d-none">
                                 <div class="mb-3 col-md-2">
                                     <label class="form-label">Icon Class</label>
-                                    <input id="IconClass" name="IconClass"
-                                           class="form-control round" />
+                                    <input id="IconClass" name="IconClass" class="form-control round" />
                                 </div>
                             </div>
 
-
-                            <!-- Status -->
+                            <!-- Active Status -->
                             <div class="row g-2">
                                 <div class="mb-3 col-md-2">
                                     <label class="form-label">Active Status</label>
-                                    <select name="IsActive" class="form-select">
+                                    <select id="IsActive" name="IsActive" class="form-select select2">
                                         <option value="true">Active</option>
                                         <option value="false">Inactive</option>
                                     </select>
                                 </div>
                             </div>
 
-                            <button type="submit" class="btn btn-primary">
-                                Create Menu Item
-                            </button>
+                            <button type="submit" class="btn btn-primary">Create Menu Item</button>
 
                         </fieldset>
                     </form>
@@ -174,30 +151,123 @@
     </div>
 </div>
 
-<!-- Load jQuery only ONCE -->
 <script src="~/assets/lib/jquery/jquery.min.js"></script>
 <script src="~/assets/js/sweetalert2.all.min.js"></script>
-<!-- Load Select2 JS -->
 <script src="~/assets/vendor/select2/js/select2.min.js"></script>
 
 <script>
-    let displayOrderValid = true;
 
-    $("#DisplayOrder").on("change", function () {
+    // ── Helper ────────────────────────────────────────────────────────────────
+    function setMsg(id, text, isError) {
+        $("#" + id).html(text
+            ? '<span style="color:' + (isError ? 'red' : 'green') + ';">' +
+              (isError ? '❌ ' : '✔ ') + text + '</span>'
+            : '');
+    }
 
-        let displayOrder = $(this).val();
-        let productId = $("#ProductId").val();
-        let categoryId = $("#CategoryId").val();
+    // ── Select2 Init ──────────────────────────────────────────────────────────
+    $("#ProductId").select2({ placeholder: "Select Product", allowClear: true });
+    $("#ParentMenuItemId").select2({ placeholder: "Select Parent Menu", allowClear: true });
+    $("#PageIds").select2({ placeholder: "Select Page", allowClear: true });
+    $("#CategoryId").select2({ placeholder: "Select Category", allowClear: true });
+    $("#IsActive").select2({ placeholder: "Select Status" });
 
-        // Guard
-        if (!displayOrder || !productId) {
-            $("#displayOrder-status").html("");
-            displayOrderValid = false;
+    // ── Tracking flags ────────────────────────────────────────────────────────
+    let menuTitleValid = false;
+    let displayOrderValid = true; // optional field — defaults to valid
+
+    // ── Product: load pages + show menu details ───────────────────────────────
+    $("#ProductId").on("change", function () {
+        const productId = $(this).val();
+
+        if (productId) {
+            setMsg('productId-status', 'Product selected.', false);
+            $("#menuDetailsContainer").removeClass("d-none");
+
+            // Load pages for selected product
+            $.ajax({
+                url: '/Permission/GetPagesByProduct',
+                type: 'GET',
+                data: { productId: productId },
+                success: function (response) {
+                    if (response.success) {
+                        $("#PageIds").empty();
+                        response.data.forEach(page => {
+                            $("#PageIds").append(new Option(page.pageName, page.id));
+                        });
+                        $("#PageIds").trigger('change');
+                    }
+                }
+            });
+        } else {
+            setMsg('productId-status', 'Please select a product.', true);
+            $("#menuDetailsContainer").addClass("d-none");
+            $("#MenuTitle").val("");
+            setMsg('menuTitle-status', '', false);
+            menuTitleValid = false;
+            $("#IsMainMenu").prop("checked", false);
+            $("#NoSubMenus").prop("checked", false);
+            $("#PageIds").empty().trigger('change');
+        }
+    });
+
+    // ── Menu Title validation ─────────────────────────────────────────────────
+    $("#MenuTitle").on("blur", function () {
+        const menuTitle = $(this).val().trim();
+        const productId = $("#ProductId").val();
+
+        if (menuTitle.length === 0) {
+            setMsg('menuTitle-status', 'Menu Title is required.', true);
+            menuTitleValid = false;
+            return;
+        }
+
+        if (menuTitle.length < 2) {
+            setMsg('menuTitle-status', 'Minimum 2 characters required.', true);
+            menuTitleValid = false;
+            return;
+        }
+
+        if (!productId) {
+            setMsg('menuTitle-status', 'Please select a product first.', true);
+            menuTitleValid = false;
             return;
         }
 
         $.ajax({
-            url: '/Page/CheckPageLevel', // reuse API if intended
+            url: "/Menu/CheckMenuTitle",
+            type: "POST",
+            data: { ProductId: productId, MenuTitle: menuTitle },
+            success: function (response) {
+                if (response.exists) {
+                    setMsg('menuTitle-status', 'Menu title already exists.', true);
+                    menuTitleValid = false;
+                } else {
+                    setMsg('menuTitle-status', 'Menu title available.', false);
+                    menuTitleValid = true;
+                }
+            },
+            error: function () {
+                setMsg('menuTitle-status', 'Unable to validate menu title.', true);
+                menuTitleValid = false;
+            }
+        });
+    });
+
+    // ── Display Order validation ──────────────────────────────────────────────
+    $("#DisplayOrder").on("change", function () {
+        const displayOrder = $(this).val();
+        const productId = $("#ProductId").val();
+        const categoryId = $("#CategoryId").val();
+
+        if (!displayOrder || !productId) {
+            setMsg('displayOrder-status', '', false);
+            displayOrderValid = true; // not blocking if field hidden/empty
+            return;
+        }
+
+        $.ajax({
+            url: '/Page/CheckPageLevel',
             type: 'POST',
             data: {
                 displayOrder: displayOrder,
@@ -207,167 +277,36 @@
             },
             success: function (res) {
                 if (res.exists) {
+                    setMsg('displayOrder-status', 'Display order already used.', true);
                     displayOrderValid = false;
-                    $("#displayOrder-status")
-                        .html(`<span class="text-danger">❌ Display order already used</span>`);
                 } else {
+                    setMsg('displayOrder-status', 'Display order available.', false);
                     displayOrderValid = true;
-                    $("#displayOrder-status")
-                        .html(`<span class="text-success">✔ Display order available</span>`);
                 }
             },
             error: function () {
+                setMsg('displayOrder-status', 'Unable to validate display order.', true);
                 displayOrderValid = false;
-                $("#displayOrder-status")
-                    .html(`<span class="text-danger">⚠ Unable to validate display order</span>`);
-            }
-        });
-    });
-</script>
-
-<script>
-    $("#ProductId").on("change", function () {
-        const productId = $(this).val();
-
-        if (productId) {
-            $("#menuDetailsContainer").removeClass("d-none");
-        } else {
-            $("#menuDetailsContainer").addClass("d-none");
-
-            // Reset values if product cleared
-            $("#MenuTitle").val("");
-            $("#IsMainMenu").prop("checked", false);
-            $("#NoSubMenus").prop("checked", false);
-        }
-    });
-</script>
-
-
-
-<script>
-
-    $("#ParentMenuItemId").select2({
-        placeholder: "Select Parent Menu",
-        allowClear: true
-    });
-
-    $("#ProductId").select2({
-        placeholder: "Select Product",
-        allowClear: true
-    });
-
-    $("#PageIds").select2({
-        placeholder: "Select Page",
-        allowClear: true,
-    });
-
-    $("#CategoryId").select2({
-        placeholder: "Select Page",
-        allowClear: true,
-    });
-
-    $("#ProductId").on('change', function () {
-        var productId = $(this).val();
-        if (productId) {
-            $("#PageId").prop('disabled', false);
-            $("#PageId").val('');
-        } else {
-            $("#PageId").prop('disabled', true);   // Keep disabled if no product selected
-            $("#PageId").val('');                   // Optional: clear value
-        }
-    });
-
-
-
-    $("#ProductId").on("change", function () {
-        let productId = $(this).val();
-        if (productId) {
-            $.ajax({
-                url: '/Permission/GetPagesByProduct',
-                type: 'GET',
-                data: { productId: productId },
-                success: function (response) {
-                    if (response.success) {
-                        $("#PageIds").empty();
-                        response.data.forEach(page => {
-                            $("#PageIds").append(
-                                new Option(page.pageName, page.id)
-                            );
-                        });
-                        $("#PageIds").trigger('change');
-                    }
-                }
-            });
-        } else {
-            $("#PageIds").empty().trigger('change');
-        }
-    });
-
-
-    let menuTitleValid = true;
-
-    $("#MenuTitle").on("input change", function () {
-        const menuTitle = $(this).val().trim();
-        const productId = $("#ProductId").val();
-        const status = $("#menuTitle-status");
-
-        status.text("").removeClass("text-danger text-success");
-
-        // Basic guard checks
-        if (!menuTitle || !productId) {
-            menuTitleValid = false;
-            return;
-        }
-
-        $.ajax({
-            url: "/Menu/CheckMenuTitle",   // API endpoint
-            type: "POST",
-            data: {
-                ProductId: productId,
-                MenuTitle: menuTitle
-            },
-            success: function (response) {
-                if (response.exists) {
-                    status
-                        .text("Menu title already exists")
-                        .addClass("text-danger");
-                    menuTitleValid = false;
-                } else {
-                    status
-                        .text("Menu title available")
-                        .addClass("text-success");
-                    menuTitleValid = true;
-                }
-            },
-            error: function () {
-                status
-                    .text("Unable to validate menu title")
-                    .addClass("text-danger");
-                menuTitleValid = false;
             }
         });
     });
 
-
-
+    // ── Checkbox toggle logic ─────────────────────────────────────────────────
     document.addEventListener('DOMContentLoaded', function () {
 
-        const isMainMenu = document.getElementById('IsMainMenu');
-        const noSubMenus = document.getElementById('NoSubMenus');
-
-        const parentMenuContainer = document.getElementById('parentMenuContainer');
-        const pageContainer = document.getElementById('pageContainer');
-        const productContainer = document.getElementById('productContainer');
-        const iconContainer = document.getElementById('iconClassContainer');
+        const isMainMenu         = document.getElementById('IsMainMenu');
+        const noSubMenus         = document.getElementById('NoSubMenus');
+        const parentMenuContainer   = document.getElementById('parentMenuContainer');
+        const pageContainer         = document.getElementById('pageContainer');
+        const productContainer      = document.getElementById('productContainer');
+        const iconContainer         = document.getElementById('iconClassContainer');
         const displayOrderContainer = document.getElementById('displayOrderContainer');
-
-        const parentSelect = document.getElementById('ParentMenuItemId');
-        const pageSelect = document.getElementById('PageIds');
-        const iconInput = document.getElementById('IconClass');
-        const displayOrderInput = document.getElementById('DisplayOrder');
-        const categoryContainer = document.getElementById('categoryContainer');
-        const categorySelect = document.getElementById('CategoryId');
-
+        const categoryContainer     = document.getElementById('categoryContainer');
+        const parentSelect          = document.getElementById('ParentMenuItemId');
+        const pageSelect            = document.getElementById('PageIds');
+        const iconInput             = document.getElementById('IconClass');
+        const displayOrderInput     = document.getElementById('DisplayOrder');
+        const categorySelect        = document.getElementById('CategoryId');
 
         function resetSelect(el, selector) {
             el.value = null;
@@ -378,130 +317,98 @@
         function resetInputs() {
             iconInput.value = '';
             displayOrderInput.value = '';
-
             iconInput.removeAttribute('required');
             displayOrderInput.removeAttribute('required');
             pageSelect.removeAttribute('required');
             parentSelect.removeAttribute('required');
         }
 
-    function toggleMenus() {
+        function toggleMenus() {
+            resetInputs();
 
-        resetInputs();
+            // Always hide category by default
+            categoryContainer.classList.add('d-none');
+            categorySelect.removeAttribute('required');
 
-        // ALWAYS hide category by default
-        categoryContainer.classList.add('d-none');
-        categorySelect.removeAttribute('required');
-
-        /* ===============================
-           NO SUB MENUS
-        =============================== */
-        if (noSubMenus.checked) {
-
-            isMainMenu.checked = true;
-
-            parentMenuContainer.classList.add('d-none');
-
-            productContainer.classList.remove('d-none');
-            pageContainer.classList.remove('d-none');
-            iconContainer.classList.remove('d-none');
-            displayOrderContainer.classList.remove('d-none');
-
-            // SHOW CATEGORY
-            categoryContainer.classList.remove('d-none');
-            categorySelect.setAttribute('required', 'required');
-
-            resetSelect(parentSelect, "#ParentMenuItemId");
-
-            pageSelect.setAttribute('required', 'required');
-            iconInput.setAttribute('required', 'required');
-            displayOrderInput.setAttribute('required', 'required');
-
-            return;
-        }
-
-        /* ===============================
-           MAIN MENU
-        =============================== */
-        if (isMainMenu.checked) {
-
-            noSubMenus.checked = false;
-
-            parentMenuContainer.classList.add('d-none');
-            pageContainer.classList.add('d-none');
-
-            productContainer.classList.remove('d-none');
-            iconContainer.classList.remove('d-none');
-            displayOrderContainer.classList.remove('d-none');
-
-            // SHOW CATEGORY
-            categoryContainer.classList.remove('d-none');
-            categorySelect.setAttribute('required', 'required');
-
-            resetSelect(parentSelect, "#ParentMenuItemId");
-            resetSelect(pageSelect, "#PageIds");
-
-            iconInput.setAttribute('required', 'required');
-            displayOrderInput.setAttribute('required', 'required');
-
-            return;
-        }
-
-        /* ===============================
-           SUB MENU
-        =============================== */
-        noSubMenus.checked = false;
-
-        parentMenuContainer.classList.remove('d-none');
-        pageContainer.classList.remove('d-none');
-
-        productContainer.classList.remove('d-none');
-        iconContainer.classList.add('d-none');
-        displayOrderContainer.classList.add('d-none');
-
-        parentSelect.setAttribute('required', 'required');
-        pageSelect.setAttribute('required', 'required');
-    }
-
-
-        toggleMenus();
-
-        isMainMenu.addEventListener('change', toggleMenus);
-        noSubMenus.addEventListener('change', toggleMenus);
-
-        /* ===============================
-           FORM SUBMIT
-        =============================== */
-        $("#RegisterForm").on("submit", function (e) {
-            e.preventDefault();
-            let form = this;
-
-            if (!displayOrderValid) {
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Display Order Already Exists',
-                    text: 'Please choose a different display order for this product.'
-                });
-                return; // stop form submission
-            }
-
-            if (!menuTitleValid) {
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Menu Title Already Exists',
-                    text: 'Please choose a different menu title for this product.'
-                });
-                return; // stop form submission
-            }
-
-            if (!form.checkValidity()) {
-                $(form).addClass('was-validated');
+            // ── No Sub Menus ──────────────────────────────────────────────────
+            if (noSubMenus.checked) {
+                isMainMenu.checked = true;
+                parentMenuContainer.classList.add('d-none');
+                productContainer.classList.remove('d-none');
+                pageContainer.classList.remove('d-none');
+                iconContainer.classList.remove('d-none');
+                displayOrderContainer.classList.remove('d-none');
+                categoryContainer.classList.remove('d-none');
+                categorySelect.setAttribute('required', 'required');
+                resetSelect(parentSelect, "#ParentMenuItemId");
+                pageSelect.setAttribute('required', 'required');
+                iconInput.setAttribute('required', 'required');
+                displayOrderInput.setAttribute('required', 'required');
                 return;
             }
 
+            // ── Main Menu ─────────────────────────────────────────────────────
+            if (isMainMenu.checked) {
+                noSubMenus.checked = false;
+                parentMenuContainer.classList.add('d-none');
+                pageContainer.classList.add('d-none');
+                productContainer.classList.remove('d-none');
+                iconContainer.classList.remove('d-none');
+                displayOrderContainer.classList.remove('d-none');
+                categoryContainer.classList.remove('d-none');
+                categorySelect.setAttribute('required', 'required');
+                resetSelect(parentSelect, "#ParentMenuItemId");
+                resetSelect(pageSelect, "#PageIds");
+                iconInput.setAttribute('required', 'required');
+                displayOrderInput.setAttribute('required', 'required');
+                return;
+            }
+
+            // ── Sub Menu ──────────────────────────────────────────────────────
+            noSubMenus.checked = false;
+            parentMenuContainer.classList.remove('d-none');
+            pageContainer.classList.remove('d-none');
+            productContainer.classList.remove('d-none');
+            iconContainer.classList.add('d-none');
+            displayOrderContainer.classList.add('d-none');
+            parentSelect.setAttribute('required', 'required');
+            pageSelect.setAttribute('required', 'required');
+        }
+
+        toggleMenus();
+        isMainMenu.addEventListener('change', toggleMenus);
+        noSubMenus.addEventListener('change', toggleMenus);
+
+        // ── Form Submit ───────────────────────────────────────────────────────
+        $("#RegisterForm").on("submit", function (e) {
+            e.preventDefault();
+
+            let isValid = true;
+
+            // Validate product
+            if (!$("#ProductId").val()) {
+                setMsg('productId-status', 'Please select a product.', true);
+                isValid = false;
+            }
+
+            // Validate menu title (only if visible)
+            if ($("#menuDetailsContainer").is(":visible") || !$("#menuDetailsContainer").hasClass("d-none")) {
+                if ($("#MenuTitle").val().trim() === '') {
+                    setMsg('menuTitle-status', 'Menu Title is required.', true);
+                    menuTitleValid = false;
+                }
+                if (!menuTitleValid) isValid = false;
+            }
+
+            // Validate display order
+            if (!displayOrderValid) isValid = false;
+
+            if (!isValid) return;
+
+            // Confirm then submit
             Swal.fire({
                 title: 'Create Menu?',
-                text: "Are you sure you want to create?",
+                text: 'Are you sure you want to create?',
                 icon: 'warning',
                 showCancelButton: true,
                 confirmButtonText: 'Yes, Save',
@@ -555,7 +462,4 @@
         });
     });
 
-
 </script>
-
-

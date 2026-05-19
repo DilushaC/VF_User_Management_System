@@ -14,101 +14,137 @@
                     <br />
                     <form asp-action="Create" asp-controller="Page" method="post" id="RegisterForm" autocomplete="off" novalidate>
                         <fieldset>
+
                             <!-- Product Dropdown -->
                             <div class="row g-2">
-                                <div class="mb-3 col-md-6 position-relative">
+                                <div class="mb-3 col-md-6">
                                     <label asp-for="ProductId" class="form-label">Select Product</label>
-                                    <select id="ProductId"
-                                            asp-for="ProductId"
+                                    <select asp-for="ProductId"
+                                            id="ProductId"
                                             class="form-control select2 round"
-                                            data-bs-toggle="tooltip"
-                                            data-bs-placement="right"
-                                            title="Product is required"
                                             required
                                             data-placeholder="Select Base Product"
                                             asp-items="ViewBag.Products">
                                         <option value="">Select Product</option>
                                     </select>
-                                    <span asp-validation-for="ProductId" class="invalid-tooltip">Product is required</span>
+                                    <small id="productId-status" class="form-text"></small>
                                 </div>
                             </div>
 
-                            <!-- Page Name (hidden initially) -->
+                            <!-- Page Name (hidden until product selected) -->
                             <div class="row g-2" id="pageNameContainer" style="display:none;">
-                                <div class="mb-3 col-md-6 position-relative">
+                                <div class="mb-3 col-md-6">
                                     <label asp-for="PageName" class="form-label">Page Name</label>
-                                    <input asp-for="PageName" class="form-control round" required
-                                           data-bs-toggle="tooltip" data-bs-placement="right" title="Page Name is required" />
-                                    <span asp-validation-for="PageName" class="invalid-tooltip">Page Name is required</span>
-                                    <small id="pageName-status"></small>
+                                    <input asp-for="PageName"
+                                           id="PageName"
+                                           class="form-control round"
+                                           required
+                                           autocomplete="off" />
+                                    <small id="pageName-status" class="form-text"></small>
                                 </div>
                             </div>
 
+                            <!-- Page URL -->
                             <div class="row g-2">
-                                <div class="mb-3 col-md-6 position-relative">
+                                <div class="mb-3 col-md-6">
                                     <label asp-for="PageUrl" class="form-label">Page URL</label>
-                                    <input asp-for="PageUrl" class="form-control round" required
-                                           data-bs-toggle="tooltip" data-bs-placement="right" title="Page URL is required" />
-                                    <span asp-validation-for="PageUrl" class="invalid-tooltip">Page URL is required</span>
+                                    <input asp-for="PageUrl"
+                                           id="PageUrl"
+                                           class="form-control round"
+                                           required
+                                           autocomplete="off" />
+                                    <small id="pageUrl-status" class="form-text"></small>
                                 </div>
                             </div>
+
+                            <!-- Description -->
                             <div class="row g-2">
-                                <div class="mb-3 col-md-6 position-relative">
+                                <div class="mb-3 col-md-6">
                                     <label asp-for="Description" class="form-label">Description</label>
-                                    <textarea asp-for="Description" class="form-control round" required
-                                              data-bs-toggle="tooltip" data-bs-placement="right" title="Description is required"></textarea>
-                                    <span asp-validation-for="Description" class="invalid-tooltip">Description is required</span>
+                                    <textarea asp-for="Description"
+                                              id="Description"
+                                              class="form-control round"
+                                              required
+                                              autocomplete="off"></textarea>
+                                    <small id="description-status" class="form-text"></small>
                                 </div>
                             </div>
+
+                            <!-- Active Status -->
                             <div class="row g-2">
                                 <div class="mb-3 col-md-2">
                                     <label asp-for="IsActive" class="form-label">Active Status</label>
-                                    <select asp-for="IsActive" class="form-select">
+                                    <select asp-for="IsActive" id="IsActive" class="form-select select2">
                                         <option value="true">Active</option>
                                         <option value="false">Inactive</option>
                                     </select>
-                                    <span asp-validation-for="IsActive" class="text-danger"></span>
                                 </div>
                             </div>
+
                             <button type="submit" class="btn btn-primary">Create Page</button>
                         </fieldset>
                     </form>
-                </div> <!-- end card-body -->
-            </div> <!-- end card-->
-        </div> <!-- end col -->
+                </div>
+            </div>
+        </div>
     </div>
 </div>
-<!-- Load jQuery only ONCE -->
+
 <script src="~/assets/lib/jquery/jquery.min.js"></script>
 <script src="~/assets/js/sweetalert2.all.min.js"></script>
-<!-- Load Select2 JS -->
 <script src="~/assets/vendor/select2/js/select2.min.js"></script>
 
 <script>
-    $("#ProductId").select2({ placeholder: "Select Product" });
 
-    // Show Page Name field only after selecting a product
-    $("#ProductId").on("change", function() {
+    // ── Helper ────────────────────────────────────────────────────────────────
+    function setMsg(id, text, isError) {
+        $("#" + id).html(text
+            ? '<span style="color:' + (isError ? 'red' : 'green') + ';">' +
+              (isError ? '❌ ' : '✔ ') + text + '</span>'
+            : '');
+    }
+
+    // ── Select2 Init ──────────────────────────────────────────────────────────
+    $("#ProductId").select2({ placeholder: "Select Product" });
+    $("#IsActive").select2({ placeholder: "Select Status" });
+
+    // ── Tracking flags ────────────────────────────────────────────────────────
+    let productIdValid = false;
+    let pageNameValid = false;
+    let pageUrlValid = false;
+    let descriptionValid = false;
+
+    // ── Product dropdown: show/hide Page Name ─────────────────────────────────
+    $("#ProductId").on("change", function () {
         let productId = $(this).val();
 
         if (productId) {
-            $("#pageNameContainer").slideDown(); // smooth animation
+            productIdValid = true;
+            setMsg('productId-status', 'Product selected.', false);
+            $("#pageNameContainer").slideDown();
         } else {
+            productIdValid = false;
+            setMsg('productId-status', 'Please select a product.', true);
             $("#pageNameContainer").slideUp();
-            $("#PageName").val("");              // reset input
-            $("#pageName-status").html("");      // clear status
+            $("#PageName").val("");
+            setMsg('pageName-status', '', false);
             pageNameValid = false;
         }
     });
 
-    let pageNameValid = false;
-
+    // ── Page Name validation ──────────────────────────────────────────────────
     $("#PageName").on('blur', function () {
-    let pageName = $(this).val().trim();
-    let productId = $("#ProductId").val();
+        let pageName = $(this).val().trim();
+        let productId = $("#ProductId").val();
+
+        if (pageName.length === 0) {
+            setMsg('pageName-status', 'Page Name is required.', true);
+            pageNameValid = false;
+            return;
+        }
 
         if (pageName.length < 3) {
-            $("#pageName-status").html(`<span style="color:gray;">Minimum 3 characters required</span>`);
+            setMsg('pageName-status', 'Minimum 3 characters required.', true);
             pageNameValid = false;
             return;
         }
@@ -120,107 +156,146 @@
             success: function (res) {
                 if (res.exists) {
                     pageNameValid = false;
-                    $("#pageName-status").html(`<span style="color:red;">❌ Page already exists</span>`);
+                    setMsg('pageName-status', 'Page already exists.', true);
                 } else {
                     pageNameValid = true;
-                    $("#pageName-status").html(`<span style="color:green;">✔ Page available</span>`);
+                    setMsg('pageName-status', 'Page name available.', false);
                 }
             }
         });
     });
 
-    // $("#PageLevel").on('blur', function () {
-    // let pageLevel = $(this).val().trim();
-    // var productId = $("#ProductId").val();
-    //     $.ajax({
-    //         url: '/Page/CheckPageLevel',
-    //         type: 'POST',
-    //         data: { pageLevel: pageLevel,productId: productId },
-    //         success: function (res) {
-    //             if (res.exists) {
-    //                 pageLevelValid = false;
-    //                 $("#pageLevel-status").html(`<span style="color:red;">❌ Page Level exists</span>`);
-    //             } else {
-    //                 pageLevelValid = true;
-    //                 $("#pageLevel-status").html(`<span style="color:green;">✔ Page Level available</span>`);
-    //             }
-    //         }
-    //     });
-    // });
+    // ── Page URL validation ───────────────────────────────────────────────────
+    $("#PageUrl").on('blur', function () {
+        let pageUrl = $(this).val().trim();
 
+        if (pageUrl.length === 0) {
+            setMsg('pageUrl-status', 'Page URL is required.', true);
+            pageUrlValid = false;
+            return;
+        }
+
+        if (pageUrl.length < 2) {
+            setMsg('pageUrl-status', 'Minimum 2 characters required.', true);
+            pageUrlValid = false;
+            return;
+        }
+
+        pageUrlValid = true;
+        setMsg('pageUrl-status', 'Page URL looks good.', false);
+    });
+
+    // ── Description validation ────────────────────────────────────────────────
+    $("#Description").on('blur', function () {
+        let description = $(this).val().trim();
+
+        if (description.length === 0) {
+            setMsg('description-status', 'Description is required.', true);
+            descriptionValid = false;
+            return;
+        }
+
+        if (description.length < 5) {
+            setMsg('description-status', 'Minimum 5 characters required.', true);
+            descriptionValid = false;
+            return;
+        }
+
+        descriptionValid = true;
+        setMsg('description-status', 'Description looks good.', false);
+    });
+
+    // ── Form Submit ───────────────────────────────────────────────────────────
     $("#RegisterForm").on("submit", function (e) {
         e.preventDefault();
-        let form = $(this)[0];
 
-        if (!pageNameValid) {
-            Swal.fire({
-                icon: 'error',
-                title: 'Page Already Exists',
-                text: 'Please Create another Page.'
-            });
-            return;
+        let isValid = true;
+
+        // Validate product selection
+        if ($("#ProductId").val() === '' || $("#ProductId").val() === null) {
+            setMsg('productId-status', 'Please select a product.', true);
+            productIdValid = false;
         }
 
-        if (!form.checkValidity()) {
-            $(this).addClass('was-validated');
-            return;
+        // Validate page name (only if container is visible)
+        if ($("#pageNameContainer").is(":visible") && $("#PageName").val().trim() === '') {
+            setMsg('pageName-status', 'Page Name is required.', true);
+            pageNameValid = false;
         }
+
+        // Validate page URL
+        if ($("#PageUrl").val().trim() === '') {
+            setMsg('pageUrl-status', 'Page URL is required.', true);
+            pageUrlValid = false;
+        }
+
+        // Validate description
+        if ($("#Description").val().trim() === '') {
+            setMsg('description-status', 'Description is required.', true);
+            descriptionValid = false;
+        }
+
+        if (!productIdValid) isValid = false;
+        if (!pageNameValid) isValid = false;
+        if (!pageUrlValid) isValid = false;
+        if (!descriptionValid) isValid = false;
+
+        if (!isValid) return;
+
+        // Confirm then submit
         Swal.fire({
             title: 'Create Page?',
-            text: "Are you sure you want to create?",
+            text: 'Are you sure you want to create?',
             icon: 'warning',
             showCancelButton: true,
             confirmButtonText: 'Yes, Save',
             cancelButtonText: 'Cancel'
         }).then((result) => {
-            if (result.isConfirmed) {
-                Swal.fire({
-                    title: 'Saving...',
-                    allowOutsideClick: false,
-                    didOpen: () => {
-                        Swal.showLoading();
-                    }
-                });
-                $.ajax({
-                    url: '/Page/Create',
-                    type: 'POST',
-                    data: $("#RegisterForm").serialize(),
-                    headers: { "X-Requested-With": "XMLHttpRequest" },
 
-                    success: function (response) {
-                        Swal.close();
+            if (!result.isConfirmed) return;
 
-                        if (response.success) {
-                            Swal.fire({
-                                icon: 'success',
-                                title: response.message,
-                                showConfirmButton: false,
-                                timer: 1500
-                            }).then(() => {
-                                window.location.href = response.redirectUrl;
-                            });
-                        } else {
-                            Swal.fire({
-                                icon: 'error',
-                                title: 'Error',
-                                text: response.message || 'Failed to create menu.'
-                            });
-                        }
-                    },
+            Swal.fire({
+                title: 'Saving...',
+                allowOutsideClick: false,
+                didOpen: () => Swal.showLoading()
+            });
 
-                    error: function () {
+            $.ajax({
+                url: '/Page/Create',
+                type: 'POST',
+                data: $("#RegisterForm").serialize(),
+                headers: { "X-Requested-With": "XMLHttpRequest" },
+
+                success: function (response) {
+                    Swal.close();
+
+                    if (response.success) {
+                        Swal.fire({
+                            icon: 'success',
+                            title: response.message,
+                            showConfirmButton: false,
+                            timer: 1500
+                        }).then(() => {
+                            window.location.href = response.redirectUrl;
+                        });
+                    } else {
                         Swal.fire({
                             icon: 'error',
                             title: 'Error',
-                            text: 'Something went wrong! Please try again.'
+                            text: response.message || 'Failed to create page.'
                         });
                     }
-                });
-            }
+                },
+
+                error: function () {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: 'Something went wrong! Please try again.'
+                    });
+                }
+            });
         });
     });
 
-
-
 </script>
-

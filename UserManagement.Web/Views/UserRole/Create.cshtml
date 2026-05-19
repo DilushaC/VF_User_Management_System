@@ -6,17 +6,7 @@
 }
 
 <div class="row">
-    <!-- start page title -->
-    <div class="row">
-        <div class="col-12">
-            <div class="page-title-box">
-                <div class="page-title-right">
-                </div>
-            </div>
-        </div>
-    </div>
-    <!-- Form row -->
-    <div class="row">
+    <div class="row p-2">
         <div class="col-12">
             <div class="card">
                 <div class="card-body">
@@ -24,26 +14,26 @@
                     <br />
                     <form asp-action="Create" asp-controller="UserRole" method="post" id="RegisterForm" autocomplete="off" novalidate>
                         <fieldset>
+
+                            <!-- User -->
                             <div class="row g-2">
-                                <div class="mb-3 col-md-6 position-relative">
+                                <div class="mb-3 col-md-6">
                                     <label asp-for="UserId" class="form-label">User Name</label>
                                     <select asp-for="UserId"
+                                            id="UserId"
                                             class="form-control select2 round"
                                             required
                                             data-placeholder="Select User"
-                                            data-bs-toggle="tooltip"
-                                            data-bs-placement="right"
-                                            title="Please select a user"
                                             asp-items="ViewBag.Users">
                                         <option value="">Select User</option>
                                     </select>
-                                    <span asp-validation-for="UserId" class="invalid-tooltip">
-                                        Please select a user
-                                    </span>
+                                    <small id="userId-status" class="form-text"></small>
                                 </div>
                             </div>
+
+                            <!-- Roles -->
                             <div class="row g-2">
-                                <div class="mb-3 col-md-6 position-relative">
+                                <div class="mb-3 col-md-6">
                                     <label asp-for="RoleIds" class="form-label">User Role</label>
                                     <select asp-for="RoleIds"
                                             id="RoleIds"
@@ -51,111 +41,145 @@
                                             class="form-control select2 round"
                                             multiple="multiple"
                                             required
-                                            data-placeholder=""
-                                            data-bs-toggle="tooltip"
-                                            data-bs-placement="right"
-                                            title="Please select at least one role"
+                                            data-placeholder="Select Roles"
                                             asp-items="ViewBag.Roles">
                                     </select>
-                                    <span asp-validation-for="RoleIds" class="invalid-tooltip">
-                                        Please select at least one role
-                                    </span>
+                                    <small id="roleIds-status" class="form-text"></small>
                                 </div>
                             </div>
-
 
                             <button type="submit" class="btn btn-primary">Create User Role</button>
                         </fieldset>
                     </form>
-
-                </div> <!-- end card-body -->
-            </div> <!-- end card-->
-        </div> <!-- end col -->
+                </div>
+            </div>
+        </div>
     </div>
 </div>
-<!-- Load jQuery only ONCE -->
+
 <script src="~/assets/lib/jquery/jquery.min.js"></script>
 <script src="~/assets/js/sweetalert2.all.min.js"></script>
-<!-- Load Select2 JS -->
 <script src="~/assets/vendor/select2/js/select2.min.js"></script>
-
 
 <script>
 
-    $("#UserId").select2({
-        placeholder: "Select UserId",
+    // ── Helper ────────────────────────────────────────────────────────────────
+    function setMsg(id, text, isError) {
+        $("#" + id).html(text
+            ? '<span style="color:' + (isError ? 'red' : 'green') + ';">' +
+              (isError ? '❌ ' : '✔ ') + text + '</span>'
+            : '');
+    }
+
+    // ── Select2 Init ──────────────────────────────────────────────────────────
+    $("#UserId").select2({ placeholder: "Select User", allowClear: true });
+    $("#RoleIds").select2({ placeholder: "Select Roles", width: "100%", allowClear: true });
+
+    // ── Tracking flags ────────────────────────────────────────────────────────
+    let userIdValid = false;
+    let roleIdsValid = false;
+
+    // ── User selection validation ─────────────────────────────────────────────
+    $("#UserId").on("change", function () {
+        if ($(this).val()) {
+            userIdValid = true;
+            setMsg('userId-status', 'User selected.', false);
+        } else {
+            userIdValid = false;
+            setMsg('userId-status', 'Please select a user.', true);
+        }
     });
 
-    $("#RoleIds").select2({
-        width: "100%",
-        allowClear: true
+    // ── Role selection validation ─────────────────────────────────────────────
+    $("#RoleIds").on("change", function () {
+        const selected = $(this).val();
+        if (selected && selected.length > 0) {
+            roleIdsValid = true;
+            setMsg('roleIds-status', 'Role(s) selected.', false);
+        } else {
+            roleIdsValid = false;
+            setMsg('roleIds-status', 'Please select at least one role.', true);
+        }
     });
 
+    // ── Form Submit ───────────────────────────────────────────────────────────
     $("#RegisterForm").on("submit", function (e) {
         e.preventDefault();
-        let form = $(this)[0];
 
-        if (!form.checkValidity()) {
-            $(this).addClass('was-validated');
-            return;
+        let isValid = true;
+
+        // Validate user
+        if (!$("#UserId").val()) {
+            setMsg('userId-status', 'Please select a user.', true);
+            userIdValid = false;
         }
 
+        // Validate roles
+        const selectedRoles = $("#RoleIds").val();
+        if (!selectedRoles || selectedRoles.length === 0) {
+            setMsg('roleIds-status', 'Please select at least one role.', true);
+            roleIdsValid = false;
+        }
+
+        if (!userIdValid) isValid = false;
+        if (!roleIdsValid) isValid = false;
+
+        if (!isValid) return;
+
+        // Confirm then submit
         Swal.fire({
             title: 'Create User Role?',
-            text: "Are you sure you want to create?",
+            text: 'Are you sure you want to create?',
             icon: 'warning',
             showCancelButton: true,
             confirmButtonText: 'Yes, Save',
             cancelButtonText: 'Cancel'
         }).then((result) => {
-            if (result.isConfirmed) {
-                Swal.fire({
-                    title: 'Saving...',
-                    allowOutsideClick: false,
-                    didOpen: () => {
-                        Swal.showLoading();
-                    }
-                });
-                $.ajax({
-                    url: '/UserRole/Create',
-                    type: 'POST',
-                    data: $("#RegisterForm").serialize(),
-                    headers: { "X-Requested-With": "XMLHttpRequest" },
 
-                    success: function (response) {
-                        Swal.close();
+            if (!result.isConfirmed) return;
 
-                        if (response.success) {
-                            Swal.fire({
-                                icon: 'success',
-                                title: response.message,
-                                showConfirmButton: false,
-                                timer: 1500
-                            }).then(() => {
-                                window.location.href = response.redirectUrl;
-                            });
-                        } else {
-                            Swal.fire({
-                                icon: 'error',
-                                title: 'Error',
-                                text: response.message || 'Failed to create menu.'
-                            });
-                        }
-                    },
+            Swal.fire({
+                title: 'Saving...',
+                allowOutsideClick: false,
+                didOpen: () => Swal.showLoading()
+            });
 
-                    error: function () {
+            $.ajax({
+                url: '/UserRole/Create',
+                type: 'POST',
+                data: $("#RegisterForm").serialize(),
+                headers: { "X-Requested-With": "XMLHttpRequest" },
+
+                success: function (response) {
+                    Swal.close();
+
+                    if (response.success) {
+                        Swal.fire({
+                            icon: 'success',
+                            title: response.message,
+                            showConfirmButton: false,
+                            timer: 1500
+                        }).then(() => {
+                            window.location.href = response.redirectUrl;
+                        });
+                    } else {
                         Swal.fire({
                             icon: 'error',
                             title: 'Error',
-                            text: 'Something went wrong! Please try again.'
+                            text: response.message || 'Failed to create user role.'
                         });
                     }
-                });
-            }
+                },
+
+                error: function () {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: 'Something went wrong! Please try again.'
+                    });
+                }
+            });
         });
     });
 
-
-
 </script>
-
