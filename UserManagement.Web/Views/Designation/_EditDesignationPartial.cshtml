@@ -111,10 +111,6 @@
 
 <script>
 
-    // ============================================
-    // SELECT2 INIT
-    // ============================================
-
     $(document).ready(function () {
 
         var modal = $("#updateDesignationForm").closest(".modal");
@@ -127,194 +123,102 @@
 
     });
 
-    // ============================================
-    // HELPERS
-    // ============================================
-
     function showError(messageId, message) {
-
-        $(messageId)
-            .removeClass("d-none")
-            .text(message);
+        $(messageId).removeClass("d-none").text(message);
     }
 
     function clearError(messageId) {
-
-        $(messageId)
-            .addClass("d-none")
-            .text("");
+        $(messageId).addClass("d-none").text("");
     }
-
-    // ============================================
-    // DESIGNATION VALIDATION
-    // ============================================
-
-    let designationValid = true;
 
     let originalDesignation = $("#DesignationName").val().trim();
 
+    // ==========================
+    // LIVE VALIDATION (UI ONLY)
+    // ==========================
     $("#DesignationName").on("keyup blur", function () {
 
         let designation = $(this).val().trim();
 
-        // Required
         if (designation === "") {
-
-            showError(
-                "#designation-status",
-                "Designation Name is required."
-            );
-
-            designationValid = false;
+            showError("#designation-status", "Designation Name is required.");
             return;
         }
 
-        // Min Length
         if (designation.length < 3) {
-
-            showError(
-                "#designation-status",
-                "Minimum 3 characters required."
-            );
-
-            designationValid = false;
+            showError("#designation-status", "Minimum 3 characters required.");
             return;
         }
 
-        // Same value no need check
         if (designation === originalDesignation) {
-
             clearError("#designation-status");
-
-            designationValid = true;
             return;
         }
 
-        // Check existing designation
         $.ajax({
-
             url: "/Designation/CheckDesignationName",
-
             type: "POST",
-
-            data: {
-                designationName: designation
-            },
-
+            data: { designationName: designation },
             success: function (res) {
 
                 if (res.exists) {
-
-                    showError(
-                        "#designation-status",
-                        "Designation already exists."
-                    );
-
-                    designationValid = false;
-
+                    showError("#designation-status", "Designation already exists.");
                 } else {
-
                     clearError("#designation-status");
-
-                    designationValid = true;
                 }
-
             },
-
             error: function () {
-
-                showError(
-                    "#designation-status",
-                    "Unable to validate designation."
-                );
-
-                designationValid = false;
+                showError("#designation-status", "Validation failed.");
             }
-
         });
 
     });
 
-    // ============================================
-    // FORM SUBMIT
-    // ============================================
-
+    // ==========================
+    // FORM SUBMIT (FINAL VALIDATION FIX)
+    // ==========================
     $("#updateDesignationForm").on("submit", function (e) {
 
         e.preventDefault();
 
         let designation = $("#DesignationName").val().trim();
 
-        // Final Validation
+        // ❌ ALWAYS BLOCK EMPTY
         if (designation === "") {
-
-            showError(
-                "#designation-status",
-                "Designation Name is required."
-            );
-
+            showError("#designation-status", "Designation Name is required.");
             return;
         }
 
+        // ❌ MIN LENGTH CHECK
         if (designation.length < 3) {
-
-            showError(
-                "#designation-status",
-                "Minimum 3 characters required."
-            );
-
+            showError("#designation-status", "Minimum 3 characters required.");
             return;
         }
 
-        if (!designationValid) {
-            return;
-        }
-
-        // ============================================
-        // CONFIRM UPDATE
-        // ============================================
+        // ❌ OPTIONAL: block if same as original + empty logic already handled
+        let ajaxUrl = "/Designation/CheckDesignationName";
 
         Swal.fire({
-
             title: "Update Designation?",
-
             icon: "warning",
-
             showCancelButton: true,
-
             confirmButtonText: "Yes, Update",
-
             cancelButtonText: "Cancel"
-
         }).then((result) => {
 
-            if (!result.isConfirmed) {
-                return;
-            }
+            if (!result.isConfirmed) return;
 
             Swal.fire({
-
                 title: "Updating...",
-
                 allowOutsideClick: false,
-
-                didOpen: () => {
-                    Swal.showLoading();
-                }
-
+                didOpen: () => Swal.showLoading()
             });
 
             $.ajax({
-
                 url: "/Designation/LoadEditModal",
-
                 type: "POST",
-
                 data: $("#updateDesignationForm").serialize(),
-
-                headers: {
-                    "X-Requested-With": "XMLHttpRequest"
-                },
+                headers: { "X-Requested-With": "XMLHttpRequest" },
 
                 success: function (response) {
 
@@ -323,52 +227,34 @@
                     if (response.success) {
 
                         Swal.fire({
-
                             icon: "success",
-
                             title: response.message,
-
                             showConfirmButton: false,
-
                             timer: 1500
-
                         }).then(() => {
-
                             window.location.href = response.redirectUrl;
-
                         });
 
-                    }
-                    else {
+                    } else {
 
                         Swal.fire({
-
                             icon: "error",
-
                             title: "Error",
-
-                            text: response.message || "Failed to update designation."
-
+                            text: response.message || "Update failed."
                         });
 
                     }
-
                 },
 
                 error: function () {
 
                     Swal.fire({
-
                         icon: "error",
-
                         title: "Error",
-
-                        text: "Something went wrong! Please try again."
-
+                        text: "Something went wrong!"
                     });
 
                 }
-
             });
 
         });
