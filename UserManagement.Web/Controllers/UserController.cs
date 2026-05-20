@@ -166,12 +166,10 @@ namespace UserManagement.Web.Controllers
                 return Json(new { success = false, message = "Unauthorized product access" });
 
             // Session storage
-            //HttpContext.Session.SetString("UserName", user.DisplayName);
-            HttpContext.Session.SetString("UserName", username);
-            //HttpContext.Session.SetString("Designation", user.DisplayDesignation);
-            //HttpContext.Session.SetString("Department", user.DisplayDepartment);
-            HttpContext.Session.SetString("UserId", username);
-            //HttpContext.Session.SetString("UserId", user.Id.ToString());
+            HttpContext.Session.SetString("UserName", user.DisplayName);
+            HttpContext.Session.SetString("Designation", user.DisplayDesignation);
+            HttpContext.Session.SetString("Department", user.DisplayDepartment);
+            HttpContext.Session.SetString("UserId", user.Id.ToString());
 
             // Store PageUrls
             var pageUrlsJson = JsonSerializer.Serialize(user.PageUrls ?? new List<string>());
