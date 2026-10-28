@@ -4,12 +4,172 @@
     Layout = null;
 }
 
-<div class="modal-header">
+<style>
+    .um-modal-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 1rem;
+        padding: 1.1rem 1.5rem;
+        background: linear-gradient(135deg, #0B3D91 0%, #082c6b 100%);
+        color: #fff;
+        border-top-left-radius: .9rem;
+        border-top-right-radius: .9rem;
+    }
+
+        .um-modal-header .modal-title {
+            display: flex;
+            align-items: center;
+            gap: .6rem;
+            flex-wrap: wrap;
+            margin: 0;
+            font-size: 1.05rem;
+            font-weight: 700;
+            color: #fff;
+        }
+
+        .um-modal-header .btn-close {
+            filter: brightness(0) invert(1);
+            opacity: .85;
+        }
+
+            .um-modal-header .btn-close:hover {
+                opacity: 1;
+            }
+
+    .um-modal-body {
+        padding: 1.5rem;
+        max-height: 65vh;
+        overflow-y: auto;
+    }
+
+        .um-modal-body .form-label {
+            font-weight: 600;
+            font-size: .85rem;
+            color: #1C2430;
+        }
+
+        .um-modal-body .form-control,
+        .um-modal-body .form-select,
+        .um-modal-body .select2-container .select2-selection--single {
+            border: 1px solid #E4E8EE;
+            border-radius: .55rem !important;
+        }
+
+            .um-modal-body .form-control:focus,
+            .um-modal-body .form-select:focus {
+                outline: none;
+                border-color: #2D6FE0;
+                box-shadow: 0 0 0 3px rgba(45,111,224,.1);
+            }
+
+        .um-modal-body .select2-container--default.select2-container--focus .select2-selection--single {
+            border-color: #2D6FE0 !important;
+            box-shadow: 0 0 0 3px rgba(45,111,224,.1);
+        }
+
+    .um-modal-footer {
+        display: flex;
+        justify-content: flex-end;
+        gap: .75rem;
+        padding: 1.1rem 1.5rem;
+        border-top: 1px solid #E4E8EE;
+        background: #F4F6F9;
+        border-bottom-left-radius: .9rem;
+        border-bottom-right-radius: .9rem;
+    }
+
+    .um-modal-btn-ghost {
+        display: inline-flex;
+        align-items: center;
+        gap: .45rem;
+        padding: .6rem 1.2rem;
+        border-radius: .6rem;
+        background: #fff;
+        border: 1px solid #E4E8EE;
+        color: #64748B;
+        font-weight: 600;
+        font-size: .9rem;
+    }
+
+        .um-modal-btn-ghost:hover {
+            color: #1C2430;
+            border-color: #64748B;
+        }
+
+    .um-modal-btn-primary {
+        display: inline-flex;
+        align-items: center;
+        gap: .45rem;
+        padding: .6rem 1.3rem;
+        border-radius: .6rem;
+        background: #2D6FE0;
+        border: none;
+        color: #fff;
+        font-weight: 700;
+        font-size: .9rem;
+        transition: background .12s ease, transform .12s ease;
+    }
+
+        .um-modal-btn-primary:hover {
+            background: #0B3D91;
+            transform: translateY(-1px);
+            color: #fff;
+        }
+
+    .um-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: .3rem;
+        padding: .2rem .6rem;
+        border-radius: 999px;
+        font-size: .72rem;
+        font-weight: 600;
+    }
+
+    .um-badge-ok {
+        color: #0E9F6E;
+        background: rgba(14,159,110,.12);
+    }
+
+    .um-badge-order {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 28px;
+        padding: .15rem .5rem;
+        border-radius: .4rem;
+        font-size: .76rem;
+        font-weight: 700;
+        color: #fff;
+        background: #2D6FE0;
+    }
+
+        .um-badge-order.um-badge-order-warn {
+            background: #D97706;
+        }
+
+    #displayOrder-status.text-success {
+        color: #0E9F6E !important;
+        font-size: .8rem;
+    }
+
+    #displayOrder-status.text-danger {
+        color: #D6384A !important;
+        font-size: .8rem;
+    }
+
+    .select2-container {
+        width: 100% !important;
+    }
+</style>
+
+<div class="um-modal-header">
     <h5 class="modal-title">
-        Edit Menu: @Model.MenuTitle
+        <i class="ri-file-list-line"></i> Edit Menu: @Model.MenuTitle
         @if (Model.PageId == null || Model.PageId == 0)
         {
-            <span class="badge bg-success ms-2">Has Submenus</span>
+            <span class="um-badge um-badge-ok"><i class="ri-folder-line"></i>Has Submenus</span>
         }
     </h5>
     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
@@ -18,7 +178,7 @@
 <form id="updateMenuForm" asp-action="UpdateMenuByIdAsync" asp-controller="Menu" method="post" autocomplete="off">
     <input type="hidden" asp-for="Id" />
 
-    <div class="modal-body">
+    <div class="um-modal-body">
 
         <!-- Menu Title -->
         <div class="mb-3 col-md-6">
@@ -60,7 +220,7 @@
             <div class="mb-3 col-md-3" id="displayOrderContainer">
                 <label asp-for="DisplayOrder" class="form-label d-flex justify-content-between">
                     <span>Display Order</span>
-                    <span id="displayOrderValue" class="badge bg-primary">@Model.DisplayOrder</span>
+                    <span id="displayOrderValue" class="um-badge-order">@Model.DisplayOrder</span>
                 </label>
 
                 <input type="number"
@@ -103,9 +263,9 @@
 
     </div>
 
-    <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-        <button type="submit" class="btn btn-primary">Save Changes</button>
+    <div class="um-modal-footer">
+        <button type="button" class="um-modal-btn-ghost" data-bs-dismiss="modal">Cancel</button>
+        <button type="submit" class="um-modal-btn-primary"><i class="ri-save-line"></i> Save Changes</button>
     </div>
 </form>
 
@@ -177,9 +337,9 @@
             val = parseInt(val);
             var milestones = [1, 5, 10, 15, 20];
             if (milestones.indexOf(val) === -1) {
-                $("#displayOrderValue").text(val).removeClass("bg-primary").addClass("bg-warning text-dark");
+                $("#displayOrderValue").text(val).removeClass("um-badge-order").addClass("um-badge-order um-badge-order-warn");
             } else {
-                $("#displayOrderValue").text(val).removeClass("bg-warning text-dark").addClass("bg-primary");
+                $("#displayOrderValue").text(val).removeClass("um-badge-order-warn").addClass("um-badge-order");
             }
         }
 
@@ -283,7 +443,6 @@
                         if (response.success) {
                             Swal.fire({
                                 icon: 'success',
-                                title: response.message,
                                 title: response.message,
                                 showConfirmButton: false,
                                 timer: 1500

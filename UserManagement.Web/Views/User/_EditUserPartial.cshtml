@@ -4,53 +4,252 @@
     Layout = null;
 }
 
-<div class="modal-header">
-    <h5 class="modal-title" id="userEditModalLabel">Edit User: @Model.UserName</h5>
-    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-</div>
+<style>
+    .um-edit {
+        --um-primary: #0B3D91;
+        --um-active: #2D6FE0;
+        --um-active-soft: rgba(45,111,224,.1);
+        --um-ash: #E4E8EE;
+        --um-bg: #F4F6F9;
+        --um-ink: #1C2430;
+        --um-muted: #64748B;
+        --um-ok: #0E9F6E;
+        --um-bad: #D6384A;
+    }
 
-<form id="updateUserForm" asp-action="UpdateUser" asp-controller="Users" method="post" autocomplete="off" novalidate>
-    <input type="hidden" asp-for="Id" />
+        .um-edit .modal-header {
+            align-items: center;
+            gap: .85rem;
+            padding: 1.1rem 1.4rem;
+            background: linear-gradient(135deg, var(--um-primary) 0%, #082c6b 100%);
+            border-bottom: none;
+        }
 
-    <div class="modal-body">
+            .um-edit .modal-header .um-edit-ico {
+                width: 40px;
+                height: 40px;
+                flex: 0 0 auto;
+                display: grid;
+                place-items: center;
+                border-radius: .6rem;
+                background: rgba(255,255,255,.14);
+                color: #fff;
+                font-size: 1.1rem;
+            }
 
-        <!-- Username -->
-        <div class="mb-3 col-md-6">
-            <label class="form-label">UserName</label>
-            <input type="text" asp-for="UserName" id="UserName" class="form-control" autocomplete="off" />
-            <small id="username-status" class="form-text"></small>
-        </div>
+        .um-edit .modal-title {
+            color: #fff;
+            font-weight: 700;
+            font-size: 1.05rem;
+            margin: 0;
+        }
 
-        <!-- First Name / Last Name -->
-        <div class="row">
-            <div class="mb-3 col-md-6">
-                <label class="form-label">First Name <span class="text-danger">*</span></label>
-                <input type="text" asp-for="FirstName" id="FirstName" class="form-control" required />
-                <small id="firstName-status" class="form-text"></small>
+            .um-edit .modal-title small {
+                display: block;
+                font-weight: 500;
+                font-size: .78rem;
+                color: rgba(255,255,255,.68);
+                margin-top: .1rem;
+            }
+
+        .um-edit .btn-close {
+            filter: invert(1) grayscale(100%) brightness(200%);
+            opacity: .85;
+        }
+
+            .um-edit .btn-close:hover {
+                opacity: 1;
+            }
+
+        .um-edit .modal-body {
+            background: var(--um-bg);
+            padding: 1.4rem 1.4rem .6rem;
+        }
+
+    .um-edit-section {
+        background: #fff;
+        border: 1px solid var(--um-ash);
+        border-radius: .7rem;
+        padding: 1.1rem 1.2rem;
+        margin-bottom: 1rem;
+    }
+
+    .um-edit-section-title {
+        font-size: .76rem;
+        font-weight: 700;
+        color: var(--um-muted);
+        margin-bottom: .9rem;
+        display: flex;
+        align-items: center;
+        gap: .4rem;
+    }
+
+        .um-edit-section-title i {
+            color: var(--um-active);
+            font-size: .95rem;
+        }
+
+    .um-edit .form-label {
+        font-weight: 600;
+        font-size: .85rem;
+        color: var(--um-ink);
+        margin-bottom: .35rem;
+    }
+
+    .um-edit .form-control,
+    .um-edit .form-select,
+    .um-edit .select2-container--default .select2-selection--multiple,
+    .um-edit .select2-container--default .select2-selection--single {
+        border: 1.5px solid var(--um-ash) !important;
+        border-radius: .55rem !important;
+        background: #fff;
+    }
+
+        .um-edit .form-control:focus,
+        .um-edit .form-select:focus {
+            border-color: var(--um-active) !important;
+            box-shadow: 0 0 0 3px var(--um-active-soft) !important;
+        }
+
+        .um-edit .select2-container--default.select2-container--focus .select2-selection--multiple,
+        .um-edit .select2-container--default .select2-selection--single:focus {
+            border-color: var(--um-active) !important;
+            box-shadow: 0 0 0 3px var(--um-active-soft) !important;
+        }
+
+    .um-edit .select2-selection__choice {
+        background: var(--um-active-soft) !important;
+        border: 1px solid var(--um-active) !important;
+        color: var(--um-primary) !important;
+        border-radius: .4rem !important;
+    }
+
+    .um-edit .form-text {
+        font-size: .78rem;
+        font-weight: 600;
+        min-height: 1.1em;
+        display: block;
+        margin-top: .3rem;
+    }
+
+        .um-edit .form-text .status-ok {
+            color: var(--um-ok);
+        }
+
+        .um-edit .form-text .status-bad {
+            color: var(--um-bad);
+        }
+
+    .um-edit .text-danger {
+        color: var(--um-bad) !important;
+    }
+
+    .um-edit .modal-footer {
+        background: var(--um-bg);
+        border-top: 1px solid var(--um-ash);
+        padding: 1rem 1.4rem;
+        gap: .6rem;
+    }
+
+    .um-edit .btn-secondary {
+        background: #fff;
+        border: 1.5px solid var(--um-ash);
+        color: var(--um-muted);
+        font-weight: 600;
+        border-radius: .55rem;
+        padding: .55rem 1.2rem;
+    }
+
+        .um-edit .btn-secondary:hover {
+            background: var(--um-bg);
+            border-color: var(--um-muted);
+            color: var(--um-ink);
+        }
+
+    .um-edit .btn-primary {
+        background: var(--um-active);
+        border: none;
+        font-weight: 700;
+        border-radius: .55rem;
+        padding: .55rem 1.3rem;
+        box-shadow: 0 6px 16px -7px rgba(45,111,224,.6);
+    }
+
+        .um-edit .btn-primary:hover {
+            background: var(--um-primary);
+            transform: translateY(-1px);
+        }
+
+    /* Status select color-codes without extra markup */
+    .um-edit #IsActive {
+        font-weight: 600;
+    }
+
+    /* Select2 dropdowns are repositioned via JS (select2:open) to sit directly
+           under their field; this keeps them above the modal's other content and
+           stops Bootstrap/Select2's own position:absolute from stacking them oddly. */
+    .select2-container--open .select2-dropdown {
+        position: fixed !important;
+        z-index: 2000 !important;
+    }
+</style>
+
+<div class="um-edit">
+
+    <div class="modal-header">
+        <span class="um-edit-ico"><i class="ri-user-settings-line"></i></span>
+        <h5 class="modal-title" id="userEditModalLabel">
+            Edit user
+            <small>@Model.UserName</small>
+        </h5>
+        <button type="button" class="btn-close ms-auto" data-bs-dismiss="modal" aria-label="Close"></button>
+    </div>
+
+    <form id="updateUserForm" asp-action="UpdateUser" asp-controller="Users" method="post" autocomplete="off" novalidate>
+        <input type="hidden" asp-for="Id" />
+
+        <div class="modal-body">
+
+            <!-- Account -->
+            <div class="um-edit-section">
+                <div class="um-edit-section-title"><i class="ri-shield-user-line"></i>Account</div>
+
+                <div class="mb-3 col-md-6">
+                    <label class="form-label">Username</label>
+                    <input type="text" asp-for="UserName" id="UserName" class="form-control" autocomplete="off" />
+                    <small id="username-status" class="form-text"></small>
+                </div>
+
+                <div class="row">
+                    <div class="mb-3 col-md-6">
+                        <label class="form-label">First name <span class="text-danger">*</span></label>
+                        <input type="text" asp-for="FirstName" id="FirstName" class="form-control" required />
+                        <small id="firstName-status" class="form-text"></small>
+                    </div>
+                    <div class="mb-3 col-md-6">
+                        <label class="form-label">Last name</label>
+                        <input type="text" asp-for="LastName" class="form-control" />
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="mb-3 col-md-6">
+                        <label class="form-label">Email address <span class="text-danger">*</span></label>
+                        <input type="email" asp-for="Email" id="Email" class="form-control" required />
+                        <small id="email-status" class="form-text"></small>
+                    </div>
+                    <div class="mb-0 col-md-6">
+                        <label class="form-label">Phone number</label>
+                        <input type="text" asp-for="Phone" class="form-control" />
+                    </div>
+                </div>
             </div>
-            <div class="mb-3 col-md-6">
-                <label class="form-label">Last Name</label>
-                <input type="text" asp-for="LastName" class="form-control" />
-            </div>
-        </div>
 
-        <!-- Email / Phone -->
-        <div class="row">
-            <div class="mb-3 col-md-6">
-                <label class="form-label">Email Address <span class="text-danger">*</span></label>
-                <input type="email" asp-for="Email" id="Email" class="form-control" required />
-                <small id="email-status" class="form-text"></small>
-            </div>
-            <div class="mb-3 col-md-6">
-                <label class="form-label">Phone Number</label>
-                <input type="text" asp-for="Phone" class="form-control" />
-            </div>
-        </div>
+            <!-- Access -->
+            <div class="um-edit-section">
+                <div class="um-edit-section-title"><i class="ri-apps-2-line"></i>Access</div>
 
-        <!-- Products -->
-        <div class="row">
-            <div class="row g-2">
-                <div class="mb-3 col-md-12 position-relative">
+                <div class="mb-0">
                     <label asp-for="ProductIds" class="form-label">Products <span class="text-danger">*</span></label>
                     <select asp-for="ProductIds"
                             id="ProductIds"
@@ -64,45 +263,48 @@
                     <small id="products-status" class="form-text"></small>
                 </div>
             </div>
-        </div>
 
-        <!-- Designation -->
-        <div class="mb-3 col-md-6">
-            <label class="form-label">Designation</label>
-            <select id="DesignationId" asp-for="DesignationId" class="form-select" asp-items="ViewBag.Designations">
-            </select>
-        </div>
+            <!-- Organization -->
+            <div class="um-edit-section">
+                <div class="um-edit-section-title"><i class="ri-building-2-line"></i>Organization</div>
 
-        <!-- Branch / Department -->
-        <div class="row">
-            <div class="mb-3 col-md-6">
-                <label class="form-label">Primary Branch</label>
-                <select id="PrimaryBranchId" asp-for="PrimaryBranchId" class="form-select" asp-items="ViewBag.Branches">
-                </select>
+                <div class="row">
+                    <div class="mb-3 col-md-6">
+                        <label class="form-label">Designation</label>
+                        <select id="DesignationId" asp-for="DesignationId" class="form-select" asp-items="ViewBag.Designations">
+                        </select>
+                    </div>
+                    <div class="mb-3 col-md-6">
+                        <label class="form-label">Status</label>
+                        <select id="IsActive" asp-for="IsActive" class="form-select">
+                            <option value="true">Active</option>
+                            <option value="false">Inactive</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="mb-0 col-md-6">
+                        <label class="form-label">Primary branch</label>
+                        <select id="PrimaryBranchId" asp-for="PrimaryBranchId" class="form-select" asp-items="ViewBag.Branches">
+                        </select>
+                    </div>
+                    <div class="mb-0 col-md-6">
+                        <label class="form-label">Primary department</label>
+                        <select id="PrimaryDepartmentId" asp-for="PrimaryDepartmentId" class="form-select" asp-items="ViewBag.Departments">
+                        </select>
+                    </div>
+                </div>
             </div>
-            <div class="mb-3 col-md-6">
-                <label class="form-label">Primary Department</label>
-                <select id="PrimaryDepartmentId" asp-for="PrimaryDepartmentId" class="form-select" asp-items="ViewBag.Departments">
-                </select>
-            </div>
+
         </div>
 
-        <!-- Status -->
-        <div class="mb-3 col-md-2">
-            <label class="form-label">Status</label>
-            <select id="IsActive" asp-for="IsActive" class="form-select">
-                <option value="true">Active</option>
-                <option value="false">Inactive</option>
-            </select>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+            <button type="submit" class="btn btn-primary"><i class="ri-save-3-line me-1"></i>Save changes</button>
         </div>
-
-    </div>
-
-    <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-        <button type="submit" class="btn btn-primary">Save Changes</button>
-    </div>
-</form>
+    </form>
+</div>
 
 <script src="~/assets/lib/jquery/jquery.min.js"></script>
 <script src="~/assets/js/sweetalert2.all.min.js"></script>
@@ -113,7 +315,7 @@
     // ── Helper ────────────────────────────────────────────────────────────────
     function setMsg(id, text, isError) {
         $("#" + id).html(text
-            ? '<span style="color:' + (isError ? 'red' : 'green') + ';">' +
+            ? '<span class="' + (isError ? 'status-bad' : 'status-ok') + '">' +
               (isError ? '\u274C ' : '\u2714 ') + text + '</span>'
             : '');
     }
@@ -124,15 +326,50 @@
     }
 
     // ── Select2 Init ─────────────────────────────────────────────────────────
-    // dropdownParent fixes dropdown clipping/z-index inside Bootstrap modals
-    var $modal = $("#updateUserForm").closest(".modal");
-    if ($modal.length === 0) { $modal = $(document.body); }
+    // dropdownParent fixes dropdown clipping/z-index inside Bootstrap modals.
+    // Anchor to the modal DIALOG (not document.body) so dropdowns render
+    // directly under their field instead of floating at the page's own scroll position.
+    var $modal = $("#userEditModal");
+    if ($modal.length === 0) {
+        $modal = $("#updateUserForm").closest(".modal");
+    }
+    if ($modal.length === 0) {
+        $modal = $(document.body);
+    }
 
     $("#DesignationId").select2({    placeholder: "Select Designation", dropdownParent: $modal });
     $("#PrimaryBranchId").select2({  placeholder: "Select Branch",      dropdownParent: $modal });
     $("#PrimaryDepartmentId").select2({ placeholder: "Select Department", dropdownParent: $modal });
     $("#IsActive").select2({         placeholder: "Select Status",       dropdownParent: $modal });
     $("#ProductIds").select2({       placeholder: "Select Products",     dropdownParent: $modal });
+
+    // Select2's "flip upward when short on space below" behavior misfires inside
+    // scrollable modals (it measures against the wrong container and jumps to the
+    // top of the modal instead of just below the field). Force every dropdown
+    // opened from this form to always render below its field, and reposition it
+    // to sit directly under the field it belongs to.
+    $modal.on('select2:open', function (e) {
+        var fieldId = $(e.target).attr('id');
+        var $select2Container = $('#select2-' + fieldId + '-container').closest('.select2');
+
+        setTimeout(function () {
+            var $dropdown = $('.select2-container--open .select2-dropdown');
+            if ($dropdown.length === 0 || $select2Container.length === 0) { return; }
+
+            $dropdown.removeClass('select2-dropdown--above').addClass('select2-dropdown--below');
+
+            // Dropdown is position:fixed (see CSS), so use getBoundingClientRect
+            // (viewport-relative) rather than .offset() (document-relative) —
+            // using offset() here was the earlier bug that put it in the wrong spot.
+            var rect = $select2Container[0].getBoundingClientRect();
+
+            $dropdown.css({
+                top: rect.bottom + 'px',
+                left: rect.left + 'px',
+                width: rect.width + 'px'
+            });
+        }, 0);
+    });
 
     // ── Validation flags ──────────────────────────────────────────────────────
     var usernameValid  = true;   // assume valid until user edits it

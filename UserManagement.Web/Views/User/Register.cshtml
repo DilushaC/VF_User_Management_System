@@ -4,142 +4,415 @@
     ViewData["Title"] = "Register User";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
-<div class="row">
-    <div class="row p-2">
-        <div class="col-12">
-            <div class="card">
-                <div class="card-body">
-                    <h3 class="header">@ViewData["Title"]</h3>
-                    <br />
 
-                    <form asp-action="RegisterUser" asp-controller="User" method="post" id="RegisterForm" autocomplete="off" novalidate>
-                        <fieldset>
+<!-- Theme Config Js -->
+<script src="~/assets/js/config.js"></script>
 
-                            <!-- Username -->
-                            <div class="row g-2">
-                                <div class="mb-3 col-md-6">
+<!-- App css -->
+<link href="~/assets/css/app.min.css" rel="stylesheet" type="text/css" id="app-style" />
+
+<!-- Icons css -->
+<link href="~/assets/css/icons.min.css" rel="stylesheet" type="text/css" />
+
+<style>
+    .um-page {
+        --um-primary: #0B3D91;
+        --um-primary-deep: #082c6b;
+        --um-active: #2D6FE0;
+        --um-active-soft: rgba(45,111,224,.1);
+        --um-bg: #F4F6F9;
+        --um-ash: #E4E8EE;
+        --um-ink: #1C2430;
+        --um-muted: #64748B;
+        --um-ok: #0E9F6E;
+        --um-bad: #D6384A;
+        --um-card: #ffffff;
+    }
+
+    .um-page {
+        background: var(--um-bg);
+        padding: 1.5rem 0 2.5rem;
+        color: var(--um-ink);
+    }
+
+    /* ===== Header bar ===== */
+    .um-head {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 1rem;
+        margin-bottom: 1.25rem;
+        padding: 1.25rem 1.5rem;
+        border-radius: .75rem;
+        background: linear-gradient(135deg, var(--um-primary) 0%, var(--um-primary-deep) 100%);
+        color: #fff;
+    }
+
+    .um-head-title {
+        display: flex;
+        align-items: center;
+        gap: .85rem;
+    }
+
+    .um-head-ico {
+        width: 44px;
+        height: 44px;
+        flex: 0 0 auto;
+        display: grid;
+        place-items: center;
+        border-radius: .65rem;
+        background: rgba(255,255,255,.14);
+        font-size: 1.3rem;
+    }
+
+    .um-head h3 {
+        margin: 0;
+        font-size: 1.35rem;
+        font-weight: 700;
+        color: #fff;
+    }
+
+    .um-head p {
+        margin: .15rem 0 0;
+        font-size: .85rem;
+        color: rgba(255,255,255,.72);
+    }
+
+    .um-back-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: .45rem;
+        padding: .6rem 1.1rem;
+        border-radius: .6rem;
+        background: rgba(255,255,255,.14);
+        color: #fff;
+        font-weight: 600;
+        font-size: .9rem;
+        text-decoration: none;
+        border: none;
+        transition: background .12s ease, transform .12s ease;
+    }
+
+        .um-back-btn:hover {
+            background: rgba(255,255,255,.24);
+            color: #fff;
+            transform: translateY(-1px);
+        }
+
+    /* ===== Stat strip ===== */
+    .um-stats {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+        gap: .9rem;
+        margin-bottom: 1.25rem;
+    }
+
+    .um-stat {
+        background: var(--um-card);
+        border: 1px solid var(--um-ash);
+        border-radius: .7rem;
+        padding: .9rem 1.1rem;
+        display: flex;
+        align-items: center;
+        gap: .75rem;
+    }
+
+    .um-stat-ico {
+        width: 38px;
+        height: 38px;
+        flex: 0 0 auto;
+        display: grid;
+        place-items: center;
+        border-radius: .55rem;
+        font-size: 1.05rem;
+        background: var(--um-active-soft);
+        color: var(--um-active);
+    }
+
+    .um-stat-num {
+        font-size: 1.1rem;
+        font-weight: 700;
+        line-height: 1.1;
+    }
+
+    .um-stat-label {
+        font-size: .78rem;
+        color: var(--um-muted);
+    }
+
+    /* ===== Form card ===== */
+    .um-card {
+        background: var(--um-card);
+        border: 1px solid var(--um-ash);
+        border-radius: .8rem;
+        overflow: hidden;
+    }
+
+    .um-card-head {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 1rem;
+        padding: 1rem 1.25rem;
+        border-bottom: 1px solid var(--um-ash);
+    }
+
+        .um-card-head h6 {
+            margin: 0;
+            font-weight: 700;
+            font-size: .95rem;
+        }
+
+    .um-card-body {
+        padding: 1.5rem;
+    }
+
+    .um-section-title {
+        font-size: .78rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: .04em;
+        color: var(--um-muted);
+        margin: 0 0 1rem;
+        padding-bottom: .5rem;
+        border-bottom: 1px dashed var(--um-ash);
+    }
+
+    .um-section + .um-section {
+        margin-top: 1.75rem;
+    }
+
+    .um-page .form-label {
+        font-weight: 600;
+        font-size: .85rem;
+        color: var(--um-ink);
+    }
+
+    .um-page .form-control,
+    .um-page .select2-container .select2-selection--multiple,
+    .um-page .select2-container .select2-selection--single {
+        border: 1px solid var(--um-ash);
+        border-radius: .55rem !important;
+    }
+
+        .um-page .form-control:focus {
+            outline: none;
+            border-color: var(--um-active);
+            box-shadow: 0 0 0 3px var(--um-active-soft);
+        }
+
+    .um-page .select2-container--default.select2-container--focus .select2-selection--multiple,
+    .um-page .select2-container--default .select2-selection--single:focus {
+        border-color: var(--um-active) !important;
+        box-shadow: 0 0 0 3px var(--um-active-soft);
+    }
+
+    .um-page .select2-selection__choice {
+        background: var(--um-active-soft) !important;
+        color: var(--um-primary) !important;
+        border: none !important;
+        border-radius: .4rem !important;
+    }
+
+    .um-hint {
+        font-size: .76rem;
+        color: var(--um-muted);
+        display: block;
+        margin-top: .15rem;
+    }
+
+    .um-status {
+        display: block;
+        margin-top: .35rem;
+        font-size: .8rem;
+    }
+
+    .um-card-footer {
+        display: flex;
+        justify-content: flex-end;
+        gap: .75rem;
+        padding: 1.1rem 1.5rem;
+        border-top: 1px solid var(--um-ash);
+        background: var(--um-bg);
+    }
+
+    .um-btn-primary {
+        display: inline-flex;
+        align-items: center;
+        gap: .45rem;
+        padding: .65rem 1.4rem;
+        border-radius: .6rem;
+        background: var(--um-active);
+        border: none;
+        color: #fff;
+        font-weight: 700;
+        font-size: .9rem;
+        transition: background .12s ease, transform .12s ease;
+    }
+
+        .um-btn-primary:hover {
+            background: var(--um-primary);
+            transform: translateY(-1px);
+        }
+
+    .um-btn-ghost {
+        display: inline-flex;
+        align-items: center;
+        gap: .45rem;
+        padding: .65rem 1.3rem;
+        border-radius: .6rem;
+        background: #fff;
+        border: 1px solid var(--um-ash);
+        color: var(--um-muted);
+        font-weight: 600;
+        font-size: .9rem;
+        text-decoration: none;
+    }
+
+        .um-btn-ghost:hover {
+            color: var(--um-ink);
+            border-color: var(--um-muted);
+        }
+</style>
+
+<div class="um-page">
+    <div class="container-fluid">
+
+        <div class="um-head">
+            <div class="um-head-title">
+                <span class="um-head-ico"><i class="ri-user-add-line"></i></span>
+                <div>
+                    <h3>@ViewData["Title"]</h3>
+                    <p>Create a new account and assign branch, department and product access</p>
+                </div>
+            </div>
+            <a href="@Url.Action("Management", "User")" class="um-back-btn">
+                <i class="ri-arrow-left-line"></i> Back to users
+            </a>
+        </div>
+
+        <form asp-action="RegisterUser" asp-controller="User" method="post" id="RegisterForm" autocomplete="off" novalidate>
+            <fieldset>
+                <div class="um-card">
+                    <div class="um-card-head">
+                        <h6><i class="ri-user-settings-line me-1" style="color:var(--um-active);"></i>User details</h6>
+                    </div>
+                    <div class="um-card-body">
+
+                        <!-- Account -->
+                        <div class="um-section">
+                            <p class="um-section-title">Account</p>
+                            <div class="row g-3">
+                                <div class="col-md-4">
                                     <label asp-for="UserName" class="form-label">User Name</label>
-                                    <input asp-for="UserName"
-                                           class="form-control round"
-                                           id="UserName"
-                                           required
-                                           autocomplete="off" />
-                                    <small id="username-status" class="form-text"></small>
+                                    <input asp-for="UserName" class="form-control" id="UserName" required autocomplete="off" />
+                                    <small id="username-status" class="um-status"></small>
                                 </div>
-                            </div>
-
-                            <!-- First name + Last name -->
-                            <div class="row g-2">
-                                <div class="mb-3 col-md-6">
+                                <div class="col-md-4">
                                     <label asp-for="FirstName" class="form-label">First Name</label>
-                                    <input asp-for="FirstName" class="form-control round" id="FirstName" required />
-                                    <small id="firstname-status" class="form-text"></small>
+                                    <input asp-for="FirstName" class="form-control" id="FirstName" required />
+                                    <small id="firstname-status" class="um-status"></small>
                                 </div>
-                                <div class="mb-3 col-md-6">
+                                <div class="col-md-4">
                                     <label asp-for="LastName" class="form-label">Last Name</label>
-                                    <input asp-for="LastName" class="form-control round" id="LastName" required />
-                                    <small id="lastname-status" class="form-text"></small>
+                                    <input asp-for="LastName" class="form-control" id="LastName" required />
+                                    <small id="lastname-status" class="um-status"></small>
                                 </div>
                             </div>
-
-                            <!-- Email -->
-                            <div class="row g-2">
-                                <div class="mb-3 col-md-6">
+                            <div class="row g-3 mt-0">
+                                <div class="col-md-6">
                                     <label asp-for="Email" class="form-label">Email</label>
-                                    <input asp-for="Email" type="email" class="form-control round" id="Email" required />
-                                    <small id="email-status" class="form-text"></small>
+                                    <input asp-for="Email" type="email" class="form-control" id="Email" required />
+                                    <small id="email-status" class="um-status"></small>
                                 </div>
-                            </div>
-
-                            <!-- Phone -->
-                            <div class="row g-2">
-                                <div class="mb-3 col-md-6">
+                                <div class="col-md-6">
                                     <label asp-for="Phone" class="form-label">Phone</label>
                                     <input asp-for="Phone"
                                            id="Phone"
                                            type="tel"
-                                           class="form-control round"
+                                           class="form-control"
                                            required
                                            autocomplete="off"
                                            maxlength="10"
                                            placeholder="07XXXXXXXX" />
-                                    <small id="phone-status" class="form-text"></small>
+                                    <small id="phone-status" class="um-status"></small>
                                 </div>
                             </div>
+                        </div>
 
-                            <!-- Products -->
-                            <div class="row g-2">
-                                <div class="mb-3 col-md-6">
+                        <!-- Access -->
+                        <div class="um-section">
+                            <p class="um-section-title">Access</p>
+                            <div class="row g-3">
+                                <div class="col-md-12">
                                     <label asp-for="ProductIds" class="form-label">
                                         Products
-                                        <small class="text-muted d-block">
-                                            Select one or more products for user access
-                                        </small>
+                                        <span class="um-hint">Select one or more products for user access</span>
                                     </label>
                                     <select asp-for="ProductIds"
                                             id="ProductIds"
                                             name="ProductIds"
-                                            class="form-control select2 round"
+                                            class="form-control select2"
                                             multiple="multiple"
                                             required
                                             data-placeholder=""
                                             asp-items="ViewBag.Products">
                                     </select>
-                                    <small id="products-status" class="form-text"></small>
+                                    <small id="products-status" class="um-status"></small>
                                 </div>
                             </div>
+                        </div>
 
-                            <!-- Designation -->
-                            <div class="row g-2">
-                                <div class="mb-3 col-md-6">
+                        <!-- Org placement -->
+                        <div class="um-section">
+                            <p class="um-section-title">Org placement</p>
+                            <div class="row g-3">
+                                <div class="col-md-4">
                                     <label asp-for="DesignationId" class="form-label">Designation Name</label>
                                     <select asp-for="DesignationId"
                                             id="DesignationId"
-                                            class="form-control select2 round"
+                                            class="form-control select2"
                                             required
                                             asp-items="ViewBag.Designations">
                                         <option value="">Select Designation</option>
                                     </select>
-                                    <small id="designation-status" class="form-text"></small>
+                                    <small id="designation-status" class="um-status"></small>
                                 </div>
-                            </div>
-
-                            <!-- Branch -->
-                            <div class="row g-2">
-                                <div class="mb-3 col-md-6">
+                                <div class="col-md-4">
                                     <label asp-for="PrimaryBranchId" class="form-label">Branch Name</label>
                                     <select asp-for="PrimaryBranchId"
                                             id="PrimaryBranchId"
-                                            class="form-control select2 round"
+                                            class="form-control select2"
                                             required
                                             asp-items="ViewBag.Branches">
                                         <option value="">Select Branch</option>
                                     </select>
-                                    <small id="branch-status" class="form-text"></small>
+                                    <small id="branch-status" class="um-status"></small>
                                 </div>
-                            </div>
-
-                            <!-- Department -->
-                            <div class="row g-2">
-                                <div class="mb-3 col-md-6">
+                                <div class="col-md-4">
                                     <label asp-for="PrimaryDepartmentId" class="form-label">Primary Department</label>
                                     <select asp-for="PrimaryDepartmentId"
                                             id="PrimaryDepartmentId"
-                                            class="form-control select2 round"
+                                            class="form-control select2"
                                             required
                                             asp-items="ViewBag.Departments">
                                         <option value="">Select Department</option>
                                     </select>
-                                    <small id="department-status" class="form-text"></small>
+                                    <small id="department-status" class="um-status"></small>
                                 </div>
                             </div>
+                        </div>
 
-                            <button type="submit" class="btn btn-primary">Create User</button>
-                        </fieldset>
-                    </form>
+                    </div>
+                    <div class="um-card-footer">
+                        <a href="@Url.Action("Index", "User")" class="um-btn-ghost">Cancel</a>
+                        <button type="submit" class="um-btn-primary"><i class="ri-save-line"></i> Create User</button>
+                    </div>
                 </div>
-            </div>
-        </div>
+            </fieldset>
+        </form>
+
     </div>
 </div>
 
@@ -153,7 +426,7 @@
     // ── Helpers ──────────────────────────────────────────────────────────────
     function setMsg(id, text, isError) {
         $("#" + id).html(text
-            ? '<span style="color:' + (isError ? 'red' : 'green') + ';">' +
+            ? '<span style="color:' + (isError ? 'var(--um-bad)' : 'var(--um-ok)') + ';">' +
               (isError ? '❌ ' : '✔ ') + text + '</span>'
             : '');
     }

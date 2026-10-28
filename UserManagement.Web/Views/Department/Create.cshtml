@@ -5,32 +5,308 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<div class="row">
-    <div class="row p-2">
-        <div class="col-12">
-            <div class="card">
-                <div class="card-body">
-                    <h3 class="header">@ViewData["Title"]</h3>
-                    <br />
-                    <form asp-action="Create" asp-controller="Department" method="post" id="RegisterForm" autocomplete="off" novalidate>
-                        <fieldset>
+<!-- Theme Config Js -->
+<script src="~/assets/js/config.js"></script>
 
-                            <!-- Department Name -->
-                            <div class="row g-2">
-                                <div class="mb-3 col-md-6">
+<!-- App css -->
+<link href="~/assets/css/app.min.css" rel="stylesheet" type="text/css" id="app-style" />
+
+<!-- Icons css -->
+<link href="~/assets/css/icons.min.css" rel="stylesheet" type="text/css" />
+
+<style>
+    .um-page {
+        --um-primary: #0B3D91;
+        --um-primary-deep: #082c6b;
+        --um-active: #2D6FE0;
+        --um-active-soft: rgba(45,111,224,.1);
+        --um-bg: #F4F6F9;
+        --um-ash: #E4E8EE;
+        --um-ink: #1C2430;
+        --um-muted: #64748B;
+        --um-ok: #0E9F6E;
+        --um-bad: #D6384A;
+        --um-card: #ffffff;
+    }
+
+    .um-page {
+        background: var(--um-bg);
+        padding: 1.5rem 0 2.5rem;
+        color: var(--um-ink);
+    }
+
+    /* ===== Header bar ===== */
+    .um-head {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 1rem;
+        margin-bottom: 1.25rem;
+        padding: 1.25rem 1.5rem;
+        border-radius: .75rem;
+        background: linear-gradient(135deg, var(--um-primary) 0%, var(--um-primary-deep) 100%);
+        color: #fff;
+    }
+
+    .um-head-title {
+        display: flex;
+        align-items: center;
+        gap: .85rem;
+    }
+
+    .um-head-ico {
+        width: 44px;
+        height: 44px;
+        flex: 0 0 auto;
+        display: grid;
+        place-items: center;
+        border-radius: .65rem;
+        background: rgba(255,255,255,.14);
+        font-size: 1.3rem;
+    }
+
+    .um-head h3 {
+        margin: 0;
+        font-size: 1.35rem;
+        font-weight: 700;
+        color: #fff;
+    }
+
+    .um-head p {
+        margin: .15rem 0 0;
+        font-size: .85rem;
+        color: rgba(255,255,255,.72);
+    }
+
+    .um-back-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: .45rem;
+        padding: .6rem 1.1rem;
+        border-radius: .6rem;
+        background: rgba(255,255,255,.14);
+        color: #fff;
+        font-weight: 600;
+        font-size: .9rem;
+        text-decoration: none;
+        border: none;
+        transition: background .12s ease, transform .12s ease;
+    }
+
+        .um-back-btn:hover {
+            background: rgba(255,255,255,.24);
+            color: #fff;
+            transform: translateY(-1px);
+        }
+
+    /* ===== Stat strip ===== */
+    .um-stats {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+        gap: .9rem;
+        margin-bottom: 1.25rem;
+    }
+
+    .um-stat {
+        background: var(--um-card);
+        border: 1px solid var(--um-ash);
+        border-radius: .7rem;
+        padding: .9rem 1.1rem;
+        display: flex;
+        align-items: center;
+        gap: .75rem;
+    }
+
+    .um-stat-ico {
+        width: 38px;
+        height: 38px;
+        flex: 0 0 auto;
+        display: grid;
+        place-items: center;
+        border-radius: .55rem;
+        font-size: 1.05rem;
+        background: var(--um-active-soft);
+        color: var(--um-active);
+    }
+
+    .um-stat-num {
+        font-size: 1.1rem;
+        font-weight: 700;
+        line-height: 1.1;
+    }
+
+    .um-stat-label {
+        font-size: .78rem;
+        color: var(--um-muted);
+    }
+
+    /* ===== Form card ===== */
+    .um-card {
+        background: var(--um-card);
+        border: 1px solid var(--um-ash);
+        border-radius: .8rem;
+        overflow: hidden;
+    }
+
+    .um-card-head {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 1rem;
+        padding: 1rem 1.25rem;
+        border-bottom: 1px solid var(--um-ash);
+    }
+
+        .um-card-head h6 {
+            margin: 0;
+            font-weight: 700;
+            font-size: .95rem;
+        }
+
+    .um-card-body {
+        padding: 1.5rem;
+    }
+
+    .um-section-title {
+        font-size: .78rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: .04em;
+        color: var(--um-muted);
+        margin: 0 0 1rem;
+        padding-bottom: .5rem;
+        border-bottom: 1px dashed var(--um-ash);
+    }
+
+    .um-section + .um-section {
+        margin-top: 1.75rem;
+    }
+
+    .um-page .form-label {
+        font-weight: 600;
+        font-size: .85rem;
+        color: var(--um-ink);
+    }
+
+    .um-page .form-control,
+    .um-page .form-select,
+    .um-page .select2-container .select2-selection--single {
+        border: 1px solid var(--um-ash);
+        border-radius: .55rem !important;
+    }
+
+        .um-page .form-control:focus,
+        .um-page .form-select:focus {
+            outline: none;
+            border-color: var(--um-active);
+            box-shadow: 0 0 0 3px var(--um-active-soft);
+        }
+
+    .um-page .select2-container--default.select2-container--focus .select2-selection--single,
+    .um-page .select2-container--default .select2-selection--single:focus {
+        border-color: var(--um-active) !important;
+        box-shadow: 0 0 0 3px var(--um-active-soft);
+    }
+
+    .um-hint {
+        font-size: .76rem;
+        color: var(--um-muted);
+        display: block;
+        margin-top: .15rem;
+    }
+
+    .um-status {
+        display: block;
+        margin-top: .35rem;
+        font-size: .8rem;
+    }
+
+    .um-card-footer {
+        display: flex;
+        justify-content: flex-end;
+        gap: .75rem;
+        padding: 1.1rem 1.5rem;
+        border-top: 1px solid var(--um-ash);
+        background: var(--um-bg);
+    }
+
+    .um-btn-primary {
+        display: inline-flex;
+        align-items: center;
+        gap: .45rem;
+        padding: .65rem 1.4rem;
+        border-radius: .6rem;
+        background: var(--um-active);
+        border: none;
+        color: #fff;
+        font-weight: 700;
+        font-size: .9rem;
+        transition: background .12s ease, transform .12s ease;
+    }
+
+        .um-btn-primary:hover {
+            background: var(--um-primary);
+            transform: translateY(-1px);
+        }
+
+    .um-btn-ghost {
+        display: inline-flex;
+        align-items: center;
+        gap: .45rem;
+        padding: .65rem 1.3rem;
+        border-radius: .6rem;
+        background: #fff;
+        border: 1px solid var(--um-ash);
+        color: var(--um-muted);
+        font-weight: 600;
+        font-size: .9rem;
+        text-decoration: none;
+    }
+
+        .um-btn-ghost:hover {
+            color: var(--um-ink);
+            border-color: var(--um-muted);
+        }
+</style>
+
+<div class="um-page">
+    <div class="container-fluid">
+
+        <div class="um-head">
+            <div class="um-head-title">
+                <span class="um-head-ico"><i class="ri-organization-chart"></i></span>
+                <div>
+                    <h3>@ViewData["Title"]</h3>
+                    <p>Add a new department for assigning to users and branches</p>
+                </div>
+            </div>
+            <a href="@Url.Action("Management", "Department")" class="um-back-btn">
+                <i class="ri-arrow-left-line"></i> Back to departments
+            </a>
+        </div>
+
+        <form asp-action="Create" asp-controller="Department" method="post" id="RegisterForm" autocomplete="off" novalidate>
+            <fieldset>
+                <div class="um-card">
+                    <div class="um-card-head">
+                        <h6><i class="ri-organization-chart me-1" style="color:var(--um-active);"></i>Department details</h6>
+                    </div>
+                    <div class="um-card-body">
+
+                        <div class="um-section">
+                            <p class="um-section-title">Details</p>
+                            <div class="row g-3">
+                                <div class="col-md-6">
                                     <label asp-for="DepartmentName" class="form-label">Department Name</label>
                                     <input asp-for="DepartmentName"
                                            id="DepartmentName"
-                                           class="form-control round"
+                                           class="form-control"
                                            required
                                            autocomplete="off" />
-                                    <small id="departmentName-status" class="form-text"></small>
+                                    <small id="departmentName-status" class="um-status"></small>
                                 </div>
-                            </div>
-
-                            <!-- Active Status -->
-                            <div class="row g-2">
-                                <div class="mb-3 col-md-2">
+                                <div class="col-md-3">
                                     <label asp-for="IsActive" class="form-label">Active Status</label>
                                     <select asp-for="IsActive" id="IsActive" class="form-select select2">
                                         <option value="true">Active</option>
@@ -38,13 +314,17 @@
                                     </select>
                                 </div>
                             </div>
+                        </div>
 
-                            <button type="submit" class="btn btn-primary">Create Department</button>
-                        </fieldset>
-                    </form>
+                    </div>
+                    <div class="um-card-footer">
+                        <a href="@Url.Action("Management", "Department")" class="um-btn-ghost">Cancel</a>
+                        <button type="submit" class="um-btn-primary"><i class="ri-save-line"></i> Create Department</button>
+                    </div>
                 </div>
-            </div>
-        </div>
+            </fieldset>
+        </form>
+
     </div>
 </div>
 
@@ -57,7 +337,7 @@
     // ── Helper ────────────────────────────────────────────────────────────────
     function setMsg(id, text, isError) {
         $("#" + id).html(text
-            ? '<span style="color:' + (isError ? 'red' : 'green') + ';">' +
+            ? '<span style="color:' + (isError ? 'var(--um-bad)' : 'var(--um-ok)') + ';">' +
               (isError ? '❌ ' : '✔ ') + text + '</span>'
             : '');
     }

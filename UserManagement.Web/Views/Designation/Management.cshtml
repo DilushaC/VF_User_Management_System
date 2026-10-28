@@ -23,17 +23,451 @@
 <!-- Icons css -->
 <link href="~/assets/css/icons.min.css" rel="stylesheet" type="text/css" />
 
-<div class="row p-2">
-    <div class="col-12">
-        <div class="card">
-            <div class="card-body">
-                <h3 class="page-title">@ViewData["Title"]</h3>
-                <br />
-                <div class="mb-3">
-                    <a href="@Url.Action("Create", "Designation")" class="btn btn-primary">
-                        <i class="ri-suitcase-line"></i> Add Designation
-                    </a>
+<style>
+    .um-page {
+        --um-primary: #0B3D91;
+        --um-primary-deep: #082c6b;
+        --um-active: #2D6FE0;
+        --um-active-soft: rgba(45,111,224,.1);
+        --um-bg: #F4F6F9;
+        --um-ash: #E4E8EE;
+        --um-ink: #1C2430;
+        --um-muted: #64748B;
+        --um-ok: #0E9F6E;
+        --um-bad: #D6384A;
+        --um-card: #ffffff;
+    }
+
+    .um-page {
+        background: var(--um-bg);
+        padding: 1.5rem 0 2.5rem;
+        color: var(--um-ink);
+    }
+
+    /* ===== Header bar ===== */
+    .um-head {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 1rem;
+        margin-bottom: 1.25rem;
+        padding: 1.25rem 1.5rem;
+        border-radius: .75rem;
+        background: linear-gradient(135deg, var(--um-primary) 0%, var(--um-primary-deep) 100%);
+        color: #fff;
+    }
+
+    .um-head-title {
+        display: flex;
+        align-items: center;
+        gap: .85rem;
+    }
+
+    .um-head-ico {
+        width: 44px;
+        height: 44px;
+        flex: 0 0 auto;
+        display: grid;
+        place-items: center;
+        border-radius: .65rem;
+        background: rgba(255,255,255,.14);
+        font-size: 1.3rem;
+    }
+
+    .um-head h3 {
+        margin: 0;
+        font-size: 1.35rem;
+        font-weight: 700;
+        color: #fff;
+    }
+
+    .um-head p {
+        margin: .15rem 0 0;
+        font-size: .85rem;
+        color: rgba(255,255,255,.72);
+    }
+
+    .um-add-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: .45rem;
+        padding: .6rem 1.1rem;
+        border-radius: .6rem;
+        background: #fff;
+        color: var(--um-primary);
+        font-weight: 700;
+        font-size: .9rem;
+        text-decoration: none;
+        border: none;
+        transition: transform .12s ease, box-shadow .12s ease;
+        box-shadow: 0 6px 16px -6px rgba(0,0,0,.35);
+    }
+
+        .um-add-btn:hover {
+            color: var(--um-primary-deep);
+            transform: translateY(-1px);
+            box-shadow: 0 10px 20px -8px rgba(0,0,0,.4);
+        }
+
+    /* ===== Stat strip ===== */
+    .um-stats {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+        gap: .9rem;
+        margin-bottom: 1.25rem;
+    }
+
+    .um-stat {
+        background: var(--um-card);
+        border: 1px solid var(--um-ash);
+        border-radius: .7rem;
+        padding: .9rem 1.1rem;
+        display: flex;
+        align-items: center;
+        gap: .75rem;
+    }
+
+    .um-stat-ico {
+        width: 38px;
+        height: 38px;
+        flex: 0 0 auto;
+        display: grid;
+        place-items: center;
+        border-radius: .55rem;
+        font-size: 1.05rem;
+        background: var(--um-active-soft);
+        color: var(--um-active);
+    }
+
+    .um-stat-num {
+        font-size: 1.25rem;
+        font-weight: 700;
+        line-height: 1.1;
+    }
+
+    .um-stat-label {
+        font-size: .78rem;
+        color: var(--um-muted);
+    }
+
+    /* ===== Table card ===== */
+    .um-card {
+        background: var(--um-card);
+        border: 1px solid var(--um-ash);
+        border-radius: .8rem;
+        overflow: hidden;
+    }
+
+    .um-card-head {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 1rem;
+        padding: 1rem 1.25rem;
+        border-bottom: 1px solid var(--um-ash);
+    }
+
+        .um-card-head h6 {
+            margin: 0;
+            font-weight: 700;
+            font-size: .95rem;
+        }
+
+    .um-card-body {
+        padding: 0 1.25rem 1.25rem;
+    }
+
+    /* ===== DataTables toolbar (length + search row) ===== */
+    .um-page .dataTables_wrapper {
+        padding-top: 1rem;
+    }
+
+        .um-page .dataTables_wrapper .row:first-child {
+            align-items: center;
+            margin-bottom: 1rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--um-ash);
+        }
+
+        .um-page .dataTables_wrapper .dataTables_length,
+        .um-page .dataTables_wrapper .dataTables_filter {
+            display: flex;
+            align-items: center;
+        }
+
+            .um-page .dataTables_wrapper .dataTables_length label,
+            .um-page .dataTables_wrapper .dataTables_filter label {
+                display: flex;
+                align-items: center;
+                gap: .5rem;
+                margin: 0;
+                font-size: .85rem;
+                font-weight: 600;
+                color: var(--um-muted);
+                white-space: nowrap;
+            }
+
+        .um-page .dataTables_wrapper .dataTables_filter {
+            justify-content: flex-end;
+        }
+
+            .um-page .dataTables_wrapper .dataTables_filter label {
+                width: 100%;
+                max-width: 320px;
+            }
+
+            .um-page .dataTables_wrapper .dataTables_length select,
+            .um-page .dataTables_wrapper .dataTables_filter input {
+                border: 1px solid var(--um-ash);
+                border-radius: .5rem;
+                padding: .45rem .7rem;
+                font-size: .85rem;
+                color: var(--um-ink);
+                background-color: #fff;
+                height: auto;
+                line-height: 1.3;
+            }
+
+        .um-page .dataTables_wrapper .dataTables_length select {
+            min-width: 70px;
+            margin: 0 .4rem;
+        }
+
+        .um-page .dataTables_wrapper .dataTables_filter input {
+            flex: 1 1 auto;
+            margin-left: 0;
+        }
+
+            .um-page .dataTables_wrapper .dataTables_length select:focus,
+            .um-page .dataTables_wrapper .dataTables_filter input:focus {
+                outline: none;
+                border-color: var(--um-active);
+                box-shadow: 0 0 0 3px var(--um-active-soft);
+            }
+
+    /* DataTable overrides */
+    #basic-datatable {
+        border: 1px solid var(--um-ash);
+        border-radius: .6rem;
+        overflow: hidden;
+    }
+
+        #basic-datatable thead th {
+            background: linear-gradient(135deg, var(--um-primary) 0%, var(--um-primary-deep) 100%);
+            color: #fff;
+            font-size: .72rem;
+            font-weight: 700;
+            letter-spacing: .02em;
+            text-transform: uppercase;
+            border-bottom: none !important;
+            padding-top: .85rem;
+            padding-bottom: .85rem;
+        }
+
+            #basic-datatable thead th.sorting:before,
+            #basic-datatable thead th.sorting:after,
+            #basic-datatable thead th.sorting_asc:before,
+            #basic-datatable thead th.sorting_asc:after,
+            #basic-datatable thead th.sorting_desc:before,
+            #basic-datatable thead th.sorting_desc:after {
+                opacity: .55;
+            }
+
+        #basic-datatable tbody td {
+            vertical-align: middle;
+            font-size: .88rem;
+            border-color: var(--um-ash) !important;
+        }
+
+        #basic-datatable tbody tr:hover {
+            background: var(--um-active-soft);
+        }
+
+    .um-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: .35rem;
+        padding: .25rem .65rem;
+        border-radius: 999px;
+        font-size: .76rem;
+        font-weight: 600;
+    }
+
+    .um-badge-active {
+        color: var(--um-ok);
+        background: rgba(14,159,110,.12);
+    }
+
+    .um-badge-inactive {
+        color: var(--um-bad);
+        background: rgba(214,56,74,.1);
+    }
+
+    .um-icon-btn {
+        width: 32px;
+        height: 32px;
+        display: inline-grid;
+        place-items: center;
+        border-radius: .5rem;
+        border: 1px solid var(--um-ash);
+        background: #fff;
+        transition: background .12s ease, border-color .12s ease, transform .12s ease, color .12s ease;
+    }
+
+    .um-edit-btn {
+        color: var(--um-active);
+    }
+
+        .um-edit-btn:hover {
+            background: var(--um-active);
+            border-color: var(--um-active);
+            color: #fff;
+            transform: translateY(-1px);
+        }
+
+    .um-delete-btn {
+        color: var(--um-bad);
+    }
+
+        .um-delete-btn:hover {
+            background: var(--um-bad);
+            border-color: var(--um-bad);
+            color: #fff;
+            transform: translateY(-1px);
+        }
+
+    /* Pagination / info row */
+    .um-page .dataTables_wrapper .row:last-child {
+        align-items: center;
+        margin-top: 1rem;
+    }
+
+    .um-page .dataTables_wrapper .dataTables_info {
+        font-size: .82rem;
+        color: var(--um-muted);
+    }
+
+    .um-page .page-link {
+        color: var(--um-primary);
+        border-color: var(--um-ash);
+        border-radius: .4rem !important;
+        margin: 0 2px;
+    }
+
+    .um-page .page-item.active .page-link {
+        background: var(--um-active);
+        border-color: var(--um-active);
+        color: #fff;
+    }
+
+    .um-page .page-item.disabled .page-link {
+        color: #c3cad6;
+    }
+
+    /* ===== Edit modal shell ===== */
+    #designationEditModal .modal-content {
+        border: none;
+        border-radius: .9rem;
+        overflow: visible;
+    }
+
+    #designationEditModal .modal-header {
+        border-top-left-radius: .9rem;
+        border-top-right-radius: .9rem;
+    }
+
+    #designationEditModal .modal-footer {
+        border-bottom-left-radius: .9rem;
+        border-bottom-right-radius: .9rem;
+    }
+
+    .um-modal-loading {
+        padding: 3rem 1.5rem;
+        text-align: center;
+    }
+
+        .um-modal-loading .spinner-border {
+            color: var(--um-active);
+            width: 2.5rem;
+            height: 2.5rem;
+        }
+
+        .um-modal-loading p {
+            margin-top: .9rem;
+            color: var(--um-muted);
+            font-size: .88rem;
+        }
+
+    .um-modal-error .modal-header {
+        background: rgba(214,56,74,.08);
+        border-bottom: 1px solid var(--um-ash);
+    }
+
+    @@media (prefers-reduced-motion: no-preference) {
+        #designationEditModal.show .modal-dialog {
+            animation: um-modal-rise .22s cubic-bezier(.2,.8,.3,1) both;
+        }
+    }
+
+    @@keyframes um-modal-rise {
+        from {
+            opacity: 0;
+            transform: translateY(14px) scale(.98);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+        }
+    }
+</style>
+
+<div class="um-page">
+    <div class="container-fluid">
+
+        <div class="um-head">
+            <div class="um-head-title">
+                <span class="um-head-ico"><i class="ri-suitcase-line"></i></span>
+                <div>
+                    <h3>Designations Management</h3>
+                    <p>Manage job titles used across branches and departments</p>
                 </div>
+            </div>
+            <a href="@Url.Action("Create", "Designation")" class="um-add-btn">
+                <i class="ri-suitcase-line"></i> Add Designation
+            </a>
+        </div>
+
+        <div class="um-stats">
+            <div class="um-stat">
+                <span class="um-stat-ico"><i class="ri-list-check-2"></i></span>
+                <div>
+                    <div class="um-stat-num" id="um-stat-total">—</div>
+                    <div class="um-stat-label">Total designations</div>
+                </div>
+            </div>
+            <div class="um-stat">
+                <span class="um-stat-ico" style="color:var(--um-ok);background:rgba(14,159,110,.12);"><i class="ri-checkbox-circle-line"></i></span>
+                <div>
+                    <div class="um-stat-num" id="um-stat-active">—</div>
+                    <div class="um-stat-label">Active</div>
+                </div>
+            </div>
+            <div class="um-stat">
+                <span class="um-stat-ico" style="color:var(--um-bad);background:rgba(214,56,74,.1);"><i class="ri-forbid-line"></i></span>
+                <div>
+                    <div class="um-stat-num" id="um-stat-inactive">—</div>
+                    <div class="um-stat-label">Inactive</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="um-card">
+            <div class="um-card-head">
+                <h6><i class="ri-list-check-2 me-1" style="color:var(--um-active);"></i>All designations</h6>
+            </div>
+            <div class="um-card-body">
                 <div class="table-responsive">
                     <table id="basic-datatable" class="table table-striped dt-responsive nowrap w-100">
                         <thead>
@@ -50,6 +484,7 @@
                 </div>
             </div>
         </div>
+
     </div>
 </div>
 
@@ -57,11 +492,11 @@
     <div class="modal-dialog modal-lg modal-dialog-centered">
         <div class="modal-content">
             <!-- Initial loading content -->
-            <div class="modal-body text-center py-5">
-                <div class="spinner-border text-primary" role="status">
+            <div class="um-modal-loading">
+                <div class="spinner-border" role="status">
                     <span class="visually-hidden">Loading...</span>
                 </div>
-                <p class="mt-2">Loading designation details...</p>
+                <p>Loading designation details…</p>
             </div>
         </div>
     </div>
@@ -81,7 +516,16 @@
         serverSide: true,
         ajax: {
             url: '/Designation/GetDesignationsPaged',
-            type: 'POST'
+            type: 'POST',
+            dataSrc: function (json) {
+                // Update the stat strip from whatever this page of data reports,
+                // without changing the server contract.
+                var total = (json && typeof json.recordsTotal !== 'undefined') ? json.recordsTotal : null;
+                if (total !== null) {
+                    $('#um-stat-total').text(total);
+                }
+                return (json && json.data) ? json.data : [];
+            }
         },
         columns: [
             { data: 'designationName' },
@@ -89,9 +533,9 @@
                 data: 'isActive',
                 render: function (data, type, row) {
                     if (data === true || data === "Active") {
-                        return '<span class="badge bg-success">Active</span>';
+                        return '<span class="um-badge um-badge-active"><i class="ri-checkbox-circle-fill"></i>Active</span>';
                     } else {
-                        return '<span class="badge bg-danger">Inactive</span>';
+                        return '<span class="um-badge um-badge-inactive"><i class="ri-close-circle-fill"></i>Inactive</span>';
                     }
             },
             },
@@ -109,21 +553,21 @@
 
                             <!-- Edit -->
                             <button type="button"
-                                    class="btn btn-sm btn-info edit-designation-btn"
+                                    class="um-icon-btn um-edit-btn edit-designation-btn"
                                     data-designation-id="${data}"
                                     title="Edit Designation">
 
-                                <i class="bi bi-pencil"></i>
+                                <i class="ri-pencil-line"></i>
 
                             </button>
 
                             <!-- Delete -->
                             <button type="button"
-                                    class="btn btn-sm btn-danger delete-designation-btn"
+                                    class="um-icon-btn um-delete-btn delete-designation-btn"
                                     data-designation-id="${data}"
                                     title="Delete Designation">
 
-                                <i class="bi bi-trash"></i>
+                                <i class="ri-delete-bin-line"></i>
 
                             </button>
 
@@ -152,11 +596,11 @@
                 return;
             }
             modalContent.html(`
-                <div class="modal-body text-center py-5">
-                    <div class="spinner-border text-primary" role="status">
+                <div class="um-modal-loading">
+                    <div class="spinner-border" role="status">
                         <span class="visually-hidden">Loading...</span>
                     </div>
-                    <p class="mt-2">Loading designation details...</p>
+                    <p>Loading designation details…</p>
                 </div>
             `);
 
@@ -173,15 +617,17 @@
                 error: function (xhr, status, error) {
                     console.error("AJAX error:", status, error);
                     modalContent.html(`
-                        <div class="modal-header">
-                            <h5 class="modal-title text-danger">Error Loading Data</h5>
-                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                        </div>
-                        <div class="modal-body">
-                            <p class="m-0">Failed to load user details. Server responded with: ${xhr.status} (${xhr.statusText})</p>
-                        </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <div class="um-modal-error">
+                            <div class="modal-header">
+                                <h5 class="modal-title text-danger"><i class="ri-error-warning-line me-1"></i>Error loading data</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                <p class="m-0">Failed to load designation details. Server responded with: ${xhr.status} (${xhr.statusText})</p>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                            </div>
                         </div>
                     `);
                 }
@@ -299,5 +745,3 @@
     });
 
 </script>
-
-
